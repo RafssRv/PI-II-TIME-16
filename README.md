@@ -16,6 +16,12 @@
 Neste projeto, será desenvolvido um Sistema de Acompanhamento de
 Demandas de Desenvolvimento, inspirado em ferramentas utilizadas por equipes de
 tecnologia para organizar tarefas, defeitos (“bugs”) e melhorias de um software.
+o sistema permitirá cadastrar, visualizar, filtrar, editar, atribuir responsáveis
+e acompanhar o status das demandas, com diferentes níveis de acesso para
+Administradores, Líderes de Projeto e Membros da Equipe.
+Também haverá comentários, histórico de alterações, dashboard com indicadores e
+filtros/buscas, formando uma espécie de ferramenta de gerenciamento de projetos
+de desenvolvimento.
 
 ### Professora Orientadora
 Professora orientadora: **Renata Arantes**
