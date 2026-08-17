@@ -6,6 +6,7 @@ Priscila Amorim dos Santos - 24787350
 
 Rafael Roveri Pires  -  RA: 24007131
 
+Helosia Lacerda Marinho  -  RA: 25893868
 
 Neste projeto, será desenvolvido um Sistema de Acompanhamento de
 Demandas de Desenvolvimento, inspirado em ferramentas utilizadas por equipes de
