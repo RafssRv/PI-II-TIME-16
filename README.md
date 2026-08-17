@@ -5,7 +5,7 @@
 
 ## Integrantes da Equipe  
 | Nome | RA | Semestre |
-|---|---|---|
+|---|---:|:---:|
 | **Helosia Lacerda Marinho** | 25893868 | 4º |
 | **Priscila Amorim dos Santos** | 24787350 | 6º |
 | **Rafael Roveri Pires** | 24007131 | 6º |
@@ -18,4 +18,4 @@ Demandas de Desenvolvimento, inspirado em ferramentas utilizadas por equipes de
 tecnologia para organizar tarefas, defeitos (“bugs”) e melhorias de um software.
 
 ### Professora Orientadora
-Professora orientadora: Renata Arantes
+Professora orientadora: **Renata Arantes**
