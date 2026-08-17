@@ -5,14 +5,12 @@
 
 ## Integrantes da Equipe  
 | Nome | RA | Semestre |
-|---|---:|:---:|
+|---|---|---|
 | **Helosia Lacerda Marinho** | 25893868 | 4º |
 | **Priscila Amorim dos Santos** | 24787350 | 6º |
 | **Rafael Roveri Pires** | 24007131 | 6º |
 | **Sophia Franco de Godoy** | 24000833 | 6º |
 | **Vinícius Panutti Salgado** | 25007329 | 4º |
-
----
 
 ## Sobre o projeto
 Neste projeto, será desenvolvido um Sistema de Acompanhamento de
