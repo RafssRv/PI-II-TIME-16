@@ -1,0 +1,184 @@
+:root {
+  /* Cores da paleta - Roxo + cinza escuro */
+  --cor-primaria: #7C3AED;
+  --cor-primaria-hover: #6D28D9;
+  --cor-primaria-clara: #EDE9FE;
+
+  /* Neutros */
+  --cinza-fundo: #F3F4F6;
+  --cinza-card: #FFFFFF;
+  --cinza-borda: #E5E7EB;
+  --texto-principal: #111827;
+  --texto-secundario: #6B7280;
+
+  /* Cores de estado */
+  --sucesso: #16A34A;
+  --alerta: #F59E0B;
+  --erro: #DC2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/*Sidebar*/
+.sidebar {
+  background: #FFFFFF;
+  border-right: 1px solid var(--cinza-borda);
+  min-height: 100vh;
+  padding: 24px 0;
+  position: fixed;
+  width: 240px;
+}
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--cinza-borda);
+  margin-bottom: 16px;
+}
+.sidebar-logo h4 {
+  color: var(--cor-primaria);
+  font-weight: 700;
+  margin: 0;
+}
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  color: var(--texto-secundario);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.sidebar-menu a:hover {
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+}
+.sidebar-menu a.active {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  border-right: 3px solid var(--cor-primaria);
+}
+
+.main-content {
+  margin-left: 240px;
+  padding: 32px;
+}
+
+/*layout publico (login)*/
+.public-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.public-card {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+
+/* Botões */
+.btn-primary-custom {
+  background: var(--cor-primaria);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.btn-primary-custom:hover {
+  background: var(--cor-primaria-hover);
+  color: white;
+}
+.btn-secondary-custom {
+  background: transparent;
+  color: var(--texto-secundario);
+  border: 1px solid var(--cinza-borda);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.btn-secondary-custom:hover {
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+}
+
+
+/* cards e formulários */
+.content-card {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.form-control-custom,
+.form-select-custom {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #FFFFFF;
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.form-control-custom:focus,
+.form-select-custom:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+
+/* status e prioridades */
+.badge-custom {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
+.badge-status-andamento { background: #FEF3C7; color: #92400E; }
+.badge-status-revisao { background: #E0E7FF; color: #4338CA; }
+.badge-status-concluida { background: #D1FAE5; color: #065F46; }
+.badge-status-cancelada { background: #E5E7EB; color: #374151; }
+
+.badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
+.badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
+.badge-prioridade-media { background: #FEF3C7; color: #92400E; }
+.badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
+
+
+
