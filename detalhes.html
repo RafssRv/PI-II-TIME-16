@@ -1,0 +1,539 @@
+<!--
+  Autor: Priscila Amorim 
+  Tela: Detalhes da Demanda
+  Descrição: Interface para visualização das informações completas de uma demanda,
+  incluindo descrição, informações gerais, comentários e histórico de alterações.
+-->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes da Demanda - Sistema de Demandas</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: var(--texto-secundario);
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--texto-secundario);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--cor-primaria);
+        }
+
+        .demand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .demand-title-area {
+            flex: 1;
+        }
+
+        .demand-id {
+            color: var(--texto-secundario);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .demand-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge-tipo {
+            background: var(--cor-primaria-clara);
+            color: var(--cor-primaria);
+        }
+
+        .demand-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .description {
+            color: var(--texto-secundario);
+            line-height: 1.7;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
+        .comments-section {
+            margin-bottom: 16px;
+        }
+
+        .comment {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--cinza-borda);
+        }
+
+        .comment:first-of-type {
+            padding-top: 0;
+        }
+
+        .comment:last-of-type {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: var(--texto-secundario);
+        }
+
+        .comment-text {
+            color: var(--texto-secundario);
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .comment-form .form-control-custom {
+            flex: 1;
+        }
+
+        .history {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-item {
+            position: relative;
+            padding: 0 0 20px 28px;
+        }
+
+        .history-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .history-item::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: var(--cor-primaria);
+            border-radius: 50%;
+        }
+
+        .history-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 15px;
+            width: 2px;
+            height: calc(100% - 5px);
+            background: var(--cinza-borda);
+        }
+
+        .history-text {
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: var(--texto-secundario);
+        }
+
+        .deadline-warning {
+            color: var(--erro);
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demand-header {
+                flex-direction: column;
+            }
+
+            .demand-actions {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                min-height: auto;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .comment-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Detalhes da Demanda</h1>
+                <p>Visualize as informações e o histórico da demanda.</p>
+            </div>
+
+            <a href="demandas.html" class="back-link">
+                ← Voltar para demandas
+            </a>
+
+        </div>
+
+
+        <!-- Informações principais da demanda -->
+        <section class="content-card">
+
+            <div class="demand-header">
+
+                <div class="demand-title-area">
+
+                    <div class="demand-id">
+                        DEM-001
+                    </div>
+
+                    <h2 class="demand-title">
+                        Corrigir erro no formulário de login
+                    </h2>
+
+                    <div class="badges">
+
+                        <span class="badge-custom badge-tipo">
+                            Defeito
+                        </span>
+
+                        <span class="badge-custom badge-prioridade-alta">
+                            Alta
+                        </span>
+
+                        <span class="badge-custom badge-status-andamento">
+                            Em andamento
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="demand-actions">
+
+                    <button class="btn-secondary-custom">
+                        Editar
+                    </button>
+
+                    <button class="btn-primary-custom">
+                        Atualizar status
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Descrição + informações -->
+        <div class="details-grid">
+
+            <section class="content-card">
+
+                <h3 class="card-title">
+                    Descrição
+                </h3>
+
+                <p class="description">
+                    Foi identificado um problema no formulário de login.
+                    Ao inserir uma senha incorreta, o sistema não apresenta
+                    corretamente a mensagem de erro ao usuário.
+                </p>
+
+                <p class="description" style="margin-top: 12px;">
+                    É necessário corrigir o comportamento da tela para que
+                    o usuário receba uma mensagem clara informando que as
+                    credenciais estão incorretas.
+                </p>
+
+            </section>
+
+
+            <!-- Informações -->
+            <section class="content-card">
+
+                <h3 class="card-title">
+                    Informações
+                </h3>
+
+                <div class="info-list">
+
+                    <div class="info-item">
+                        <span class="info-label">Projeto</span>
+                        <span class="info-value">Sistema de Demandas</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Responsável</span>
+                        <span class="info-value">João Silva</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Criada em</span>
+                        <span class="info-value">25/08/2026</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Última atualização</span>
+                        <span class="info-value">28/08/2026</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Prazo de finalização</span>
+                        <span class="info-value">02/09/2026</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- Comentários -->
+        <section class="content-card comments-section">
+
+            <h3 class="card-title">
+                Comentários
+            </h3>
+
+            <div class="comment">
+
+                <div class="comment-header">
+
+                    <span class="comment-author">
+                        João Silva
+                    </span>
+
+                    <span class="comment-date">
+                        28/08/2026 às 14:30
+                    </span>
+
+                </div>
+
+                <p class="comment-text">
+                    Identifiquei o problema e estou verificando o comportamento
+                    do formulário para realizar a correção.
+                </p>
+
+            </div>
+
+
+            <div class="comment">
+
+                <div class="comment-header">
+
+                    <span class="comment-author">
+                        Maria Santos
+                    </span>
+
+                    <span class="comment-date">
+                        27/08/2026 às 16:10
+                    </span>
+
+                </div>
+
+                <p class="comment-text">
+                    O erro acontece apenas quando a senha informada está incorreta.
+                </p>
+
+            </div>
+
+
+            <!-- Campo para novo comentário -->
+            <div class="comment-form">
+
+                <input
+                    type="text"
+                    class="form-control-custom"
+                    placeholder="Escreva um comentário..."
+                >
+
+                <button class="btn-primary-custom">
+                    Comentar
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- Histórico -->
+        <section class="content-card">
+
+            <h3 class="card-title">
+                Histórico de alterações
+            </h3>
+
+            <div class="history">
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>João Silva</strong> alterou o status
+                        de <strong>Aberta</strong> para
+                        <strong>Em andamento</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        28/08/2026 às 14:20
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> alterou o responsável
+                        da demanda para <strong>João Silva</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        27/08/2026 às 16:00
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> alterou a prioridade
+                        de <strong>Média</strong> para <strong>Alta</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        27/08/2026 às 15:45
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> criou a demanda.
+                    </p>
+
+                    <span class="history-date">
+                        25/08/2026 às 10:15
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
