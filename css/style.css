@@ -160,6 +160,21 @@ body {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
+textarea.form-control-custom {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group label .obrigatorio {
+  color: var(--erro);
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--texto-secundario);
+  margin-top: 4px;
+}
+
 
 /* status e prioridades */
 .badge-custom {
@@ -181,4 +196,70 @@ body {
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
 
+/* navegação e cabeçalho de página (usados no cadastro/editar) */
+.breadcrumb-custom {
+  font-size: 13px;
+  color: var(--texto-secundario);
+  margin-bottom: 8px;
+}
+.breadcrumb-custom a {
+  color: var(--texto-secundario);
+  text-decoration: none;
+}
+.breadcrumb-custom a:hover {
+  color: var(--cor-primaria);
+}
 
+.page-header {
+  margin-bottom: 32px;
+}
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+.page-header p {
+  color: var(--texto-secundario);
+  margin: 4px 0 0;
+}
+/* modificador: só a dashboard usa (título + botão lado a lado) */
+.page-header--acao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* card de formulário (diferente do content-card: mais padding, usado em blocos de form) */
+.form-card {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.form-card h5 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--cinza-borda);
+}
+
+/* barra de ações do formulário */
+.actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+/* aviso informativo (ex: "status nasce como Aberta") */
+.info-banner {
+  background: var(--cor-primaria-clara);
+  border-left: 3px solid var(--cor-primaria);
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #5B21B6;
+  margin-bottom: 24px;
+}

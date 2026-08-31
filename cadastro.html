@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova demanda - Acompanhamento de Demandas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h4>DemandasApp</h4>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="#">Dashboard</a>
+            <a href="#" class="active">Demandas</a>
+            <a href="#">Projetos</a>
+            <a href="#">Usuários</a>
+        </nav>
+    </aside>
+
+    <!-- Conteudo -->
+    <main class="main-content">
+
+        <div class="breadcrumb-custom">
+            <a href="#">Demandas</a> / <span>Nova demanda</span>
+        </div>
+
+        <div class="page-header">
+            <h1>Nova demanda</h1>
+            <p>Registre uma tarefa, defeito, melhoria ou item de documentação vinculado a um projeto da equipe.</p>
+        </div>
+
+        <div class="info-banner">
+            A demanda será criada automaticamente com o status <strong>Aberta</strong>.
+        </div>
+
+        <form>
+            <div class="form-card">
+                <h5>Sobre a demanda</h5>
+
+                <div class="form-group">
+                    <label>Título <span class="obrigatorio">*</span></label>
+                    <input type="text" class="form-control-custom" placeholder="Ex: Corrigir erro de login com e-mail inválido">
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição <span class="obrigatorio">*</span></label>
+                    <textarea class="form-control-custom" placeholder="Descreva o contexto, o comportamento esperado e passos para reproduzir, se for o caso."></textarea>
+                    <div class="form-hint">Seja específico para facilitar o trabalho de quem for executar</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Projeto <span class="obrigatorio">*</span></label>
+                            <select class="form-select-custom">
+                                <option>Selecione um projeto...</option>
+                                <option>Sistema de Demandas — PI2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tipo <span class="obrigatorio">*</span></label>
+                            <select class="form-select-custom">
+                                <option>Selecione o tipo...</option>
+                                <option>Tarefa</option>
+                                <option>Defeito</option>
+                                <option>Melhoria</option>
+                                <option>Documentação</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h5>Atribuição e prazo</h5>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Responsável</label>
+                            <select class="form-select-custom">
+                                <option>Sem responsável definido</option>
+                                <option>Rafa</option>
+                            </select>
+                            <div class="form-hint">Pode ser atribuído depois</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Prioridade <span class="obrigatorio">*</span></label>
+                            <select class="form-select-custom">
+                                <option>Selecione a prioridade...</option>
+                                <option>Crítica</option>
+                                <option>Alta</option>
+                                <option>Média</option>
+                                <option>Baixa</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Prazo de finalização</label>
+                    <input type="date" class="form-control-custom" style="max-width: 240px;">
+                    <div class="form-hint">A data será validada contra feriados nacionais</div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <button type="button" class="btn-secondary-custom">Cancelar</button>
+                <button type="submit" class="btn-primary-custom">Criar demanda</button>
+            </div>
+        </form>
+
+    </main>
+
+</body>
+</html>
