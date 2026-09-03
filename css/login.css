@@ -1,0 +1,92 @@
+/*
+Autora: Sophia Franco de Godoy
+Descrição: Estilização da tela de login, incluindo o card de acesso, campos de entrada, título, logo e botão de entrada
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+}
+
+/* Container com Flexbox para centralizar o card no meio da tela */
+.pagina-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    margin-top: 40px;
+}
+
+/* Card centralizado usando o Box Model */
+.card-login {
+    background-color: white;
+    width: 380px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Título e logo */
+.logo {
+    color: #7c3aed;
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.card-login h2 {
+    color: #111827;
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.card-login p {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* Estrutura dos campos com margin e padding */
+.campo {
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.campo p {
+    margin-bottom: 6px;
+    color: #111827;
+}
+
+.caixa-input {
+    width: 93%;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+}
+
+.placeholder-texto {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* Botão estilizado com display flex para centralizar o link */
+.botao-entrar {
+    background-color: #7c3aed;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 20px;
+}
+
+.botao-entrar a {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+}
