@@ -18,11 +18,18 @@
     --info: #0EA5E9;
 }
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--cinza-fundo);
     color: var(--texto-principal);
     font-size: 14px;
+    line-height: 1.5;
 }
 
 /* Sidebar */
@@ -93,6 +100,7 @@ body {
     border-radius: 6px;
     font-weight: 500;
     transition: background 0.15s;
+    cursor: pointer;
 }
 .btn-primary-custom:hover {
     background: var(--cor-primaria-hover);
@@ -180,14 +188,15 @@ body {
     font-weight: 500;
 }
 .badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
-.badge-status-andamento { background: #e6eae6; color: #374151; }
+.badge-status-andamento { background: #FEF3C7; color: #92400E; }
 .badge-status-revisao { background: #E0E7FF; color: #4338CA; }
 .badge-status-concluida { background: #D1FAE5; color: #065F46; }
+.badge-status-cancelada { background: #E5E7EB; color: #374151; }
 
 .badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
 .badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
 .badge-prioridade-media { background: #FEF3C7; color: #92400E; }
-.badge-prioridade-baixa { background: #d1ecc7; color: #3e5137; }
+.badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
 /* Barra de progresso simples */
 .progress-bar-custom {

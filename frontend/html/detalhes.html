@@ -1,5 +1,5 @@
 <!--
-  Autor: Priscila Amorim 
+  Autor: Priscila Amorim
   Tela: Detalhes da Demanda
   Descrição: Interface para visualização das informações completas de uma demanda,
   incluindo descrição, informações gerais, comentários e histórico de alterações.
@@ -14,252 +14,8 @@
 
     <title>Detalhes da Demanda - Sistema de Demandas</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/detalhes.css">
-
-    <style>
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .page-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .page-header p {
-            color: var(--texto-secundario);
-            margin: 0;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--texto-secundario);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back-link:hover {
-            color: var(--cor-primaria);
-        }
-
-        .demand-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .demand-title-area {
-            flex: 1;
-        }
-
-        .demand-id {
-            color: var(--texto-secundario);
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-
-        .demand-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 14px;
-        }
-
-        .badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .badge-tipo {
-            background: var(--cor-primaria-clara);
-            color: var(--cor-primaria);
-        }
-
-        .demand-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .description {
-            color: var(--texto-secundario);
-            line-height: 1.7;
-        }
-
-        .info-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: var(--texto-secundario);
-        }
-
-        .info-value {
-            font-weight: 500;
-        }
-
-        .comments-section {
-            margin-bottom: 16px;
-        }
-
-        .comment {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--cinza-borda);
-        }
-
-        .comment:first-of-type {
-            padding-top: 0;
-        }
-
-        .comment:last-of-type {
-            border-bottom: none;
-        }
-
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-
-        .comment-author {
-            font-weight: 600;
-        }
-
-        .comment-date {
-            font-size: 12px;
-            color: var(--texto-secundario);
-        }
-
-        .comment-text {
-            color: var(--texto-secundario);
-        }
-
-        .comment-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .comment-form .form-control-custom {
-            flex: 1;
-        }
-
-        .history {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .history-item {
-            position: relative;
-            padding: 0 0 20px 28px;
-        }
-
-        .history-item:last-child {
-            padding-bottom: 0;
-        }
-
-        .history-item::before {
-            content: "";
-            position: absolute;
-            left: 6px;
-            top: 5px;
-            width: 10px;
-            height: 10px;
-            background: var(--cor-primaria);
-            border-radius: 50%;
-        }
-
-        .history-item:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            left: 10px;
-            top: 15px;
-            width: 2px;
-            height: calc(100% - 5px);
-            background: var(--cinza-borda);
-        }
-
-        .history-text {
-            font-size: 13px;
-            margin-bottom: 3px;
-        }
-
-        .history-date {
-            font-size: 11px;
-            color: var(--texto-secundario);
-        }
-
-        .deadline-warning {
-            color: var(--erro);
-            font-weight: 600;
-        }
-
-        @media (max-width: 900px) {
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .demand-header {
-                flex-direction: column;
-            }
-
-            .demand-actions {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .sidebar {
-                position: static;
-                width: 100%;
-                min-height: auto;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .comment-form {
-                flex-direction: column;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -269,6 +25,7 @@
             <h4>DemandasApp</h4>
         </div>
         <nav class="sidebar-menu">
+            <a href="#" class="sidebar-logo"><button class="btn-primary-custom">+ Novo Projeto</button></a>
             <a href="#">Dashboard</a>
             <a href="#" class="active">Demandas</a>
             <a href="#">Projetos</a>
@@ -287,7 +44,7 @@
                 <p>Visualize as informações e o histórico da demanda.</p>
             </div>
 
-            <a href="demandas.html" class="back-link">
+            <a href="listagemDemandas.html" class="back-link">
                 ← Voltar para demandas
             </a>
 
