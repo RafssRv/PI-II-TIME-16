@@ -1,0 +1,209 @@
+<!--Autor: Vinícius Panutti - 25007329-->
+<!--DASHBOARD == HOME-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Roxo + Cinza Escuro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/styleDashboard/dashboard.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <h4>DemandasApp</h4>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="#" class="sidebar-logo"><button class="btn-primary-custom">+ Novo Projeto</button></a>
+        <a href="#" class="active">Visão Geral</a>
+        <a href="#">Projeto 1</a>
+        <a href="#">Projeto 2</a>
+        <a href="#">Projeto 3</a>
+    </nav>
+</aside>
+
+<!-- Conteudo principal -->
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Visão geral das demandas do projeto</p>
+        </div>
+        <div>
+            <button class="btn-primary-custom">+ Pesquisar demanda</button>
+            <button class="btn-primary-custom">+ Adicionar Filtro</button>
+        </div>
+    </div>
+
+    <!-- Cards de metrica -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="label">Total de demandas</div>
+                <div class="value">147</div>
+                <div class="trend">Em 4 projetos ativos</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="label">Em andamento</div>
+                <div class="value destaque">42</div>
+                <div class="trend">28% do total</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="label">Concluídas</div>
+                <div class="value">89</div>
+                <div class="trend">60% do total</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="metric-card">
+                <div class="label">Críticas em aberto</div>
+                <div class="value alerta">6</div>
+                <div class="trend">Requer atenção</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda linha: distribuicao + proximas do prazo -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="content-card">
+                <h5>Por status</h5>
+                <div class="tipo-item">
+                    <span class="nome">Aberta</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Em andamento</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Em revisão</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Concluída</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Cancelada</span>
+                    <span class="count">X</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="content-card">
+                <h5>Por prioridade</h5>
+                <div class="tipo-item">
+                    <span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
+                    <span class="count">X</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="content-card">
+                <h5>Por tipo</h5>
+                <div class="tipo-item">
+                    <span class="nome">Tarefa</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Defeito</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Melhoria</span>
+                    <span class="count">X</span>
+                </div>
+                <div class="tipo-item">
+                    <span class="nome">Documentação</span>
+                    <span class="count">X</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de proximas do prazo -->
+    <div class="content-card">
+        <h5>Demandas próximas do prazo</h5>
+        <table class="table-custom">
+            <thead>
+            <tr>
+                <th>Título</th>
+                <th>Projeto</th>
+                <th>Responsável</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Prazo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Corrigir erro no login com Google</td>
+                <td>App Cliente</td>
+                <td>Sophia</td>
+                <td><span class="badge-custom badge-prioridade-critica">Crítica</span></td>
+                <td><span class="badge-custom badge-status-andamento">Em andamento</span></td>
+                <td>26/08/2026</td>
+            </tr>
+            <tr>
+                <td>Implementar filtro por responsável</td>
+                <td>Painel Admin</td>
+                <td>Priscila</td>
+                <td><span class="badge-custom badge-prioridade-alta">Alta</span></td>
+                <td><span class="badge-custom badge-status-revisao">Em revisão</span></td>
+                <td>27/08/2026</td>
+            </tr>
+            <tr>
+                <td>Atualizar documentação da API</td>
+                <td>Backend</td>
+                <td>Panutti</td>
+                <td><span class="badge-custom badge-prioridade-media">Média</span></td>
+                <td><span class="badge-custom badge-status-aberta">Aberta</span></td>
+                <td>28/08/2026</td>
+            </tr>
+            <tr>
+                <td>Melhorar performance da listagem</td>
+                <td>App Cliente</td>
+                <td>Heloisa</td>
+                <td><span class="badge-custom badge-prioridade-alta">Alta</span></td>
+                <td><span class="badge-custom badge-status-andamento">Em andamento</span></td>
+                <td>29/08/2026</td>
+            </tr>
+            <tr>
+                <td>Ajustar exportação de relatórios</td>
+                <td>Painel Admin</td>
+                <td>Rafael</td>
+                <td><span class="badge-custom badge-prioridade-media">Média</span></td>
+                <td><span class="badge-custom badge-status-aberta">Aberta</span></td>
+                <td>30/08/2026</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>
