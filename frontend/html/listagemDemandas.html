@@ -1,0 +1,132 @@
+<!-- Autor: Heloisa L Marinho --> 
+<!-- Descrição: Permite que todas as demandas sejam listadas 
+e também com filtro de busca por critério --> 
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/front/estilos/style.css">
+    <title>Listagem de Demandas</title>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h1 class="page-title">Visualizar Demandas</h1>
+            
+            <div class="content-card">
+                <div class="toolbar-filters">
+                    
+                    <div class="form-group filter-group busca">
+                        <label for="busca">Buscar pelo nome da demanda</label>
+                        <input type="text" id="busca" class="form-control-custom" placeholder="Digite aqui...">
+                    </div>
+                    
+                    <div class="form-group filter-group">
+                        <label for="filtro-status">Filtrar por Status</label>
+                        <select id="filtro-status" class="form-select-custom">
+                            <option value="todos">Todos</option>
+                            <option value="aberta">Aberta</option>
+                            <option value="andamento">Em andamento</option>
+                            <option value="revisao">Em revisão</option>
+                            <option value="concluida">Concluída</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group filter-group">
+                        <label for="filtro-prioridade">Filtrar por Prioridade</label>
+                        <select id="filtro-prioridade" class="form-select-custom">
+                            <option value="todos">Todas</option>
+                            <option value="critica">Crítica</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Média</option>
+                            <option value="baixa">Baixa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group filter-group">
+                        <label for="ordenacao">Ordenar por</label>
+                        <select id="ordenacao" class="form-select-custom">
+                            <option value="criacao_desc">Data de criação</option> 
+                            <option value="prazo_asc">Prazo de finalização</option> 
+                            <option value="prioridade_desc">Prioridade</option> 
+                            <option value="status">Status</option> 
+                        </select>
+                    </div>
+
+                    <div>
+                        <button class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demandas-grid">
+                <div class="content-card card-demanda">
+                    <div class="card-header">
+                        <h3 class="card-title">Corrigir erro no login com Google</h3>
+                        <div class="card-badges">
+                            <span class="badge-custom badge-status-andamento">Em andamento</span>
+                            <span class="badge-custom badge-prioridade-critica">Crítica</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tipo:</strong> Defeito</p>
+                        <p><strong>Projeto:</strong> App Cliente</p>
+                        <p><strong>Responsável:</strong> Sophia</p>
+                    </div>
+                    <div class="card-footer">
+                        <span><strong>Criado:</strong> 07/08/2026</span>
+                        <span><strong>Prazo:</strong> 26/08/2026</span>
+                    </div>
+                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
+                </div>
+
+                <!-- CARD 2 -->
+                <div class="content-card card-demanda">
+                    <div class="card-header">
+                        <h3 class="card-title">Implementar filtro por responsável</h3>
+                        <div class="card-badges">
+                            <span class="badge-custom badge-status-revisao">Em revisão</span>
+                            <span class="badge-custom badge-prioridade-alta">Alta</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tipo:</strong> Tarefa</p>
+                        <p><strong>Projeto:</strong> Painel Admin</p>
+                        <p><strong>Responsável:</strong> Priscila</p>
+                    </div>
+                    <div class="card-footer">
+                        <span><strong>Criado:</strong> 20/08/2026</span>
+                        <span><strong>Prazo:</strong> 27/08/2026</span>
+                    </div>
+                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
+                </div>
+
+                <!-- CARD 3 -->
+                <div class="content-card card-demanda">
+                    <div class="card-header">
+                        <h3 class="card-title">Atualizar documentação da API</h3>
+                        <div class="card-badges">
+                            <span class="badge-custom badge-status-aberta">Aberta</span>
+                            <span class="badge-custom badge-prioridade-media">Média</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tipo:</strong> Documentação</p>
+                        <p><strong>Projeto:</strong> Backend</p>
+                        <p><strong>Responsável:</strong> Panutti</p>
+                    </div>
+                    <div class="card-footer">
+                        <span><strong>Criado:</strong> 26/08/2026</span>
+                        <span><strong>Prazo:</strong> 28/08/2026</span>
+                    </div>
+                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
+                </div>
+
+            </div> 
+        </div> 
+    </main>
+</body>
+</html>

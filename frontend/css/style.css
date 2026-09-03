@@ -1,0 +1,217 @@
+/* 
+Autor: Heloisa L Marinho 
+Tela: Listagem de Demandas
+Descrição: Estilos padrão do projeto e específicos para a tela de listagem de Demandas 
+*/
+
+:root {
+  /* Cores da paleta - Roxo + cinza escuro */
+  --cor-primaria: #7C3AED;
+  --cor-primaria-hover: #6D28D9;
+  --cor-primaria-clara: #EDE9FE;
+
+  /* Neutros */
+  --cinza-fundo: #F3F4F6;
+  --cinza-card: #FFFFFF;
+  --cinza-borda: #E5E7EB;
+  --texto-principal: #111827;
+  --texto-secundario: #6B7280;
+
+  /* Cores de estado */
+  --sucesso: #16A34A;
+  --alerta: #F59E0B;
+  --erro: #DC2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.page-title {
+  margin-bottom: 24px;
+  font-size: 24px;
+  color: var(--texto-principal);
+}
+
+/* Botões */
+.btn-primary-custom {
+  background: var(--cor-primaria);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.btn-primary-custom:hover {
+  background: var(--cor-primaria-hover);
+  color: white;
+}
+
+.btn-secondary-custom {
+  background: transparent;
+  color: var(--texto-secundario);
+  border: 1px solid var(--cinza-borda);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.btn-secondary-custom:hover {
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.form-control-custom,
+.form-select-custom {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #FFFFFF;
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.form-control-custom:focus,
+.form-select-custom:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* filtros (barra superior) */
+.content-card {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.toolbar-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.toolbar-filters .filter-group {
+  flex: 1;
+  min-width: 150px;
+  margin-bottom: 0; 
+}
+
+.toolbar-filters .filter-group.busca {
+  min-width: 200px;
+}
+
+.toolbar-filters .btn-filtrar {
+  height: 42px; 
+}
+
+/* cards e formulários */
+.demandas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.card-demanda {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--cor-primaria);
+  padding-right: 12px;
+}
+
+.card-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.card-body {
+  margin-bottom: 16px;
+}
+
+.card-body p {
+  margin-bottom: 4px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--texto-secundario);
+  padding-top: 16px;
+  border-top: 1px solid var(--cinza-borda);
+  margin-top: auto;
+}
+
+.card-demanda .btn-detalhes {
+  margin-top: 16px;
+  width: 100%;
+}
+
+/* status e prioridades */
+.badge-custom {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
+.badge-status-andamento { background: #FEF3C7; color: #92400E; }
+.badge-status-revisao { background: #E0E7FF; color: #4338CA; }
+.badge-status-concluida { background: #D1FAE5; color: #065F46; }
+.badge-status-cancelada { background: #E5E7EB; color: #374151; }
+
+.badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
+.badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
+.badge-prioridade-media { background: #FEF3C7; color: #92400E; }
+.badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
