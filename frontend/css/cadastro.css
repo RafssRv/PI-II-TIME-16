@@ -263,3 +263,15 @@ textarea.form-control-custom {
   color: #5B21B6;
   margin-bottom: 24px;
 }
+
+/* mensagens de erro */
+.erro-campo {
+  color: #dc3545;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 4px;
+}
+
+.campo-invalido {
+  border-color: #dc3545 !important;
+}

@@ -23,11 +23,10 @@
             <h4>DemandasApp</h4>
         </div>
         <nav class="sidebar-menu">
-            <a href="#" class="sidebar-logo"><button class="btn-primary-custom">+ Novo Projeto</button></a>
-            <a href="#">Dashboard</a>
-            <a href="#"class="active">Demandas</a>
+            <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="listagemDemandas.html" class="active">Demandas</a>
             <a href="#">Projetos</a>
-            <a href="#">Usuários</a>
         </nav>
     </aside>
 
@@ -53,12 +52,12 @@
 
                 <div class="form-group">
                     <label>Título <span class="obrigatorio">*</span></label>
-                    <input type="text" class="form-control-custom" placeholder="Ex: Corrigir erro de login com e-mail inválido">
+                    <input type="text" id="titulo" class="form-control-custom" placeholder="Ex: Corrigir erro de login com e-mail inválido">
                 </div>
 
                 <div class="form-group">
                     <label>Descrição <span class="obrigatorio">*</span></label>
-                    <textarea class="form-control-custom" placeholder="Descreva o contexto, o comportamento esperado e passos para reproduzir, se for o caso."></textarea>
+                    <textarea id="descricao" class="form-control-custom" placeholder="Descreva o contexto, o comportamento esperado e passos para reproduzir, se for o caso."></textarea>
                     <div class="form-hint">Seja específico para facilitar o trabalho de quem for executar</div>
                 </div>
 
@@ -66,7 +65,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Projeto <span class="obrigatorio">*</span></label>
-                            <select class="form-select-custom">
+                            <select id="projeto" class="form-select-custom">
                                 <option>Selecione um projeto...</option>
                                 <option>Sistema de Demandas — PI2</option>
                             </select>
@@ -75,7 +74,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Tipo <span class="obrigatorio">*</span></label>
-                            <select class="form-select-custom">
+                            <select id="tipo" class="form-select-custom">
                                 <option>Selecione o tipo...</option>
                                 <option>Tarefa</option>
                                 <option>Defeito</option>
@@ -104,7 +103,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Prioridade <span class="obrigatorio">*</span></label>
-                            <select class="form-select-custom">
+                            <select id="prioridade" class="form-select-custom">
                                 <option>Selecione a prioridade...</option>
                                 <option>Crítica</option>
                                 <option>Alta</option>
@@ -117,7 +116,7 @@
 
                 <div class="form-group">
                     <label>Prazo de finalização</label>
-                    <input type="date" class="form-control-custom" style="max-width: 240px;">
+                    <input type="date" id="prazo" class="form-control-custom" style="max-width: 240px;">
                     <div class="form-hint">A data será validada contra feriados nacionais</div>
                 </div>
             </div>
@@ -130,5 +129,6 @@
 
     </main>
 
+    <script src="../js/cadastro.js"></script>
 </body>
 </html>
