@@ -32,9 +32,12 @@
             <h1>Dashboard</h1>
             <p>Visão geral das demandas do projeto</p>
         </div>
-        <div>
-            <button class="btn-primary-custom">+ Pesquisar demanda</button>
-            <button class="btn-primary-custom">+ Adicionar Filtro</button>
+        <div class="header-actions">
+            <div class="busca-grupo">
+                <input type="text" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável..." oninput="pesquisarDemanda()">
+                <button type="button" class="btn-primary-custom" onclick="pesquisarDemanda()">+ Pesquisar demanda</button>
+            </div>
+            <button type="button" class="btn-primary-custom" onclick="adicionarFiltro()">+ Adicionar Filtro</button>
         </div>
     </div>
 
@@ -144,9 +147,9 @@
     </div>
 
     <!-- Tabela de proximas do prazo -->
-    <div class="content-card">
+    <div class="content-card" id="card-demandas-prazo">
         <h5>Demandas próximas do prazo</h5>
-        <table class="table-custom">
+        <table class="table-custom" id="tabela-demandas">
             <thead>
             <tr>
                 <th>Título</th>
@@ -200,9 +203,11 @@
             </tr>
             </tbody>
         </table>
+        <p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
     </div>
 
 </main>
 
+<script src="../js/dashboard.js"></script>
 </body>
 </html>

@@ -107,6 +107,57 @@ body {
     color: white;
 }
 
+/* Ações do cabeçalho: busca + filtro */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.busca-grupo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.busca-grupo .form-control-custom {
+    width: 240px;
+}
+
+.form-control-custom,
+.form-select-custom {
+    padding: 10px 12px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #FFFFFF;
+    color: var(--texto-principal);
+    transition: border 0.15s, box-shadow 0.15s;
+}
+.form-control-custom:focus,
+.form-select-custom:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.filtros-ativos {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.filtros-ativos .form-select-custom {
+    min-width: 180px;
+}
+
+.mensagem-sem-resultados {
+    color: var(--texto-secundario);
+    font-size: 13px;
+    margin: 12px 0 0;
+}
+
 
 /* Cards de metrica */
 .metric-card {
