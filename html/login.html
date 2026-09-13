@@ -1,6 +1,6 @@
 <!--
 Autora: Sophia Franco de Godoy
-Descrição: Estrutura da página de login do DemandasApp, contendo título, campos de e-mail e senha e botão de acesso ao sistema
+Descrição: Estrutura da página de login do DemandasApp com suporte a validação via JavaScript e feedback visual (Bootstrap)
 -->
 
 <!DOCTYPE html>
@@ -9,31 +9,35 @@ Descrição: Estrutura da página de login do DemandasApp, contendo título, cam
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DemandasApp - Login</title>
-    <link rel="stylesheet" href="login.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/login.css">
+    <script src="../js/login.js" defer></script>
 </head>
-<body>
+<body class="bg-light">
 
     <div class="pagina-login">
 
-        <div class="card-login">
+        <div class="card-login shadow-sm">
 
             <h1 class="logo">DemandasApp</h1>
             <h2>Acesse sua conta</h2>
-            <p>Preencha os campos abaixo para entrar no sistema.</p>
+            <p class="text-secondary">Preencha os campos abaixo para entrar no sistema.</p>
 
-            <div class="campo">
-                <p><strong>E-mail *</strong></p>
-                <input type="email" class="caixa-input" placeholder="seu.email@empresa.com">
-            </div>
+            <form id="form-login" novalidate>
+                <div class="campo mb-3 text-start">
+                    <label for="email" class="form-label"><strong>E-mail *</strong></label>
+                    <input type="email" id="email" class="form-control" placeholder="seu.email@empresa.com" required>
+                    <div id="erro-email" class="invalid-feedback"></div>
+                </div>
 
-            <div class="campo">
-                <p><strong>Senha *</strong></p>
-                <input type="password" class="caixa-input" placeholder="••••••••">
-            </div>
+                <div class="campo mb-3 text-start">
+                    <label for="senha" class="form-label"><strong>Senha *</strong></label>
+                    <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
+                    <div id="erro-senha" class="invalid-feedback"></div>
+                </div>
 
-            <div class="botao-entrar">
-                <a href="#">Entrar</a>
-            </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3 botao-entrar">Entrar</button>
+            </form>
 
         </div>
 
