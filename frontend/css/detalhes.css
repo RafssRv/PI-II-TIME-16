@@ -191,14 +191,6 @@ h1, h2, h3, h4, h5, h6 {
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
 
-/* ==============================================================
-   Autor: Priscila Amorim dos Santos
-   Tela: Detalhes da Demanda
-   Branch: feature/detalhes
-   Descrição: Estilos específicos para a tela de visualização
-   detalhada de uma demanda.
-   ============================================================== */
-
 .page-header {
   display: flex;
   justify-content: space-between;
