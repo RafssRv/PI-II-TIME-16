@@ -7,7 +7,8 @@ e também com filtro de busca por critério -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/front/estilos/style.css">
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <script src="/backend/listagem.js" defer></script>
     <title>Listagem de Demandas</title>
 </head>
 <body>
@@ -19,13 +20,14 @@ e também com filtro de busca por critério -->
                 <div class="toolbar-filters">
                     
                     <div class="form-group filter-group busca">
-                        <label for="busca">Buscar pelo nome da demanda</label>
-                        <input type="text" id="busca" class="form-control-custom" placeholder="Digite aqui...">
+                        <label for="filtro-busca">Buscar pelo nome da demanda</label>
+                        <input type="text" id="filtro-busca" class="form-control-custom" placeholder="Digite aqui...">
                     </div>
                     
                     <div class="form-group filter-group">
                         <label for="filtro-status">Filtrar por Status</label>
                         <select id="filtro-status" class="form-select-custom">
+                            <option value="selecione" selected disabled>Selecione...</option>
                             <option value="todos">Todos</option>
                             <option value="aberta">Aberta</option>
                             <option value="andamento">Em andamento</option>
@@ -38,6 +40,7 @@ e também com filtro de busca por critério -->
                     <div class="form-group filter-group">
                         <label for="filtro-prioridade">Filtrar por Prioridade</label>
                         <select id="filtro-prioridade" class="form-select-custom">
+                            <option value="selecione" selected disabled>Selecione...</option>
                             <option value="todos">Todas</option>
                             <option value="critica">Crítica</option>
                             <option value="alta">Alta</option>
@@ -47,8 +50,9 @@ e também com filtro de busca por critério -->
                     </div>
 
                     <div class="form-group filter-group">
-                        <label for="ordenacao">Ordenar por</label>
-                        <select id="ordenacao" class="form-select-custom">
+                        <label for="filtro-ordenacao">Ordenar por</label>
+                        <select id="filtro-ordenacao" class="form-select-custom">
+                            <option value="selecione" selected disabled>Selecione...</option>
                             <option value="criacao_desc">Data de criação</option> 
                             <option value="prazo_asc">Prazo de finalização</option> 
                             <option value="prioridade_desc">Prioridade</option> 
@@ -57,7 +61,7 @@ e também com filtro de busca por critério -->
                     </div>
 
                     <div>
-                        <button class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
+                        <button type="button" id="btn-filtrar" onclick="realizarBusca()" class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
                     </div>
                 </div>
             </div>
