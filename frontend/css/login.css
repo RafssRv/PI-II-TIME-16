@@ -1,6 +1,6 @@
 /*
 Autora: Sophia Franco de Godoy
-Descrição: Estilização da tela de login, incluindo o card de acesso, campos de entrada, título, logo e botão de entrada
+Descrição: Estilização da tela de login, complementando o layout centralizado do card.
 */
 
 body {
@@ -14,8 +14,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 500px;
-    margin-top: 40px;
+    height: 100vh;
 }
 
 /* Card centralizado usando o Box Model */
@@ -42,51 +41,13 @@ body {
     margin-bottom: 6px;
 }
 
-.card-login p {
-    color: #6b7280;
-    font-size: 14px;
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-/* Estrutura dos campos com margin e padding */
-.campo {
-    text-align: left;
-    margin-bottom: 16px;
-}
-
-.campo p {
-    margin-bottom: 6px;
-    color: #111827;
-}
-
-.caixa-input {
-    width: 93%;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-}
-
-.placeholder-texto {
-    margin: 0;
-    color: #9ca3af;
-    font-size: 14px;
-}
-
-/* Botão estilizado com display flex para centralizar o link */
+/* Botão estilizado */
 .botao-entrar {
     background-color: #7c3aed;
-    border-radius: 6px;
-    padding: 12px;
-    margin-top: 20px;
+    border: none;
+    font-weight: bold;
 }
 
-.botao-entrar a {
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    text-decoration: none;
+.botao-entrar:hover {
+    background-color: #6d28d9;
 }
