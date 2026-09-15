@@ -217,17 +217,24 @@
 
             <!-- Campo para novo comentário -->
             <div class="comment-form">
-
-                <input
-                    type="text"
-                    class="form-control-custom"
-                    placeholder="Escreva um comentário..."
-                >
-
-                <button class="btn-primary-custom">
+            
+                <div style="flex: 1;">
+                    <input
+                        type="text"
+                        class="form-control-custom"
+                        id="comentario-input"
+                        placeholder="Escreva um comentário..."
+                    >
+                    <span
+                        id="comentario-erro"
+                        style="display: none; color: var(--erro); font-size: 12px; margin-top: 4px;"
+                    ></span>
+                </div>
+            
+                <button class="btn-primary-custom" id="btn-comentar" type="button">
                     Comentar
                 </button>
-
+            
             </div>
 
         </section>
