@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsc && node dist/server.js",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -27,7 +27,6 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
-    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }
