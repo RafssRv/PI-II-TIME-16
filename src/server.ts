@@ -1,16 +1,31 @@
-// Autor: Vinícius Panutti Salgado — Responsável pelo Dashboard
-// Servidor provisório da demonstração individual; não substitui a base coletiva.
-import express from 'express';
-import dashboardRoutes from './dashboard/dashboard.routes';
+/*
+  Autor: equipe (ponto de entrada do servidor)
+  Descrição: Servidor Express com TypeScript. 
+*/
+
+import express, { NextFunction, Request, Response } from 'express';
+import detalhesRoutes from './routes/detalhes.routes';
 
 const app = express();
+const porta = 3000;
+
+app.use(express.json());
 
 app.get('/', (_req, res) => {
-  res.send('Servidor rodando');
+  res.json({ mensagem: 'Servidor rodando' });
 });
 
+// Rotas da dashboard (Vinícius Panutti)
 app.use('/dashboard', dashboardRoutes);
+  
+// Rotas da tela de Detalhes (Priscila)
+app.use('/demandas', detalhesRoutes);
 
-app.listen(3000, () => {
-  console.log('Demonstração do Dashboard: http://localhost:3000/dashboard');
+// JSON malformado no corpo da requisição -> 400 em JSON
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  res.status(400).json({ erro: 'Requisição inválida. Verifique o JSON enviado.' });
+});
+
+app.listen(porta, () => {
+  console.log(`Servidor ouvindo na porta ${porta}`);
 });
