@@ -15,6 +15,9 @@ app.get('/', (_req, res) => {
   res.json({ mensagem: 'Servidor rodando' });
 });
 
+// Rotas da dashboard (Vinícius Panutti)
+app.use('/dashboard', dashboardRoutes);
+  
 // Rotas da tela de Detalhes (Priscila)
 app.use('/demandas', detalhesRoutes);
 
