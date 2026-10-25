@@ -1,3 +1,4 @@
+-- Autor: Vinícius Panutti Salgado - RA 25007329
 -- Oracle Database 12c ou superior. Execute uma única vez em um schema vazio.
 -- DDL no Oracle realiza COMMIT implícito: um erro pode deixar objetos já criados.
 
