@@ -1,0 +1,34 @@
+const API_BASE = '/api';
+
+async function api(path, options = {}) {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+  });
+  if (response.status === 204) return null;
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(body.error || 'Não foi possível concluir a operação.');
+  return body;
+}
+
+function usuarioAtual() {
+  const value = sessionStorage.getItem('usuario');
+  return value ? JSON.parse(value) : null;
+}
+
+function exigirUsuario() {
+  const user = usuarioAtual();
+  if (!user) window.location.href = 'login.html';
+  return user;
+}
+
+const rotulos = {
+  ABERTA: 'Aberta', EM_ANDAMENTO: 'Em andamento', EM_REVISAO: 'Em revisão',
+  CONCLUIDA: 'Concluída', CANCELADA: 'Cancelada',
+  CRITICA: 'Crítica', ALTA: 'Alta', MEDIA: 'Média', BAIXA: 'Baixa',
+  TAREFA: 'Tarefa', DEFEITO: 'Defeito', MELHORIA: 'Melhoria', DOCUMENTACAO: 'Documentação'
+};
+
+function formatarData(value) {
+  return value ? new Date(value).toLocaleDateString('pt-BR') : 'Não definido';
+}

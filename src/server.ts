@@ -1,31 +1,31 @@
 /*
   Autor: equipe (ponto de entrada do servidor)
-  Descrição: Servidor Express com TypeScript. 
+  Descrição: Servidor Express com TypeScript e persistência Oracle.
 */
 
-import express, { NextFunction, Request, Response } from 'express';
+import 'dotenv/config';
+import dashboardRoutes from './dashboard/dashboard.routes';
 import detalhesRoutes from './routes/detalhes.routes';
 
-const app = express();
-const porta = 3000;
+const { createApp } = require('./app');
+const { createOracleDatabase } = require('./database');
 
-app.use(express.json());
+const port = Number(process.env.PORT || 3000);
+const database = createOracleDatabase();
+const app = createApp(database);
 
-app.get('/', (_req, res) => {
-  res.json({ mensagem: 'Servidor rodando' });
-});
-
-// Rotas da dashboard (Vinícius Panutti)
+// Mantém disponíveis as rotas demonstrativas criadas nas etapas anteriores.
 app.use('/dashboard', dashboardRoutes);
-  
-// Rotas da tela de Detalhes (Priscila)
 app.use('/demandas', detalhesRoutes);
 
-// JSON malformado no corpo da requisição -> 400 em JSON
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  res.status(400).json({ erro: 'Requisição inválida. Verifique o JSON enviado.' });
+const server = app.listen(port, () => {
+  console.log(`Servidor disponível em http://localhost:${port}`);
 });
 
-app.listen(porta, () => {
-  console.log(`Servidor ouvindo na porta ${porta}`);
-});
+async function shutdown() {
+  await database.close();
+  server.close();
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);

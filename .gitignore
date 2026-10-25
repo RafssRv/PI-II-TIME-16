@@ -1,7 +1,18 @@
 node_modules/
 /.idea
 dist/
+coverage/
 *.log
+
+# Configuração local e credenciais
 .env
 .env.*
 !.env.example
+
+# Oracle Wallet e arquivos de conexão locais
+wallet/
+Wallet_*/
+*.sso
+*.p12
+tnsnames.ora
+sqlnet.ora

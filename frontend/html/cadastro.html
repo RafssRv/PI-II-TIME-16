@@ -46,7 +46,7 @@
             A demanda será criada automaticamente com o status <strong>Aberta</strong>.
         </div>
 
-        <form>
+        <form id="form-demanda">
             <div class="form-card">
                 <h5>Sobre a demanda</h5>
 
@@ -66,8 +66,7 @@
                         <div class="form-group">
                             <label>Projeto <span class="obrigatorio">*</span></label>
                             <select id="projeto" class="form-select-custom">
-                                <option>Selecione um projeto...</option>
-                                <option>Sistema de Demandas — PI2</option>
+                                <option value="">Selecione um projeto...</option>
                             </select>
                         </div>
                     </div>
@@ -75,11 +74,11 @@
                         <div class="form-group">
                             <label>Tipo <span class="obrigatorio">*</span></label>
                             <select id="tipo" class="form-select-custom">
-                                <option>Selecione o tipo...</option>
-                                <option>Tarefa</option>
-                                <option>Defeito</option>
-                                <option>Melhoria</option>
-                                <option>Documentação</option>
+                                <option value="">Selecione o tipo...</option>
+                                <option value="TAREFA">Tarefa</option>
+                                <option value="DEFEITO">Defeito</option>
+                                <option value="MELHORIA">Melhoria</option>
+                                <option value="DOCUMENTACAO">Documentação</option>
                             </select>
                         </div>
                     </div>
@@ -93,9 +92,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Responsável</label>
-                            <select class="form-select-custom">
-                                <option>Sem responsável definido</option>
-                                <option>Rafa</option>
+                            <select id="responsavel" class="form-select-custom">
+                                <option value="">Sem responsável definido</option>
                             </select>
                             <div class="form-hint">Pode ser atribuído depois</div>
                         </div>
@@ -104,11 +102,11 @@
                         <div class="form-group">
                             <label>Prioridade <span class="obrigatorio">*</span></label>
                             <select id="prioridade" class="form-select-custom">
-                                <option>Selecione a prioridade...</option>
-                                <option>Crítica</option>
-                                <option>Alta</option>
-                                <option>Média</option>
-                                <option>Baixa</option>
+                                <option value="">Selecione a prioridade...</option>
+                                <option value="CRITICA">Crítica</option>
+                                <option value="ALTA">Alta</option>
+                                <option value="MEDIA">Média</option>
+                                <option value="BAIXA">Baixa</option>
                             </select>
                         </div>
                     </div>
@@ -129,6 +127,7 @@
 
     </main>
 
+    <script src="../js/api.js"></script>
     <script src="../js/cadastro.js"></script>
 </body>
 </html>
