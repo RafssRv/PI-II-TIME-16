@@ -4,7 +4,8 @@
   "description": "Engenharia de Software - Pontifícia Universidade Católica de Campinas - 2 semestre 2026",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/RafssRv/PI-II-TIME-16#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "oracledb": "^6.9.0"
   }
 }

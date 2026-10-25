@@ -25,4 +25,6 @@ O script usa colunas identity e requer Oracle 12c ou superior. Ele cria a estrut
 
 ## Próxima etapa
 
-Implementar conexão segura no servidor, operações CRUD, autenticação/autorização e persistência de histórico; ligar as telas à API e testar com um banco Oracle de teste. A branch `develop` atualmente contém telas com dados de exemplo e um servidor mínimo, portanto esta estrutura ainda não constitui integração funcional. Use credenciais via variáveis de ambiente locais ignoradas pelo Git e nunca compartilhe senhas em mensagens ou commits.
+O servidor agora expõe a primeira integração em `server.js`: `GET /api/health`, listagem e detalhe de demandas, `POST`, `PATCH`, `DELETE` e criação de comentários. O `POST` e o `PATCH` registram histórico na mesma transação. A conexão usa `ORACLE_USER`, `ORACLE_PASSWORD` e `ORACLE_CONNECT_STRING`; copie `.env.example` para uma configuração local sem versioná-la. Antes de iniciar, instale as dependências com `npm install` e execute `npm start`.
+
+Ainda não é possível confirmar a integração sem um Oracle acessível e sem executar o `schema.sql`. Depois que o script criar as tabelas, valide primeiro `GET /api/health`; só então teste os CRUDs. A API não implementa ainda autenticação/login, CRUD de usuários e projetos, regras de pertencimento ao projeto, integração dos arquivos HTML com a API, paginação ou exclusão em cascata. Esses pontos ficam para a próxima etapa.
