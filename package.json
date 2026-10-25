@@ -14,12 +14,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@11.25.0",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/RafssRv/PI-II-TIME-16/issues"
   },
   "homepage": "https://github.com/RafssRv/PI-II-TIME-16#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "oracledb": "^6.9.0"
   }
