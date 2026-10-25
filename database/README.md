@@ -25,6 +25,26 @@ O script usa colunas identity e requer Oracle 12c ou superior. Ele cria a estrut
 
 ## Próxima etapa
 
-O servidor agora expõe a primeira integração em `server.js`: `GET /api/health`, listagem e detalhe de demandas, `POST`, `PATCH`, `DELETE` e criação de comentários. O `POST` e o `PATCH` registram histórico na mesma transação. A conexão usa `ORACLE_USER`, `ORACLE_PASSWORD` e `ORACLE_CONNECT_STRING`; copie `.env.example` para uma configuração local sem versioná-la. Antes de iniciar, instale as dependências com `npm install` e execute `npm start`.
+O servidor expõe `GET /api/health`, login, CRUD de usuários, projetos, membros, demandas e comentários. Criação e alteração de demandas registram histórico na mesma transação. Usuários e projetos são desativados em vez de apagados; excluir uma demanda apaga seus comentários e histórico na mesma transação.
 
-Ainda não é possível confirmar a integração sem um Oracle acessível e sem executar o `schema.sql`. Depois que o script criar as tabelas, valide primeiro `GET /api/health`; só então teste os CRUDs. A API não implementa ainda autenticação/login, CRUD de usuários e projetos, regras de pertencimento ao projeto, integração dos arquivos HTML com a API, paginação ou exclusão em cascata. Esses pontos ficam para a próxima etapa.
+A conexão usa `ORACLE_USER`, `ORACLE_PASSWORD` e `ORACLE_CONNECT_STRING`; copie `.env.example` para `.env` sem versioná-lo. Instale as dependências com `pnpm install` e execute `pnpm start`. As telas de login, cadastro, listagem e detalhes consomem a API.
+
+Ainda não é possível confirmar a integração real sem um Oracle acessível e sem executar o `schema.sql`. Depois que o script criar as tabelas, valide primeiro `GET /api/health`. A API valida credenciais no login, mas ainda não emite token nem bloqueia endpoints por perfil; essa autorização deve ser implementada antes de produção.
+
+## Primeiro acesso
+
+Depois de executar o schema e iniciar o servidor, crie o primeiro usuário pela API:
+
+```http
+POST /api/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Administrador",
+  "email": "admin@local.test",
+  "senha": "defina-uma-senha-forte",
+  "perfil": "ADMIN"
+}
+```
+
+Crie também um projeto com `POST /api/projetos`. Em seguida, abra `http://localhost:3000`, faça login e cadastre a primeira demanda.
