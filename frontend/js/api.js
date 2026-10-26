@@ -1,3 +1,6 @@
+// Autor: Equipe PI-II-TIME-16
+// Descrição: Cliente HTTP compartilhado com mensagens de erro e sessão autenticada.
+
 const API_BASE = '/api';
 
 async function api(path, options = {}) {
@@ -7,13 +10,18 @@ async function api(path, options = {}) {
   });
   if (response.status === 204) return null;
   const body = await response.json().catch(() => ({}));
+  if (response.status === 401 && !path.startsWith('/login')) {
+    sessionStorage.removeItem('usuario');
+    if (!window.location.pathname.endsWith('/login.html')) window.location.href = 'login.html';
+  }
   if (!response.ok) throw new Error(body.error || 'Não foi possível concluir a operação.');
   return body;
 }
 
 function usuarioAtual() {
   const value = sessionStorage.getItem('usuario');
-  return value ? JSON.parse(value) : null;
+  if (!value) return null;
+  try { return JSON.parse(value); } catch { sessionStorage.removeItem('usuario'); return null; }
 }
 
 function exigirUsuario() {

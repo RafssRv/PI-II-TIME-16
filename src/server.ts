@@ -5,7 +5,6 @@
 
 import 'dotenv/config';
 import dashboardRoutes from './dashboard/dashboard.routes';
-import detalhesRoutes from './routes/detalhes.routes';
 
 const { createApp } = require('./app');
 const { createOracleDatabase } = require('./database');
@@ -14,9 +13,8 @@ const port = Number(process.env.PORT || 3000);
 const database = createOracleDatabase();
 const app = createApp(database);
 
-// Mantém disponíveis as rotas demonstrativas criadas nas etapas anteriores.
+// O dashboard continua separado; detalhes e demandas usam as rotas persistidas em /api.
 app.use('/dashboard', dashboardRoutes);
-app.use('/demandas', detalhesRoutes);
 
 const server = app.listen(port, () => {
   console.log(`Servidor disponível em http://localhost:${port}`);

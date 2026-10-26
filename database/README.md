@@ -25,7 +25,7 @@ O script usa colunas identity e requer Oracle 12c ou superior. Ele cria a estrut
 
 ## Próxima etapa
 
-O servidor expõe `GET /api/health`, login, CRUD de usuários, projetos, membros, demandas e comentários. Criação e alteração de demandas registram histórico na mesma transação. Usuários e projetos são desativados em vez de apagados; excluir uma demanda apaga seus comentários e histórico na mesma transação.
+O servidor expõe `GET /api/health`, login, CRUD de usuários, projetos, membros, demandas e comentários. Criação e alteração de demandas registram histórico na mesma transação. Usuários e projetos são desativados em vez de apagados.
 
 A conexão usa `ORACLE_USER`, `ORACLE_PASSWORD` e `ORACLE_CONNECT_STRING`; copie `.env.example` para `.env` sem versioná-lo. Instale as dependências com `pnpm install` e execute `pnpm start`. As telas de login, cadastro, listagem e detalhes consomem a API.
 
