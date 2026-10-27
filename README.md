@@ -28,11 +28,11 @@ Professora orientadora: **Renata Arantes**
 
 ## Execução local
 
-Requisitos: Node.js 20 ou superior, pnpm e um Oracle 12c ou superior com o schema de `database/schema.sql`.
+Requisitos: Node.js 20 ou superior, pnpm e MySQL 8.4 com o schema de `database/schema.sql`.
 
-1. Copie `.env.example` para `.env` e informe o usuário, a senha e a string de conexão do Oracle.
+1. Copie `.env.example` para `.env` e informe host, porta, banco, usuário e senha nas variáveis `MYSQL_*`.
 2. Execute `pnpm install`.
-3. Execute `pnpm start`.
+3. Execute `pnpm build` e depois `pnpm start`.
 4. Acesse `http://localhost:3000`.
 
 Consulte `database/README.md` para criar as tabelas e preparar o primeiro usuário.

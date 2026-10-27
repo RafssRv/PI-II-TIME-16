@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('node:path');
 const bcrypt = require('bcryptjs');
-const oracledb = require('oracledb');
 
 function required(body, names) {
   for (const name of names) {
@@ -20,7 +19,6 @@ async function useConnection(database, work) {
   const connection = await database.connection();
   try { return await work(connection); } finally { await connection.close(); }
 }
-const outputId = () => ({ dir: oracledb.BIND_OUT, type: oracledb.NUMBER });
 
 function createApp(database) {
   const app = express();
@@ -29,7 +27,7 @@ function createApp(database) {
   app.get('/', (_req, res) => res.redirect('/frontend/html/login.html'));
 
   app.get('/api/health', async (_req, res, next) => {
-    try { await useConnection(database, (c) => c.query('SELECT 1 AS ok FROM dual')); res.json({ database: 'online' }); }
+    try { await useConnection(database, (c) => c.query('SELECT 1 AS ok')); res.json({ database: 'online' }); }
     catch (error) { next(Object.assign(error, { status: 503 })); }
   });
 
@@ -52,8 +50,8 @@ function createApp(database) {
       required(req.body, ['nome', 'email', 'senha', 'perfil']);
       const senha_hash = await bcrypt.hash(req.body.senha, 12);
       const userId = await useConnection(database, async (c) => {
-        const result = await c.execute('INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil) RETURNING id INTO :id', { nome: req.body.nome.trim(), email: req.body.email.trim().toLowerCase(), senha_hash, perfil: req.body.perfil, id: outputId() });
-        await c.commit(); return result.outBinds.id[0];
+        const result = await c.execute('INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil)', { nome: req.body.nome.trim(), email: req.body.email.trim().toLowerCase(), senha_hash, perfil: req.body.perfil });
+        await c.commit(); return result.insertId;
       });
       res.status(201).json({ id: userId });
     } catch (error) { next(error); }
@@ -65,15 +63,15 @@ function createApp(database) {
       if (!changes.length) throw Object.assign(new Error('Nenhum campo permitido informado.'), { status: 400 });
       await useConnection(database, async (c) => {
         const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id);
-        const result = await c.execute(`UPDATE usuarios SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds);
-        if (!result.rowsAffected) throw notFound('Usuário'); await c.commit();
+        const result = await c.execute(`UPDATE usuarios SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds);
+        if (!result.affectedRows) throw notFound('Usuário'); await c.commit();
       });
       res.status(204).end();
     } catch (error) { next(error); }
   });
   app.delete('/api/usuarios/:id', async (req, res, next) => {
     try {
-      await useConnection(database, async (c) => { const result = await c.execute('UPDATE usuarios SET ativo = 0, atualizado_em = SYSTIMESTAMP WHERE id = :id', { id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Usuário'); await c.commit(); });
+      await useConnection(database, async (c) => { const result = await c.execute('UPDATE usuarios SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Usuário'); await c.commit(); });
       res.status(204).end();
     } catch (error) { next(error); }
   });
@@ -85,7 +83,7 @@ function createApp(database) {
   app.post('/api/projetos', async (req, res, next) => {
     try {
       required(req.body, ['nome']);
-      const projectId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao) RETURNING id INTO :id', { nome: req.body.nome.trim(), descricao: req.body.descricao || null, id: outputId() }); await c.commit(); return result.outBinds.id[0]; });
+      const projectId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao)', { nome: req.body.nome.trim(), descricao: req.body.descricao || null }); await c.commit(); return result.insertId; });
       res.status(201).json({ id: projectId });
     } catch (error) { next(error); }
   });
@@ -94,12 +92,12 @@ function createApp(database) {
       const allowed = ['nome', 'descricao', 'ativo'];
       const changes = Object.keys(req.body).filter((key) => allowed.includes(key));
       if (!changes.length) throw Object.assign(new Error('Nenhum campo permitido informado.'), { status: 400 });
-      await useConnection(database, async (c) => { const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id); const result = await c.execute(`UPDATE projetos SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds); if (!result.rowsAffected) throw notFound('Projeto'); await c.commit(); });
+      await useConnection(database, async (c) => { const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id); const result = await c.execute(`UPDATE projetos SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds); if (!result.affectedRows) throw notFound('Projeto'); await c.commit(); });
       res.status(204).end();
     } catch (error) { next(error); }
   });
   app.delete('/api/projetos/:id', async (req, res, next) => {
-    try { await useConnection(database, async (c) => { const result = await c.execute('UPDATE projetos SET ativo = 0, atualizado_em = SYSTIMESTAMP WHERE id = :id', { id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Projeto'); await c.commit(); }); res.status(204).end(); }
+    try { await useConnection(database, async (c) => { const result = await c.execute('UPDATE projetos SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Projeto'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
   app.post('/api/projetos/:id/membros', async (req, res, next) => {
@@ -142,8 +140,8 @@ function createApp(database) {
       required(req.body, ['projeto_id', 'criador_id', 'titulo', 'descricao', 'tipo', 'prioridade']);
       const demandId = await useConnection(database, async (c) => {
         try {
-          const result = await c.execute('INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo) VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo) RETURNING id INTO :id', { projeto_id: req.body.projeto_id, criador_id: req.body.criador_id, responsavel_id: req.body.responsavel_id || null, titulo: req.body.titulo.trim(), descricao: req.body.descricao.trim(), tipo: req.body.tipo, prioridade: req.body.prioridade, prazo: req.body.prazo ? new Date(`${req.body.prazo}T00:00:00`) : null, id: outputId() });
-          const createdId = result.outBinds.id[0];
+          const result = await c.execute('INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo) VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo)', { projeto_id: req.body.projeto_id, criador_id: req.body.criador_id, responsavel_id: req.body.responsavel_id || null, titulo: req.body.titulo.trim(), descricao: req.body.descricao.trim(), tipo: req.body.tipo, prioridade: req.body.prioridade, prazo: req.body.prazo ? new Date(`${req.body.prazo}T00:00:00`) : null });
+          const createdId = result.insertId;
           await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, valor_novo) VALUES (:id, :autor_id, 'CRIACAO', :titulo)", { id: createdId, autor_id: req.body.criador_id, titulo: req.body.titulo.trim() });
           await c.commit(); return createdId;
         } catch (error) { await c.rollback(); throw error; }
@@ -163,7 +161,7 @@ function createApp(database) {
           const rows = await c.query('SELECT * FROM demandas WHERE id = :id FOR UPDATE', { id: demandId });
           if (!rows.length) throw notFound('Demanda');
           const binds = Object.fromEntries(changes.map((key) => [key, key === 'prazo' && req.body[key] ? new Date(`${req.body[key]}T00:00:00`) : req.body[key]])); binds.id = demandId;
-          await c.execute(`UPDATE demandas SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds);
+          await c.execute(`UPDATE demandas SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds);
           for (const campo of changes) await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, campo, valor_anterior, valor_novo) VALUES (:id, :autor_id, 'ALTERACAO', :campo, :anterior, :novo)", { id: demandId, autor_id: req.body.autor_id, campo, anterior: rows[0][campo] == null ? null : String(rows[0][campo]), novo: req.body[campo] == null ? null : String(req.body[campo]) });
           await c.commit();
         } catch (error) { await c.rollback(); throw error; }
@@ -179,7 +177,7 @@ function createApp(database) {
           await c.execute('DELETE FROM comentarios WHERE demanda_id = :id', { id: demandId });
           await c.execute('DELETE FROM historico_demandas WHERE demanda_id = :id', { id: demandId });
           const result = await c.execute('DELETE FROM demandas WHERE id = :id', { id: demandId });
-          if (!result.rowsAffected) throw notFound('Demanda');
+          if (!result.affectedRows) throw notFound('Demanda');
           await c.commit();
         } catch (error) { await c.rollback(); throw error; }
       });
@@ -189,21 +187,21 @@ function createApp(database) {
   app.post('/api/demandas/:id/comentarios', async (req, res, next) => {
     try {
       required(req.body, ['autor_id', 'texto']);
-      const commentId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto) RETURNING id INTO :id', { demanda_id: parseId(req.params.id), autor_id: req.body.autor_id, texto: req.body.texto.trim(), id: outputId() }); await c.commit(); return result.outBinds.id[0]; });
+      const commentId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto)', { demanda_id: parseId(req.params.id), autor_id: req.body.autor_id, texto: req.body.texto.trim() }); await c.commit(); return result.insertId; });
       res.status(201).json({ id: commentId });
     } catch (error) { next(error); }
   });
   app.patch('/api/comentarios/:id', async (req, res, next) => {
-    try { required(req.body, ['texto']); await useConnection(database, async (c) => { const result = await c.execute('UPDATE comentarios SET texto = :texto, atualizado_em = SYSTIMESTAMP WHERE id = :id', { texto: req.body.texto.trim(), id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
+    try { required(req.body, ['texto']); await useConnection(database, async (c) => { const result = await c.execute('UPDATE comentarios SET texto = :texto, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { texto: req.body.texto.trim(), id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
   app.delete('/api/comentarios/:id', async (req, res, next) => {
-    try { await useConnection(database, async (c) => { const result = await c.execute('DELETE FROM comentarios WHERE id = :id', { id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
+    try { await useConnection(database, async (c) => { const result = await c.execute('DELETE FROM comentarios WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
 
   app.use((error, _req, res, _next) => {
-    const status = error.status || (error.errorNum === 1 ? 409 : 500);
+    const status = error.status || (error.code === 'ER_DUP_ENTRY' ? 409 : 500);
     if (status >= 500) console.error(error);
     res.status(status).json({ error: status >= 500 ? 'Erro interno ao acessar o banco.' : error.message });
   });
