@@ -1,6 +1,6 @@
 /*
   Autor: equipe (ponto de entrada do servidor)
-  Descrição: Servidor Express com TypeScript e persistência Oracle.
+  Descrição: Servidor Express com TypeScript e persistência MySQL.
 */
 
 import 'dotenv/config';
@@ -8,10 +8,10 @@ import dashboardRoutes from './dashboard/dashboard.routes';
 import detalhesRoutes from './routes/detalhes.routes';
 
 const { createApp } = require('./app');
-const { createOracleDatabase } = require('./database');
+const { createMysqlDatabase } = require('./database');
 
 const port = Number(process.env.PORT || 3000);
-const database = createOracleDatabase();
+const database = createMysqlDatabase();
 const app = createApp(database);
 
 // Mantém disponíveis as rotas demonstrativas criadas nas etapas anteriores.
