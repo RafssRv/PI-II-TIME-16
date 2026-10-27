@@ -1,50 +1,91 @@
-# Banco Oracle
+# Banco MySQL
 
-## Modelo
+O projeto usa MySQL 8.4, `mysql2/promise`, InnoDB e utf8mb4. Não há instalação automática do servidor. O MySQL Workbench é o cliente para conectar e executar SQL; o servidor MySQL precisa estar instalado e ativo.
 
-- `usuarios`: identidade, hash de senha e perfil global (administrador, líder ou membro).
-- `projetos` e `projeto_membros`: projetos e sua equipe; a chave composta impede inscrições duplicadas.
-- `demandas`: pertence a um projeto, tem criador e pode ter um responsável. Tipo, prioridade e status usam códigos sem acentos; a interface deve traduzi-los.
-- `comentarios`: vinculados à demanda e ao autor.
-- `historico_demandas`: registra criação e alterações por usuário, campo e valores anterior e novo.
+## Modelo e comportamento preservados
 
-As chaves estrangeiras impedem exclusões que deixariam registros órfãos. Usuários e projetos podem ser desativados; para excluir definitivamente uma demanda é necessário decidir o tratamento dos comentários e histórico antes de removê-los. Não há exclusão em cascata. O banco não impõe que criador ou responsável seja membro do projeto: a API deverá validar essa regra se o grupo a adotar.
+- `usuarios`: nome, e-mail único sem diferença de caixa/espaços, hash de senha e perfil.
+- `projetos` e `projeto_membros`: projetos e equipe, sem inscrições duplicadas.
+- `demandas`: projeto, criador, responsável opcional, título, descrição, tipo, prioridade, status e prazo.
+- `comentarios`: texto e autor vinculados à demanda.
+- `historico_demandas`: criação e alterações por campo, autor, valor anterior e novo.
 
-`atualizado_em` recebe a data inicial automaticamente; a aplicação deve atualizá-lo em cada edição. A aplicação deve inserir os eventos de histórico na mesma transação das alterações da demanda. O campo `senha_hash` deve guardar somente um hash seguro gerado pela aplicação, nunca a senha. Perfis, autenticação e autorização dependem da API; as restrições SQL não implementam essas regras. A validação de prazo e feriados também pertence à aplicação.
+Usuários e projetos são desativados pela API. A exclusão definitiva de uma demanda remove também seus comentários e histórico em uma transação. Criação/edição da demanda e histórico são atômicos. A conexão inicia transações explicitamente e desfaz qualquer transação aberta antes de voltar ao pool. Senhas da aplicação são gravadas em hash; `atualizado_em` é atualizado pela API. Prazo é devolvido como `YYYY-MM-DD`, e timestamps são tratados em UTC.
 
-## Preparação no SQL Developer
+O login confere credenciais, mas os endpoints ainda não exigem sessão/token e não aplicam autorização por perfil nem pertencimento ao projeto. As rotas legadas `/dashboard` e `/demandas` continuam demonstrativas; a persistência está em `/api`. O dashboard ainda usa dados de exemplo. A migração não altera essas limitações preexistentes.
 
-1. Solicite ao responsável pelo Oracle: host, porta, **nome do serviço** (ou SID, se for o caso), usuário, senha e versão do banco. Para Oracle Cloud, confirme também se é necessário wallet e receba-o por canal seguro. Não coloque credenciais no repositório.
-2. Abra o SQL Developer e clique em **Nova conexão** (ícone `+`). Dê um nome, informe usuário e senha e selecione o tipo de conexão indicado pelo administrador. Em conexão básica, informe host e porta e escolha **Nome do serviço** ou **SID** conforme os dados recebidos. Para wallet, siga as instruções fornecidas pelo administrador da instância.
-3. Clique em **Testar**. Se falhar, confira rede/VPN, serviço, credenciais e permissões com o responsável; não prossiga até obter sucesso. Clique em **Conectar**.
-4. Use preferencialmente um usuário/schema próprio da aplicação, criado pelo administrador com `CREATE SESSION`, `CREATE TABLE` e quota no tablespace adequado. Não execute o schema em `SYS` ou `SYSTEM`. Confirme que o schema está vazio e possui espaço; este script não apaga tabelas existentes.
-5. Abra `database/schema.sql` no SQL Developer, selecione a conexão correta na worksheet e execute como **script** (F5). Confira a saída de cada comando: DDL do Oracle faz commit implícito e uma falha pode deixar uma instalação parcial. Não reexecute às cegas; identifique e remova os objetos parciais apenas no schema de desenvolvimento, ou peça auxílio ao administrador.
-6. Atualize a árvore **Tabelas** da conexão e confira `USUARIOS`, `PROJETOS`, `PROJETO_MEMBROS`, `DEMANDAS`, `COMENTARIOS` e `HISTORICO_DEMANDAS`. As tabelas vazias ainda não tornam as telas funcionais.
+## Preparação quando o MySQL estiver disponível
 
-O script usa colunas identity e requer Oracle 12c ou superior. Ele cria a estrutura do zero em schema vazio, sem dados iniciais nem contas. A versão, privilégios e conectividade precisam ser confirmados antes da execução.
+1. No MySQL Workbench, crie uma conexão com host `127.0.0.1`, porta `3306` e o usuário administrativo definido na instalação. Clique em **Test Connection**. Use a senha real escolhida na instalação.
+2. Conectado como administrador, execute uma vez, substituindo a senha abaixo:
 
-## Próxima etapa
-
-O servidor expõe `GET /api/health`, login, CRUD de usuários, projetos, membros, demandas e comentários. Criação e alteração de demandas registram histórico na mesma transação. Usuários e projetos são desativados em vez de apagados; excluir uma demanda apaga seus comentários e histórico na mesma transação.
-
-A conexão usa `ORACLE_USER`, `ORACLE_PASSWORD` e `ORACLE_CONNECT_STRING`; copie `.env.example` para `.env` sem versioná-lo. Instale as dependências com `pnpm install` e execute `pnpm start`. As telas de login, cadastro, listagem e detalhes consomem a API.
-
-Ainda não é possível confirmar a integração real sem um Oracle acessível e sem executar o `schema.sql`. Depois que o script criar as tabelas, valide primeiro `GET /api/health`. A API valida credenciais no login, mas ainda não emite token nem bloqueia endpoints por perfil; essa autorização deve ser implementada antes de produção.
-
-## Primeiro acesso
-
-Depois de executar o schema e iniciar o servidor, crie o primeiro usuário pela API:
-
-```http
-POST /api/usuarios
-Content-Type: application/json
-
-{
-  "nome": "Administrador",
-  "email": "admin@local.test",
-  "senha": "defina-uma-senha-forte",
-  "perfil": "ADMIN"
-}
+```sql
+CREATE DATABASE demandas_app CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs;
+CREATE USER 'app_demandas'@'localhost' IDENTIFIED BY 'substitua_por_sua_senha';
+GRANT SELECT, INSERT, UPDATE, DELETE ON demandas_app.* TO 'app_demandas'@'localhost';
 ```
 
-Crie também um projeto com `POST /api/projetos`. Em seguida, abra `http://localhost:3000`, faça login e cadastre a primeira demanda.
+3. Na mesma conexão administrativa, execute `USE demandas_app;`. Abra `database/schema.sql` e execute o script completo. Ele requer um banco vazio e não apaga dados nem recria tabelas já existentes. DDL faz commit implícito: confira todos os resultados e corrija erros antes de continuar. Execute o schema só uma vez por banco vazio.
+4. Confira `SHOW TABLES;`: devem existir seis tabelas. O usuário da aplicação recebe somente acesso aos dados; o administrador executa a criação de tabelas.
+5. Crie uma conexão no Workbench com o usuário `app_demandas`, a senha definida e o banco `demandas_app` para consultar os registros da aplicação.
+
+## Executar a aplicação
+
+Na raiz do repositório, copie `.env.example` para `.env` e preencha:
+
+```dotenv
+PORT=3000
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_DATABASE=demandas_app
+MYSQL_USER=app_demandas
+MYSQL_PASSWORD=sua_senha_real
+```
+
+Não use o administrador/root na aplicação. O `.env` não é versionado. Execute:
+
+```bash
+pnpm install
+pnpm build
+pnpm start
+```
+
+Abra `http://localhost:3000/api/health`: o resultado esperado é `{"database":"online"}`. Esse endpoint verifica a conexão; não confirma sozinho que todas as tabelas foram criadas.
+
+## Primeiro usuário, projeto e teste manual
+
+No Postman, envie `POST http://localhost:3000/api/usuarios`, Body → raw → JSON:
+
+```json
+{"nome":"Administrador","email":"admin@local.test","senha":"defina-uma-senha-forte","perfil":"ADMIN"}
+```
+
+Crie o projeto com `POST http://localhost:3000/api/projetos`:
+
+```json
+{"nome":"Sistema de Demandas","descricao":"Projeto Integrador II"}
+```
+
+Abra `http://localhost:3000`, faça login com o usuário criado e acesse a tela de demandas. Cadastre, liste, abra o detalhe, edite, altere status e comente. Recarregue a página para verificar persistência. Confira no Workbench:
+
+```sql
+SELECT * FROM demandas ORDER BY id;
+SELECT * FROM comentarios ORDER BY id;
+SELECT * FROM historico_demandas ORDER BY id;
+SELECT id, nome, email, perfil, ativo FROM usuarios;
+SELECT * FROM projetos;
+```
+
+Depois exclua uma demanda de teste: ela, seus comentários e seu histórico devem desaparecer. Usuários e projetos são gerenciados pela API; não há telas administrativas próprias. `GET/POST/PATCH/DELETE /api/usuarios` e `/api/projetos` cobrem listagem, criação, edição por `/:id` e desativação por `/:id`. Membros usam `/api/projetos/:id/membros`; comentários usam `/api/demandas/:id/comentarios` e `/api/comentarios/:id`.
+
+## Testes automatizados
+
+`pnpm test` roda testes com adaptador simulado, sem exigir MySQL. O teste real é ignorado por padrão. Para executá-lo, crie um banco separado `demandas_app_test`, aplique nele o mesmo schema e conceda ao usuário acesso somente às tabelas desse banco de testes. Configure `MYSQL_DATABASE=demandas_app_test` e execute:
+
+```bash
+MYSQL_INTEGRATION=1 pnpm test
+```
+
+O teste exige nome terminado em `_test`, cria registros próprios, verifica login, IDs, datas, edição, comentário, histórico e exclusão e remove os registros que criou. Não use dados reais nesse banco.
+
+Esta entrega prepara uma instalação nova em MySQL; não transfere dados de uma instância Oracle existente.
