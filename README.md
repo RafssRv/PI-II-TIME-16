@@ -36,3 +36,11 @@ Requisitos: Node.js 20 ou superior, pnpm e MySQL 8.4 com o schema de `database/s
 4. Acesse `http://localhost:3000`.
 
 Consulte `database/README.md` para criar as tabelas e preparar o primeiro usuário.
+
+## Integração das funcionalidades
+
+Detalhes, listagem e dashboard consultam a mesma API em `/api` e persistem no MySQL. Filtros combináveis, ordenação, edição dos campos da demanda, alteração de status, comentários e histórico estão conectados. A ação de remoção é o cancelamento: a exclusão física de demandas é bloqueada para preservar o histórico.
+
+As telas de cadastro e login e suas ações não foram alteradas nesta integração. O fluxo de criação existente é aproveitado e testado como regressão. A API ainda precisa da integração de autenticação e autorização em trabalho próprio; os controles visuais por perfil não substituem permissões no servidor.
+
+Para validar, execute `pnpm build` e `pnpm test`. Para o teste real, use exclusivamente um banco terminado em `_test`, aplique o schema e execute `MYSQL_INTEGRATION=1 pnpm test`. Veja [configuração e contratos da API](database/README.md).
