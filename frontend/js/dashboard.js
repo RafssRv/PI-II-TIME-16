@@ -126,3 +126,57 @@ function atualizarMensagemVazio(semResultados) {
     }
     mensagem.hidden = !semResultados;
 }
+
+// Carrega indicadores persistidos e conserva os filtros locais da tabela.
+async function carregarDashboard() {
+    const erro = document.getElementById('dashboard-erro');
+    const carregando = document.getElementById('dashboard-carregando');
+    erro.hidden = true;
+    carregando.hidden = false;
+    try {
+        const dados = await api('/dashboard');
+        const metricas = [
+            dados.totalDemandas,
+            dados.quantidadesPorStatus.EM_ANDAMENTO,
+            dados.quantidadesPorStatus.CONCLUIDA,
+            dados.demandasCriticasEmAberto.length
+        ];
+        document.querySelectorAll('.metric-card .value').forEach((elemento, indice) => { elemento.textContent = metricas[indice]; });
+        const grupos = [
+            ['status', dados.quantidadesPorStatus],
+            ['prioridade', dados.quantidadesPorPrioridade],
+            ['tipo', dados.quantidadesPorTipo]
+        ];
+        document.querySelectorAll('.row')[1].querySelectorAll('.content-card').forEach((card, index) => {
+            const contagens = Object.values(grupos[index][1]);
+            card.querySelectorAll('.count').forEach((elemento, indice) => { elemento.textContent = contagens[indice]; });
+        });
+        const lista = document.getElementById('demandas-criticas');
+        lista.replaceChildren(...dados.demandasCriticasEmAberto.map((demanda) => {
+            const item = document.createElement('li'); item.append(linkDemanda(demanda)); return item;
+        }));
+        if (!lista.children.length) { const item = document.createElement('li'); item.textContent = 'Nenhuma demanda crítica em aberto.'; lista.append(item); }
+        const corpo = document.querySelector('#tabela-demandas tbody');
+        corpo.replaceChildren(...dados.demandasProximasDoPrazo.map((demanda) => {
+            const linha = document.createElement('tr');
+            const titulo = document.createElement('td'); titulo.append(linkDemanda(demanda)); linha.append(titulo);
+            for (const valor of [demanda.projeto_nome, demanda.responsavel_nome || 'Não definido', rotulos[demanda.prioridade], rotulos[demanda.status], dataDashboard(demanda.prazo)]) {
+                const coluna = document.createElement('td'); coluna.textContent = valor; linha.append(coluna);
+            }
+            return linha;
+        }));
+        aplicarFiltrosTabela();
+    } catch (error) {
+        erro.textContent = error.message; erro.hidden = false;
+    } finally {
+        carregando.hidden = true;
+    }
+}
+function linkDemanda(demanda) {
+    const link = document.createElement('a');
+    link.href = `detalhes.html?id=${demanda.id}`; link.textContent = demanda.titulo; return link;
+}
+function dataDashboard(value) {
+    return value ? value.split('-').reverse().join('/') : 'Não definido';
+}
+if (exigirUsuario()) document.addEventListener('DOMContentLoaded', carregarDashboard);

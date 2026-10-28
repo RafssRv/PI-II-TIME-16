@@ -42,9 +42,27 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
     assert.equal(detail.prazo, '2030-12-31');
     assert.equal(detail.comentarios[0].texto, 'Comentário editado');
     assert.equal(detail.historico.length, 2);
+    assert.equal((await call(`/demandas/${created.demanda}/comentarios`)).length, 1);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, titulo: 'Demanda editada no MySQL', tipo: 'DOCUMENTACAO', prioridade: 'CRITICA', prazo: null }, 204);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: 2147483647, titulo: 'Edição sem autor deve reverter' }, 400);
+    const persisted = await call(`/demandas/${created.demanda}`);
+    assert.equal(persisted.titulo, 'Demanda editada no MySQL');
+    assert.equal(persisted.tipo, 'DOCUMENTACAO');
+    assert.equal(persisted.prioridade, 'CRITICA');
+    assert.equal(persisted.prazo, null);
+    await call(`/demandas/${created.demanda}`, 'DELETE', undefined, 405);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, status: 'CANCELADA' }, 204);
+    const cancelled = await call(`/demandas/${created.demanda}`);
+    assert.equal(cancelled.status, 'CANCELADA');
+    assert.equal(cancelled.historico.length, 7);
+    assert.equal(cancelled.comentarios[0].texto, 'Comentário editado');
     await call(`/comentarios/${created.comentario}`, 'DELETE', undefined, 204);
-    await call(`/demandas/${created.demanda}`, 'DELETE', undefined, 204);
-    await call(`/demandas/${created.demanda}`, 'GET', undefined, 404);
+    const filtered = await call(`/demandas?projeto_id=${created.projeto}&status=CANCELADA&ordenacao=prioridade_desc`);
+    assert.equal(filtered.length, 1);
+    assert.equal(filtered[0].id, created.demanda);
+    const dashboard = await call('/dashboard');
+    assert.ok(dashboard.quantidadesPorStatus.CANCELADA >= 1);
+    assert.ok(!dashboard.demandasCriticasEmAberto.some(d => d.id === created.demanda));
   } finally {
     const c = await database.connection();
     try {

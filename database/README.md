@@ -10,9 +10,9 @@ O projeto usa MySQL 8.4, `mysql2/promise`, InnoDB e utf8mb4. Não há instalaç�
 - `comentarios`: texto e autor vinculados à demanda.
 - `historico_demandas`: criação e alterações por campo, autor, valor anterior e novo.
 
-Usuários e projetos são desativados pela API. A exclusão definitiva de uma demanda remove também seus comentários e histórico em uma transação. Criação/edição da demanda e histórico são atômicos. A conexão inicia transações explicitamente e desfaz qualquer transação aberta antes de voltar ao pool. Senhas da aplicação são gravadas em hash; `atualizado_em` é atualizado pela API. Prazo é devolvido como `YYYY-MM-DD`, e timestamps são tratados em UTC.
+Usuários e projetos são desativados pela API. Demandas não são excluídas fisicamente: DELETE retorna 405. O cancelamento usa PATCH com status CANCELADA e preserva comentários e histórico. Criação/edição da demanda e histórico são atômicos. A conexão inicia transações explicitamente e desfaz qualquer transação aberta antes de voltar ao pool. Senhas da aplicação são gravadas em hash; `atualizado_em` é atualizado pela API. Prazo é devolvido como `YYYY-MM-DD`, e timestamps são tratados em UTC.
 
-O login confere credenciais, mas os endpoints ainda não exigem sessão/token e não aplicam autorização por perfil nem pertencimento ao projeto. As rotas legadas `/dashboard` e `/demandas` continuam demonstrativas; a persistência está em `/api`. O dashboard ainda usa dados de exemplo. A migração não altera essas limitações preexistentes.
+O login confere credenciais, mas os endpoints ainda não exigem sessão/token e não aplicam autorização por perfil nem pertencimento ao projeto. As rotas legadas `/dashboard` e `/demandas` redirecionam para `/api`, que é a fonte de persistência. O dashboard consulta o MySQL. As limitações de autenticação ficam fora desta integração.
 
 ## Preparação quando o MySQL estiver disponível
 
@@ -76,7 +76,7 @@ SELECT id, nome, email, perfil, ativo FROM usuarios;
 SELECT * FROM projetos;
 ```
 
-Depois exclua uma demanda de teste: ela, seus comentários e seu histórico devem desaparecer. Usuários e projetos são gerenciados pela API; não há telas administrativas próprias. `GET/POST/PATCH/DELETE /api/usuarios` e `/api/projetos` cobrem listagem, criação, edição por `/:id` e desativação por `/:id`. Membros usam `/api/projetos/:id/membros`; comentários usam `/api/demandas/:id/comentarios` e `/api/comentarios/:id`.
+Depois cancele uma demanda com `PATCH /api/demandas/:id`, corpo `{"autor_id": ID_DO_USUARIO, "status": "CANCELADA"}`: o registro, os comentários e o histórico devem continuar presentes. O ciclo é ABERTA → EM_ANDAMENTO → EM_REVISAO → CONCLUIDA; EM_REVISAO pode retornar a EM_ANDAMENTO. Demandas concluídas não podem ser canceladas. Usuários e projetos são gerenciados pela API; não há telas administrativas próprias. `GET/POST/PATCH/DELETE /api/usuarios` e `/api/projetos` cobrem listagem, criação, edição por `/:id` e desativação por `/:id`. Membros usam `/api/projetos/:id/membros`; comentários usam `/api/demandas/:id/comentarios` e `/api/comentarios/:id`.
 
 ## Testes automatizados
 
@@ -86,6 +86,19 @@ Depois exclua uma demanda de teste: ela, seus comentários e seu histórico deve
 MYSQL_INTEGRATION=1 pnpm test
 ```
 
-O teste exige nome terminado em `_test`, cria registros próprios, verifica login, IDs, datas, edição, comentário, histórico e exclusão e remove os registros que criou. Não use dados reais nesse banco.
+O teste exige nome terminado em `_test`, cria registros próprios, verifica login, IDs, datas, edição, comentário, histórico, filtros, dashboard e cancelamento e remove somente os registros que criou por SQL de limpeza no banco de testes. Não use dados reais nesse banco.
 
 Esta entrega prepara uma instalação nova em MySQL; não transfere dados de uma instância Oracle existente.
+
+
+## Integração de detalhes, listagem e dashboard
+
+- `GET /api/dashboard`: totais, distribuições e demandas críticas/próximas do prazo (hoje até sete dias, calendário de São Paulo).
+- `GET /api/demandas`: filtros combináveis `status`, `prioridade`, `tipo`, `projeto_id`, `responsavel_id`, `busca` (título ou descrição).
+- `ordenacao`: `criacao_desc` (padrão), `prazo_asc`, `prioridade_desc` ou `status`.
+- `PATCH /api/demandas/:id`: edição de campos com `autor_id`, histórico transacional, ciclo de status e responsável ativo vinculado ao projeto.
+- Alterações de prazo validam formato, data real, passado e feriados nacionais na BrasilAPI; indisponibilidade retorna 503 e não grava o prazo.
+- A criação de demandas e o login existentes não foram alterados. A criação ainda precisa receber, em trabalho separado, a mesma validação de feriados e de pertencimento do responsável.
+- Não há sessão validada no servidor nem autorização por perfil: `autor_id` ainda é enviado pelo cliente. Essa integração funcional não elimina essa pendência de segurança.
+
+Na interface, abra listagem ou dashboard após entrar pelo fluxo existente. Em detalhes use Editar, Salvar status, Comentar e Cancelar demanda. O botão Projetos nas telas integradas direciona ao filtro por projeto da listagem; ainda não existe uma tela administrativa de projetos.

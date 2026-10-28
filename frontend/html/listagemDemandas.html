@@ -9,7 +9,6 @@ e também com filtro de busca por critério -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/listagem.css">
-    <link rel="stylesheet" href="../css/style.css">
     <script src="../js/api.js" defer></script>
     <script src="../js/listagem.js" defer></script>
     <title>Listagem de Demandas</title>
@@ -24,7 +23,7 @@ e também com filtro de busca por critério -->
         <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
         <a href="dashboard.html">Dashboard</a>
         <a href="listagemDemandas.html" class="active">Demandas</a>
-        <a href="#">Projetos</a>
+        <a href="listagemDemandas.html#filtro-projeto">Projetos</a>
     </nav>
     </aside>
 
@@ -33,10 +32,10 @@ e também com filtro de busca por critério -->
             <h1 class="page-title">Visualizar Demandas</h1>
 
             <div class="content-card">
-                <div class="toolbar-filters">
+                <form class="toolbar-filters" id="filtros">
                     
                     <div class="form-group filter-group busca">
-                        <label for="filtro-busca">Buscar pelo nome da demanda</label>
+                        <label for="filtro-busca">Buscar por título ou descrição</label>
                         <input type="text" id="filtro-busca" class="form-control-custom" placeholder="Digite aqui...">
                     </div>
                     
@@ -66,6 +65,24 @@ e também com filtro de busca por critério -->
                     </div>
 
                     <div class="form-group filter-group">
+                        <label for="filtro-tipo">Tipo</label>
+                        <select id="filtro-tipo" class="form-select-custom">
+                            <option value="">Todos</option>
+                            <option value="TAREFA">Tarefa</option>
+                            <option value="DEFEITO">Defeito</option>
+                            <option value="MELHORIA">Melhoria</option>
+                            <option value="DOCUMENTACAO">Documentação</option>
+                        </select>
+                    </div>
+                    <div class="form-group filter-group">
+                        <label for="filtro-projeto">Projeto</label>
+                        <select id="filtro-projeto" class="form-select-custom"><option value="">Todos</option></select>
+                    </div>
+                    <div class="form-group filter-group">
+                        <label for="filtro-responsavel">Responsável</label>
+                        <select id="filtro-responsavel" class="form-select-custom"><option value="">Todos</option></select>
+                    </div>
+                    <div class="form-group filter-group">
                         <label for="filtro-ordenacao">Ordenar por</label>
                         <select id="filtro-ordenacao" class="form-select-custom">
                             <option value="selecione" selected disabled>Selecione...</option>
@@ -77,75 +94,12 @@ e também com filtro de busca por critério -->
                     </div>
 
                     <div>
-                        <button type="button" id="btn-filtrar" onclick="realizarBusca()" class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
+                        <button type="submit" id="btn-filtrar" class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
                     </div>
-                </div>
+                </form>
             </div>
 
-            <div class="demandas-grid" id="demandas-grid">
-                <div class="content-card card-demanda">
-                    <div class="card-header">
-                        <h3 class="card-title">Corrigir erro no login com Google</h3>
-                        <div class="card-badges">
-                            <span class="badge-custom badge-status-andamento">Em andamento</span>
-                            <span class="badge-custom badge-prioridade-critica">Crítica</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Tipo:</strong> Defeito</p>
-                        <p><strong>Projeto:</strong> App Cliente</p>
-                        <p><strong>Responsável:</strong> Sophia</p>
-                    </div>
-                    <div class="card-footer">
-                        <span><strong>Criado:</strong> 07/08/2026</span>
-                        <span><strong>Prazo:</strong> 26/08/2026</span>
-                    </div>
-                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
-                </div>
-
-                <!-- CARD 2 -->
-                <div class="content-card card-demanda">
-                    <div class="card-header">
-                        <h3 class="card-title">Implementar filtro por responsável</h3>
-                        <div class="card-badges">
-                            <span class="badge-custom badge-status-revisao">Em revisão</span>
-                            <span class="badge-custom badge-prioridade-alta">Alta</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Tipo:</strong> Tarefa</p>
-                        <p><strong>Projeto:</strong> Painel Admin</p>
-                        <p><strong>Responsável:</strong> Priscila</p>
-                    </div>
-                    <div class="card-footer">
-                        <span><strong>Criado:</strong> 20/08/2026</span>
-                        <span><strong>Prazo:</strong> 27/08/2026</span>
-                    </div>
-                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
-                </div>
-
-                <!-- CARD 3 -->
-                <div class="content-card card-demanda">
-                    <div class="card-header">
-                        <h3 class="card-title">Atualizar documentação da API</h3>
-                        <div class="card-badges">
-                            <span class="badge-custom badge-status-aberta">Aberta</span>
-                            <span class="badge-custom badge-prioridade-media">Média</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Tipo:</strong> Documentação</p>
-                        <p><strong>Projeto:</strong> Backend</p>
-                        <p><strong>Responsável:</strong> Panutti</p>
-                    </div>
-                    <div class="card-footer">
-                        <span><strong>Criado:</strong> 26/08/2026</span>
-                        <span><strong>Prazo:</strong> 28/08/2026</span>
-                    </div>
-                    <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
-                </div>
-
-            </div>
+            <div class="demandas-grid" id="demandas-grid" aria-live="polite">Carregando demandas...</div>
         </div>
     </main>
 </body>
