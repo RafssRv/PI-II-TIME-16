@@ -43,8 +43,17 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
     assert.equal(detail.comentarios[0].texto, 'Comentário editado');
     assert.equal(detail.historico.length, 2);
     await call(`/comentarios/${created.comentario}`, 'DELETE', undefined, 204);
-    await call(`/demandas/${created.demanda}`, 'DELETE', undefined, 204);
-    await call(`/demandas/${created.demanda}`, 'GET', undefined, 404);
+    await call(`/demandas/${created.demanda}`, 'DELETE', undefined, 405);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, status: 'CANCELADA' }, 204);
+    const cancelled = await call(`/demandas/${created.demanda}`);
+    assert.equal(cancelled.status, 'CANCELADA');
+    assert.equal(cancelled.historico.length, 3);
+    const filtered = await call(`/demandas?projeto_id=${created.projeto}&status=CANCELADA&ordenacao=prioridade_desc`);
+    assert.equal(filtered.length, 1);
+    assert.equal(filtered[0].id, created.demanda);
+    const dashboard = await call('/dashboard');
+    assert.ok(dashboard.quantidadesPorStatus.CANCELADA >= 1);
+    assert.ok(!dashboard.demandasCriticasEmAberto.some(d => d.id === created.demanda));
   } finally {
     const c = await database.connection();
     try {
