@@ -28,7 +28,7 @@
             <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
             <a href="dashboard.html">Dashboard</a>
             <a href="listagemDemandas.html" class="active">Demandas</a>
-            <a href="#">Projetos</a>
+            <a href="listagemDemandas.html#filtro-projeto">Projetos</a>
         </nav>
     </aside>
 
@@ -49,6 +49,8 @@
 
         </div>
 
+        <p class="page-error" id="mensagem-erro" role="alert" hidden></p>
+
 
         <!-- Informações principais da demanda -->
         <section class="content-card">
@@ -58,26 +60,18 @@
                 <div class="demand-title-area">
 
                     <div class="demand-id">
-                        DEM-001
+                    Carregando...
                     </div>
 
                     <h2 class="demand-title">
-                        Corrigir erro no formulário de login
+                        Carregando demanda...
                     </h2>
 
                     <div class="badges">
 
-                        <span class="badge-custom badge-tipo">
-                            Defeito
-                        </span>
-
-                        <span class="badge-custom badge-prioridade-alta">
-                            Alta
-                        </span>
-
-                        <span class="badge-custom badge-status-andamento">
-                            Em andamento
-                        </span>
+                        <span class="badge-custom badge-tipo"></span>
+                        <span class="badge-custom"></span>
+                        <span class="badge-custom"></span>
 
                     </div>
 
@@ -85,13 +79,15 @@
 
                 <div class="demand-actions">
 
-                    <button class="btn-secondary-custom">
+                    <button class="btn-secondary-custom" id="btn-editar" type="button">
                         Editar
                     </button>
 
-                    <button class="btn-primary-custom">
-                        Atualizar status
+                    <select class="form-select-custom" id="novo-status" aria-label="Novo status"></select>
+                    <button class="btn-primary-custom" id="btn-atualizar-status" type="button">
+                        Salvar status
                     </button>
+                    <button class="btn-secondary-custom" id="btn-cancelar-demanda" type="button" hidden>Cancelar demanda</button>
 
                 </div>
 
@@ -109,17 +105,7 @@
                     Descrição
                 </h3>
 
-                <p class="description">
-                    Foi identificado um problema no formulário de login.
-                    Ao inserir uma senha incorreta, o sistema não apresenta
-                    corretamente a mensagem de erro ao usuário.
-                </p>
-
-                <p class="description" style="margin-top: 12px;">
-                    É necessário corrigir o comportamento da tela para que
-                    o usuário receba uma mensagem clara informando que as
-                    credenciais estão incorretas.
-                </p>
+                <p class="description" id="descricao-demanda">Carregando descrição...</p>
 
             </section>
 
@@ -135,27 +121,27 @@
 
                     <div class="info-item">
                         <span class="info-label">Projeto</span>
-                        <span class="info-value">Sistema de Demandas</span>
+                        <span class="info-value">Carregando...</span>
                     </div>
 
                     <div class="info-item">
                         <span class="info-label">Responsável</span>
-                        <span class="info-value">João Silva</span>
+                        <span class="info-value">Carregando...</span>
                     </div>
 
                     <div class="info-item">
                         <span class="info-label">Criada em</span>
-                        <span class="info-value">25/08/2026</span>
+                        <span class="info-value">Carregando...</span>
                     </div>
 
                     <div class="info-item">
                         <span class="info-label">Última atualização</span>
-                        <span class="info-value">28/08/2026</span>
+                        <span class="info-value">Carregando...</span>
                     </div>
 
                     <div class="info-item">
                         <span class="info-label">Prazo de finalização</span>
-                        <span class="info-value">02/09/2026</span>
+                        <span class="info-value">Carregando...</span>
                     </div>
 
                 </div>
@@ -172,49 +158,6 @@
                 Comentários
             </h3>
 
-            <div class="comment">
-
-                <div class="comment-header">
-
-                    <span class="comment-author">
-                        João Silva
-                    </span>
-
-                    <span class="comment-date">
-                        28/08/2026 às 14:30
-                    </span>
-
-                </div>
-
-                <p class="comment-text">
-                    Identifiquei o problema e estou verificando o comportamento
-                    do formulário para realizar a correção.
-                </p>
-
-            </div>
-
-
-            <div class="comment">
-
-                <div class="comment-header">
-
-                    <span class="comment-author">
-                        Maria Santos
-                    </span>
-
-                    <span class="comment-date">
-                        27/08/2026 às 16:10
-                    </span>
-
-                </div>
-
-                <p class="comment-text">
-                    O erro acontece apenas quando a senha informada está incorreta.
-                </p>
-
-            </div>
-
-
             <!-- Campo para novo comentário -->
             <div class="comment-form">
             
@@ -223,6 +166,7 @@
                         type="text"
                         class="form-control-custom"
                         id="comentario-input"
+                        maxlength="500"
                         placeholder="Escreva um comentário..."
                     >
                     <span
@@ -247,68 +191,64 @@
                 Histórico de alterações
             </h3>
 
-            <div class="history">
-
-                <div class="history-item">
-
-                    <p class="history-text">
-                        <strong>João Silva</strong> alterou o status
-                        de <strong>Aberta</strong> para
-                        <strong>Em andamento</strong>.
-                    </p>
-
-                    <span class="history-date">
-                        28/08/2026 às 14:20
-                    </span>
-
-                </div>
-
-
-                <div class="history-item">
-
-                    <p class="history-text">
-                        <strong>Maria Santos</strong> alterou o responsável
-                        da demanda para <strong>João Silva</strong>.
-                    </p>
-
-                    <span class="history-date">
-                        27/08/2026 às 16:00
-                    </span>
-
-                </div>
-
-
-                <div class="history-item">
-
-                    <p class="history-text">
-                        <strong>Maria Santos</strong> alterou a prioridade
-                        de <strong>Média</strong> para <strong>Alta</strong>.
-                    </p>
-
-                    <span class="history-date">
-                        27/08/2026 às 15:45
-                    </span>
-
-                </div>
-
-
-                <div class="history-item">
-
-                    <p class="history-text">
-                        <strong>Maria Santos</strong> criou a demanda.
-                    </p>
-
-                    <span class="history-date">
-                        25/08/2026 às 10:15
-                    </span>
-
-                </div>
-
-            </div>
+            <div class="history" aria-live="polite"></div>
 
         </section>
 
     </main>
+
+    <dialog class="edit-dialog" id="dialog-edicao" aria-labelledby="titulo-edicao">
+        <form id="form-edicao" method="dialog">
+            <div class="dialog-header">
+                <h2 id="titulo-edicao">Editar demanda</h2>
+                <button class="dialog-close" id="fechar-edicao" type="button" aria-label="Fechar">×</button>
+            </div>
+            <div class="form-group">
+                <label for="edicao-titulo">Título</label>
+                <input class="form-control-custom" id="edicao-titulo" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="edicao-descricao">Descrição</label>
+                <textarea class="form-control-custom" id="edicao-descricao" rows="4" maxlength="1000" required></textarea>
+            </div>
+            <div class="edit-form-grid">
+                <div class="form-group">
+                    <label for="edicao-tipo">Tipo</label>
+                    <select class="form-select-custom" id="edicao-tipo" required>
+                        <option value="TAREFA">Tarefa</option>
+                        <option value="DEFEITO">Defeito</option>
+                        <option value="MELHORIA">Melhoria</option>
+                        <option value="DOCUMENTACAO">Documentação</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edicao-prioridade">Prioridade</label>
+                    <select class="form-select-custom" id="edicao-prioridade" required>
+                        <option value="CRITICA">Crítica</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Média</option>
+                        <option value="BAIXA">Baixa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="edit-form-grid">
+                <div class="form-group">
+                    <label for="edicao-responsavel">Responsável</label>
+                    <select class="form-select-custom" id="edicao-responsavel"></select>
+                </div>
+                <div class="form-group">
+                    <label for="edicao-prazo">Prazo de finalização</label>
+                    <input class="form-control-custom" id="edicao-prazo" type="date">
+                </div>
+            </div>
+            <p class="form-hint">O responsável deve pertencer ao projeto. Feriados nacionais não podem ser usados como prazo.</p>
+            <p class="form-error" id="edicao-erro" role="alert" hidden></p>
+            <div class="dialog-actions">
+                <button class="btn-secondary-custom" id="cancelar-edicao" type="button">Voltar</button>
+                <button class="btn-primary-custom" type="submit">Salvar alterações</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="../js/api.js"></script>
     <script src="../js/detalhes.js"></script>
