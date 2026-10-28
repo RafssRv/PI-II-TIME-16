@@ -3,7 +3,6 @@ const path = require('node:path');
 const bcrypt = require('bcryptjs');
 const { isNationalHoliday } = require('./holidays');
 
-// Integração: Vinicius Panutti Salgado — R.A. 25007329.
 // As ações de cadastro/login existentes são mantidas; regras abaixo tratam consultas e edição.
 const ENUMS = {
   status: ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'],
@@ -268,6 +267,17 @@ function createApp(database, { isHoliday = isNationalHoliday, now = () => new Da
   });
   app.delete('/api/demandas/:id', (_req, res) => {
     res.set('Allow', 'GET, PATCH').status(405).json({ error: 'Demandas não podem ser excluídas. Altere o status para CANCELADA para preservar o histórico.' });
+  });
+  app.get('/api/demandas/:id/comentarios', async (req, res, next) => {
+    try {
+      const id = parseId(req.params.id);
+      const comentarios = await useConnection(database, async (c) => {
+        const demandas = await c.query('SELECT id FROM demandas WHERE id = :id', { id });
+        if (!demandas.length) throw notFound('Demanda');
+        return c.query('SELECT c.*, u.nome AS autor_nome FROM comentarios c JOIN usuarios u ON u.id = c.autor_id WHERE c.demanda_id = :id ORDER BY c.criado_em, c.id', { id });
+      });
+      res.json(comentarios);
+    } catch (error) { next(error); }
   });
   app.post('/api/demandas/:id/comentarios', async (req, res, next) => {
     try {
