@@ -21,7 +21,7 @@
         <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
         <a href="dashboard.html" class="active">Dashboard</a>
         <a href="listagemDemandas.html">Demandas</a>
-        <a href="#">Projetos</a>
+        <a href="listagemDemandas.html#filtro-projeto">Projetos</a>
     </nav>
     </aside>
 
@@ -41,34 +41,36 @@
         </div>
     </div>
 
+    <p id="dashboard-erro" role="alert" hidden></p>
+    <p id="dashboard-carregando" role="status">Carregando indicadores...</p>
     <!-- Cards de metrica -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="metric-card">
                 <div class="label">Total de demandas</div>
-                <div class="value">147</div>
-                <div class="trend">Em 4 projetos ativos</div>
+                <div class="value">—</div>
+                <div class="trend"></div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="metric-card">
                 <div class="label">Em andamento</div>
-                <div class="value destaque">42</div>
-                <div class="trend">28% do total</div>
+                <div class="value destaque">—</div>
+                <div class="trend"></div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="metric-card">
                 <div class="label">Concluídas</div>
-                <div class="value">89</div>
-                <div class="trend">60% do total</div>
+                <div class="value">—</div>
+                <div class="trend"></div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="metric-card">
                 <div class="label">Críticas em aberto</div>
-                <div class="value alerta">6</div>
-                <div class="trend">Requer atenção</div>
+                <div class="value alerta">—</div>
+                <div class="trend"></div>
             </div>
         </div>
     </div>
@@ -80,23 +82,23 @@
                 <h5>Por status</h5>
                 <div class="tipo-item">
                     <span class="nome">Aberta</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Em andamento</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Em revisão</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Concluída</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Cancelada</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
             </div>
         </div>
@@ -106,19 +108,19 @@
                 <h5>Por prioridade</h5>
                 <div class="tipo-item">
                     <span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
             </div>
         </div>
@@ -128,24 +130,28 @@
                 <h5>Por tipo</h5>
                 <div class="tipo-item">
                     <span class="nome">Tarefa</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Defeito</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Melhoria</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
                 <div class="tipo-item">
                     <span class="nome">Documentação</span>
-                    <span class="count">X</span>
+                    <span class="count">—</span>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="content-card mb-4">
+        <h5>Demandas críticas em aberto</h5>
+        <ul id="demandas-criticas"><li>Carregando...</li></ul>
+    </div>
     <!-- Tabela de proximas do prazo -->
     <div class="content-card" id="card-demandas-prazo">
         <h5>Demandas próximas do prazo</h5>
@@ -161,46 +167,6 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Corrigir erro no login com Google</td>
-                <td>App Cliente</td>
-                <td>Sophia</td>
-                <td><span class="badge-custom badge-prioridade-critica">Crítica</span></td>
-                <td><span class="badge-custom badge-status-andamento">Em andamento</span></td>
-                <td>26/08/2026</td>
-            </tr>
-            <tr>
-                <td>Implementar filtro por responsável</td>
-                <td>Painel Admin</td>
-                <td>Priscila</td>
-                <td><span class="badge-custom badge-prioridade-alta">Alta</span></td>
-                <td><span class="badge-custom badge-status-revisao">Em revisão</span></td>
-                <td>27/08/2026</td>
-            </tr>
-            <tr>
-                <td>Atualizar documentação da API</td>
-                <td>Backend</td>
-                <td>Panutti</td>
-                <td><span class="badge-custom badge-prioridade-media">Média</span></td>
-                <td><span class="badge-custom badge-status-aberta">Aberta</span></td>
-                <td>28/08/2026</td>
-            </tr>
-            <tr>
-                <td>Melhorar performance da listagem</td>
-                <td>App Cliente</td>
-                <td>Heloisa</td>
-                <td><span class="badge-custom badge-prioridade-alta">Alta</span></td>
-                <td><span class="badge-custom badge-status-andamento">Em andamento</span></td>
-                <td>29/08/2026</td>
-            </tr>
-            <tr>
-                <td>Ajustar exportação de relatórios</td>
-                <td>Painel Admin</td>
-                <td>Rafael</td>
-                <td><span class="badge-custom badge-prioridade-media">Média</span></td>
-                <td><span class="badge-custom badge-status-aberta">Aberta</span></td>
-                <td>30/08/2026</td>
-            </tr>
             </tbody>
         </table>
         <p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
@@ -208,6 +174,7 @@
 
 </main>
 
+<script src="../js/api.js"></script>
 <script src="../js/dashboard.js"></script>
 </body>
 </html>
