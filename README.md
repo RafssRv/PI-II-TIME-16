@@ -49,10 +49,14 @@ Para validar, execute `pnpm build` e `pnpm test`. Para o teste real, use exclusi
 
 # Relatório de integração e pendências
 
-Responsável pelo relatório: Vinicius Panutti Salgado — R.A. 25007329.  
-Data da análise: 28/10/2026. As datas 22/10 a 27/10 no Project foram mantidas conforme solicitado.  
-Branch: `testes/intergracao-e-testes`, derivada de `feature/integracao-de-funcionalidades`.  
-Base analisada: `34007a2048d9fc97be8ab142b8a6170ab2753766`.  
+Responsável pelo relatório: Vinicius Panutti Salgado — R.A. 25007329.
+
+Data da análise: 28/10/2026. As datas 22/10 a 27/10 no Project foram mantidas conforme solicitado.
+
+Branch: `testes/intergracao-e-testes`, derivada de `feature/integracao-de-funcionalidades`.
+
+Base analisada: `34007a2048d9fc97be8ab142b8a6170ab2753766`.
+
 PR de implementação: [#45, com destino develop](https://github.com/RafssRv/PI-II-TIME-16/pull/45).
 
 Esta branch acrescenta somente este relatório ao README. As correções e os testes estão nos commits herdados da integração; não foram feitas novas alterações funcionais na branch de relatório.
