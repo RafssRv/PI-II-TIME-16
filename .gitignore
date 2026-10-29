@@ -1,2 +1,17 @@
+node_modules/
 /.idea
-/node_modules
+dist/
+coverage/
+*.log
+
+# Configuração local e credenciais
+.env
+.env.*
+!.env.example
+
+# Credenciais, backups e dados locais do MySQL
+.my.cnf
+.mylogin.cnf
+mysql-data/
+backups/
+*.sql.gz

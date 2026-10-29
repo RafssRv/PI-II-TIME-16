@@ -2,9 +2,9 @@
   "name": "pi-ii-time-16",
   "version": "1.0.0",
   "description": "Engenharia de Software - Pontifícia Universidade Católica de Campinas - 2 semestre 2026",
-  "main": "index.js",
-  "type": "module",
+  "main": "dist/server.js",
   "scripts": {
+    "test": "node --test",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -16,12 +16,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@11.25.0",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/RafssRv/PI-II-TIME-16/issues"
   },
   "homepage": "https://github.com/RafssRv/PI-II-TIME-16#readme",
   "dependencies": {
-    "express": "^5.3.0"
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mysql2": "^3.15.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

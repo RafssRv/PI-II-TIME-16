@@ -7,15 +7,31 @@ e também com filtro de busca por critério -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/listagem.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/listagem.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/api.js" defer></script>
+    <script src="../js/listagem.js" defer></script>
     <title>Listagem de Demandas</title>
 </head>
 <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+    <div class="sidebar-logo">
+        <h4>DemandasApp</h4>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="listagemDemandas.html" class="active">Demandas</a>
+        <a href="#">Projetos</a>
+    </nav>
+    </aside>
+
     <main>
         <div class="container">
             <h1 class="page-title">Visualizar Demandas</h1>
-            
+
             <div class="content-card">
                 <div class="toolbar-filters">
                     
@@ -66,7 +82,7 @@ e também com filtro de busca por critério -->
                 </div>
             </div>
 
-            <div class="demandas-grid">
+            <div class="demandas-grid" id="demandas-grid">
                 <div class="content-card card-demanda">
                     <div class="card-header">
                         <h3 class="card-title">Corrigir erro no login com Google</h3>
@@ -129,8 +145,8 @@ e também com filtro de busca por critério -->
                     <button class="btn-secondary-custom btn-detalhes">Ver Detalhes</button>
                 </div>
 
-            </div> 
-        </div> 
+            </div>
+        </div>
     </main>
 </body>
 </html>

@@ -37,6 +37,50 @@ body {
   line-height: 1.5;
 }
 
+/* Sidebar */
+.sidebar {
+  background: #FFFFFF;
+  border-right: 1px solid var(--cinza-borda);
+  min-height: 100vh;
+  padding: 24px 0;
+  position: fixed;
+  width: 240px;
+}
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--cinza-borda);
+  margin-bottom: 16px;
+}
+.sidebar-logo h4 {
+  color: var(--cor-primaria);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0;
+}
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  color: var(--texto-secundario);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.sidebar-menu a:hover {
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+}
+.sidebar-menu a.active {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  border-right: 3px solid var(--cor-primaria);
+}
+
+main {
+  margin-left: 240px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -56,6 +100,9 @@ body {
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
   font-weight: 500;
   transition: background 0.15s;
   cursor: pointer;
@@ -71,6 +118,9 @@ body {
   border: 1px solid var(--cinza-borda);
   padding: 10px 20px;
   border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
   font-weight: 500;
   transition: all 0.15s;
   cursor: pointer;

@@ -1,0 +1,317 @@
+<!--
+  Autor: Priscila Amorim
+  Tela: Detalhes da Demanda
+  Descrição: Interface para visualização das informações completas de uma demanda,
+  incluindo descrição, informações gerais, comentários e histórico de alterações.
+-->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes da Demanda - Sistema de Demandas</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/detalhes.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h4>DemandasApp</h4>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="listagemDemandas.html" class="active">Demandas</a>
+            <a href="#">Projetos</a>
+        </nav>
+    </aside>
+
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Detalhes da Demanda</h1>
+                <p>Visualize as informações e o histórico da demanda.</p>
+            </div>
+
+            <a href="listagemDemandas.html" class="back-link">
+                ← Voltar para demandas
+            </a>
+
+        </div>
+
+
+        <!-- Informações principais da demanda -->
+        <section class="content-card">
+
+            <div class="demand-header">
+
+                <div class="demand-title-area">
+
+                    <div class="demand-id">
+                        DEM-001
+                    </div>
+
+                    <h2 class="demand-title">
+                        Corrigir erro no formulário de login
+                    </h2>
+
+                    <div class="badges">
+
+                        <span class="badge-custom badge-tipo">
+                            Defeito
+                        </span>
+
+                        <span class="badge-custom badge-prioridade-alta">
+                            Alta
+                        </span>
+
+                        <span class="badge-custom badge-status-andamento">
+                            Em andamento
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="demand-actions">
+
+                    <button class="btn-secondary-custom">
+                        Editar
+                    </button>
+
+                    <button class="btn-primary-custom">
+                        Atualizar status
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Descrição + informações -->
+        <div class="details-grid">
+
+            <section class="content-card">
+
+                <h3 class="card-title">
+                    Descrição
+                </h3>
+
+                <p class="description">
+                    Foi identificado um problema no formulário de login.
+                    Ao inserir uma senha incorreta, o sistema não apresenta
+                    corretamente a mensagem de erro ao usuário.
+                </p>
+
+                <p class="description" style="margin-top: 12px;">
+                    É necessário corrigir o comportamento da tela para que
+                    o usuário receba uma mensagem clara informando que as
+                    credenciais estão incorretas.
+                </p>
+
+            </section>
+
+
+            <!-- Informações -->
+            <section class="content-card">
+
+                <h3 class="card-title">
+                    Informações
+                </h3>
+
+                <div class="info-list">
+
+                    <div class="info-item">
+                        <span class="info-label">Projeto</span>
+                        <span class="info-value">Sistema de Demandas</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Responsável</span>
+                        <span class="info-value">João Silva</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Criada em</span>
+                        <span class="info-value">25/08/2026</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Última atualização</span>
+                        <span class="info-value">28/08/2026</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">Prazo de finalização</span>
+                        <span class="info-value">02/09/2026</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- Comentários -->
+        <section class="content-card comments-section">
+
+            <h3 class="card-title">
+                Comentários
+            </h3>
+
+            <div class="comment">
+
+                <div class="comment-header">
+
+                    <span class="comment-author">
+                        João Silva
+                    </span>
+
+                    <span class="comment-date">
+                        28/08/2026 às 14:30
+                    </span>
+
+                </div>
+
+                <p class="comment-text">
+                    Identifiquei o problema e estou verificando o comportamento
+                    do formulário para realizar a correção.
+                </p>
+
+            </div>
+
+
+            <div class="comment">
+
+                <div class="comment-header">
+
+                    <span class="comment-author">
+                        Maria Santos
+                    </span>
+
+                    <span class="comment-date">
+                        27/08/2026 às 16:10
+                    </span>
+
+                </div>
+
+                <p class="comment-text">
+                    O erro acontece apenas quando a senha informada está incorreta.
+                </p>
+
+            </div>
+
+
+            <!-- Campo para novo comentário -->
+            <div class="comment-form">
+            
+                <div style="flex: 1;">
+                    <input
+                        type="text"
+                        class="form-control-custom"
+                        id="comentario-input"
+                        placeholder="Escreva um comentário..."
+                    >
+                    <span
+                        id="comentario-erro"
+                        style="display: none; color: var(--erro); font-size: 12px; margin-top: 4px;"
+                    ></span>
+                </div>
+            
+                <button class="btn-primary-custom" id="btn-comentar" type="button">
+                    Comentar
+                </button>
+            
+            </div>
+
+        </section>
+
+
+        <!-- Histórico -->
+        <section class="content-card">
+
+            <h3 class="card-title">
+                Histórico de alterações
+            </h3>
+
+            <div class="history">
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>João Silva</strong> alterou o status
+                        de <strong>Aberta</strong> para
+                        <strong>Em andamento</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        28/08/2026 às 14:20
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> alterou o responsável
+                        da demanda para <strong>João Silva</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        27/08/2026 às 16:00
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> alterou a prioridade
+                        de <strong>Média</strong> para <strong>Alta</strong>.
+                    </p>
+
+                    <span class="history-date">
+                        27/08/2026 às 15:45
+                    </span>
+
+                </div>
+
+
+                <div class="history-item">
+
+                    <p class="history-text">
+                        <strong>Maria Santos</strong> criou a demanda.
+                    </p>
+
+                    <span class="history-date">
+                        25/08/2026 às 10:15
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/detalhes.js"></script>
+</body>
+
+</html>

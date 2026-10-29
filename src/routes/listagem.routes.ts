@@ -3,8 +3,8 @@
 // Os valores aceitos são os mesmos dos selects da tela do HTML.
 
 import { Router } from "express";
-import { demandas, projetos, usuarios, TIPOS, PRIORIDADES, STATUS } from "../data/dados.js";
-import type { Status } from "../data/dados.js";
+import { demandas, projetos, usuarios, TIPOS, PRIORIDADES, STATUS } from "../data/listagem.data";
+import type { Status } from "../data/listagem.data";
 
 const router = Router();
 
@@ -44,7 +44,7 @@ const APELIDOS_STATUS: Record<string, Status> = {
 // Peso da prioridade: 1 = mais importante
 const pesoPrioridade: Record<string, number> = { Crítica: 1, Alta: 2, Média: 3, Baixa: 4 };
 
-// Opções do select 
+// Opções do select
 type CampoOrdenacao = "dataCriacao" | "prazo" | "prioridade" | "status";
 const ORDENACOES: Record<string, { campo: CampoOrdenacao; fator: 1 | -1 }> = {
   criacao_desc:    { campo: "dataCriacao", fator: -1 }, // mais recentes primeiro
@@ -97,7 +97,7 @@ router.get("/listagem", (req, res) => {
   let config = ORDENACOES.criacao_desc;
   const ordenacao = lerTexto(req.query.ordenacao);
   if (ordenacao) {
-    if (Object.hasOwn(ORDENACOES, ordenacao)) {
+    if (Object.prototype.hasOwnProperty.call(ORDENACOES, ordenacao)) {
       config = ORDENACOES[ordenacao];
     } else {
       erros.push(`Ordenação inválida: "${ordenacao}". Use: ${Object.keys(ORDENACOES).join(", ")}.`);
@@ -110,15 +110,15 @@ router.get("/listagem", (req, res) => {
     return;
   }
 
-  // FILTROS 
+  // FILTROS
   let resultado = [...demandas];
-  if (status)                     resultado = resultado.filter(d => d.status === status);
-  if (prioridade)                 resultado = resultado.filter(d => d.prioridade === prioridade);
-  if (tipo)                       resultado = resultado.filter(d => d.tipo === tipo);
+  if (status)                      resultado = resultado.filter(d => d.status === status);
+  if (prioridade)                  resultado = resultado.filter(d => d.prioridade === prioridade);
+  if (tipo)                        resultado = resultado.filter(d => d.tipo === tipo);
   if (responsavelId !== undefined) resultado = resultado.filter(d => d.responsavelId === responsavelId);
   if (projetoId !== undefined)     resultado = resultado.filter(d => d.projetoId === projetoId);
 
-  // BUSCA e
+  // BUSCA
   if (busca) {
     const termo = busca.toLowerCase();
     resultado = resultado.filter(d =>
@@ -127,7 +127,7 @@ router.get("/listagem", (req, res) => {
     );
   }
 
-  //ORDENAÇÃO
+  // ORDENAÇÃO
   resultado.sort((a, b) => {
     let comparacao = 0;
 

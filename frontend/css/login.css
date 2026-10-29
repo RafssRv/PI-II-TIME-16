@@ -1,0 +1,53 @@
+/*
+Autora: Sophia Franco de Godoy
+Descrição: Estilização da tela de login, complementando o layout centralizado do card.
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+}
+
+/* Container com Flexbox para centralizar o card no meio da tela */
+.pagina-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card centralizado usando o Box Model */
+.card-login {
+    background-color: white;
+    width: 380px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Título e logo */
+.logo {
+    color: #7c3aed;
+    font-size: 28px;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.card-login h2 {
+    color: #111827;
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+/* Botão estilizado */
+.botao-entrar {
+    background-color: #7c3aed;
+    border: none;
+    font-weight: bold;
+}
+
+.botao-entrar:hover {
+    background-color: #6d28d9;
+}
