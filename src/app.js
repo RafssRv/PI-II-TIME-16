@@ -118,7 +118,14 @@ function createApp(database) {
       const binds = {}; const filters = [];
       for (const field of ['status', 'prioridade']) if (req.query[field]) { filters.push(`d.${field} = :${field}`); binds[field] = req.query[field]; }
       if (req.query.busca) { filters.push('(LOWER(d.titulo) LIKE :busca OR LOWER(d.descricao) LIKE :busca)'); binds.busca = `%${req.query.busca.toLowerCase()}%`; }
-      const sql = `SELECT d.*, p.nome AS projeto_nome, u.nome AS responsavel_nome FROM demandas d JOIN projetos p ON p.id = d.projeto_id LEFT JOIN usuarios u ON u.id = d.responsavel_id ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''} ORDER BY d.criado_em DESC`;
+      const orderByMap = {
+        criacao_desc: 'd.criado_em DESC',
+        prazo_asc: 'd.prazo IS NULL ASC, d.prazo ASC',
+        prioridade_desc: "FIELD(d.prioridade, 'CRITICA', 'ALTA', 'MEDIA', 'BAIXA')",
+        status: "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA')"
+      };
+      const orderBy = orderByMap[req.query.ordenacao] || orderByMap.criacao_desc;
+      const sql = `SELECT d.*, p.nome AS projeto_nome, u.nome AS responsavel_nome FROM demandas d JOIN projetos p ON p.id = d.projeto_id LEFT JOIN usuarios u ON u.id = d.responsavel_id ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''} ORDER BY ${orderBy}`;
       res.json(await useConnection(database, (c) => c.query(sql, binds)));
     } catch (error) { next(error); }
   });
