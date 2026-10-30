@@ -1,33 +1,42 @@
 -- Autor: Equipe PI-II-TIME-16
 -- Descrição: Dados demonstrativos para apresentar perfis, projetos e demandas.
--- Execute após schema.sql em um schema de desenvolvimento. As contas abaixo são apenas para demonstração.
+-- MySQL 8.4. Execute após schema.sql, com o banco demandas_app selecionado (USE demandas_app;).
+-- As contas abaixo são apenas para demonstração.
+-- O script pode ser executado mais de uma vez: registros já existentes não são duplicados.
 
-MERGE INTO usuarios u
-USING (
-    SELECT 'Admin Demo' nome, 'admin@local.test' email,
-           '$2b$12$QAyhaWtP9tqSp6oU6myLW..W44FvREIJJGBvk017TmYXjLOF2D8mK' senha_hash, 'ADMIN' perfil FROM dual
+START TRANSACTION;
+
+INSERT INTO usuarios (nome, email, senha_hash, perfil)
+SELECT s.nome, s.email, s.senha_hash, s.perfil
+FROM (
+    SELECT 'Admin Demo' AS nome, 'admin@local.test' AS email,
+           '$2b$12$QAyhaWtP9tqSp6oU6myLW..W44FvREIJJGBvk017TmYXjLOF2D8mK' AS senha_hash, 'ADMIN' AS perfil
     UNION ALL
     SELECT 'Lucas Líder', 'lider@local.test',
-           '$2b$12$e2/.lBV02T34.T0SC3JzHuiDEjiXdanjZ2vQezNKzxMhBUI8MeHji', 'LIDER' FROM dual
+           '$2b$12$e2/.lBV02T34.T0SC3JzHuiDEjiXdanjZ2vQezNKzxMhBUI8MeHji', 'LIDER'
     UNION ALL
     SELECT 'João Silva', 'joao@local.test',
-           '$2b$12$TJRMnBaAcBFIVPAA.td9IOKE8B1/X9.e2S9LAgwSsz3QQJX7OeOee', 'MEMBRO' FROM dual
+           '$2b$12$TJRMnBaAcBFIVPAA.td9IOKE8B1/X9.e2S9LAgwSsz3QQJX7OeOee', 'MEMBRO'
     UNION ALL
     SELECT 'Maria Santos', 'maria@local.test',
-           '$2b$12$TJRMnBaAcBFIVPAA.td9IOKE8B1/X9.e2S9LAgwSsz3QQJX7OeOee', 'MEMBRO' FROM dual
-) s
-ON (LOWER(u.email) = LOWER(s.email))
-WHEN NOT MATCHED THEN INSERT (nome, email, senha_hash, perfil)
-VALUES (s.nome, s.email, s.senha_hash, s.perfil);
+           '$2b$12$TJRMnBaAcBFIVPAA.td9IOKE8B1/X9.e2S9LAgwSsz3QQJX7OeOee', 'MEMBRO'
+) AS s
+WHERE NOT EXISTS (
+    SELECT 1 FROM usuarios u
+    WHERE u.email_chave = LOWER(TRIM(s.email)) COLLATE utf8mb4_0900_as_cs
+);
 
-MERGE INTO projetos p
-USING (
-    SELECT 'Sistema de Demandas' nome, 'Projeto de acompanhamento de demandas.' descricao FROM dual
+INSERT INTO projetos (nome, descricao)
+SELECT s.nome, s.descricao
+FROM (
+    SELECT 'Sistema de Demandas' AS nome, 'Projeto de acompanhamento de demandas.' AS descricao
     UNION ALL
-    SELECT 'App Cliente', 'Aplicação de atendimento ao cliente.' FROM dual
-) s
-ON (p.nome = s.nome)
-WHEN NOT MATCHED THEN INSERT (nome, descricao) VALUES (s.nome, s.descricao);
+    SELECT 'App Cliente', 'Aplicação de atendimento ao cliente.'
+) AS s
+WHERE NOT EXISTS (
+    SELECT 1 FROM projetos p
+    WHERE p.nome = s.nome COLLATE utf8mb4_0900_as_cs
+);
 
 INSERT INTO projeto_membros (projeto_id, usuario_id)
 SELECT p.id, u.id
@@ -41,46 +50,43 @@ WHERE (
       WHERE pm.projeto_id = p.id AND pm.usuario_id = u.id
   );
 
-MERGE INTO demandas d
-USING (
-  SELECT p.id projeto_id, criador.id criador_id, responsavel.id responsavel_id,
-         dados.titulo, dados.descricao, dados.tipo, dados.prioridade, dados.status, dados.prazo
-  FROM (
-    SELECT 'Sistema de Demandas' projeto, 'joao@local.test' criador, 'joao@local.test' responsavel,
-           'Ajustar fluxo de login' titulo, 'Corrigir a mensagem apresentada após uma senha inválida.' descricao,
-           'DEFEITO' tipo, 'ALTA' prioridade, 'EM_ANDAMENTO' status, DATE '2026-10-29' prazo FROM dual
+INSERT INTO demandas
+    (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, status, prazo)
+SELECT p.id, criador.id, responsavel.id,
+       dados.titulo, dados.descricao, dados.tipo, dados.prioridade, dados.status, dados.prazo
+FROM (
+    SELECT 'Sistema de Demandas' AS projeto, 'joao@local.test' AS criador, 'joao@local.test' AS responsavel,
+           'Ajustar fluxo de login' AS titulo, 'Corrigir a mensagem apresentada após uma senha inválida.' AS descricao,
+           'DEFEITO' AS tipo, 'ALTA' AS prioridade, 'EM_ANDAMENTO' AS status, DATE '2026-10-29' AS prazo
     UNION ALL
     SELECT 'App Cliente', 'lider@local.test', NULL, 'Implementar busca por responsável',
-           'Adicionar busca textual e filtros por pessoa responsável.', 'MELHORIA', 'MEDIA', 'ABERTA', DATE '2026-11-03' FROM dual
+           'Adicionar busca textual e filtros por pessoa responsável.', 'MELHORIA', 'MEDIA', 'ABERTA', DATE '2026-11-03'
     UNION ALL
     SELECT 'Sistema de Demandas', 'lider@local.test', 'joao@local.test', 'Revisar página de cadastro',
-           'Ajustar os rótulos e validar as mensagens do formulário.', 'TAREFA', 'CRITICA', 'ABERTA', DATE '2026-10-27' FROM dual
+           'Ajustar os rótulos e validar as mensagens do formulário.', 'TAREFA', 'CRITICA', 'ABERTA', DATE '2026-10-27'
     UNION ALL
     SELECT 'Sistema de Demandas', 'maria@local.test', 'maria@local.test', 'Documentar API de demandas',
-           'Registrar os exemplos de requisição e resposta das rotas.', 'DOCUMENTACAO', 'BAIXA', 'EM_REVISAO', NULL FROM dual
+           'Registrar os exemplos de requisição e resposta das rotas.', 'DOCUMENTACAO', 'BAIXA', 'EM_REVISAO', NULL
     UNION ALL
     SELECT 'App Cliente', 'lider@local.test', 'maria@local.test', 'Atualizar validação de cadastro',
-           'Revisar regras e mensagens da validação de cadastro.', 'TAREFA', 'ALTA', 'CONCLUIDA', NULL FROM dual
+           'Revisar regras e mensagens da validação de cadastro.', 'TAREFA', 'ALTA', 'CONCLUIDA', NULL
     UNION ALL
     SELECT 'Sistema de Demandas', 'lider@local.test', 'joao@local.test', 'Remover inconsistência de prioridade',
-           'Analisar a demanda duplicada e registrar o motivo do cancelamento.', 'DEFEITO', 'CRITICA', 'CANCELADA', NULL FROM dual
+           'Analisar a demanda duplicada e registrar o motivo do cancelamento.', 'DEFEITO', 'CRITICA', 'CANCELADA', NULL
     UNION ALL
     SELECT 'App Cliente', 'maria@local.test', NULL, 'Criar filtros do dashboard',
-           'Permitir filtrar indicadores por status e prioridade.', 'MELHORIA', 'MEDIA', 'ABERTA', DATE '2026-10-30' FROM dual
+           'Permitir filtrar indicadores por status e prioridade.', 'MELHORIA', 'MEDIA', 'ABERTA', DATE '2026-10-30'
     UNION ALL
-    SELECT 'Sistema de Demandas', 'lider@local.test', 'joao@local.test', 'Otimizar consulta Oracle',
-           'Reduzir o tempo de resposta da consulta da listagem.', 'TAREFA', 'ALTA', 'EM_REVISAO', DATE '2026-11-02' FROM dual
-) dados
-  JOIN projetos p ON p.nome = dados.projeto
-  JOIN usuarios criador ON criador.email = dados.criador
-  LEFT JOIN usuarios responsavel ON responsavel.email = dados.responsavel
-) s
-ON (d.titulo = s.titulo)
-WHEN NOT MATCHED THEN INSERT
-    (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, status, prazo)
-VALUES
-    (s.projeto_id, s.criador_id, s.responsavel_id,
-     s.titulo, s.descricao, s.tipo, s.prioridade, s.status, s.prazo);
+    SELECT 'Sistema de Demandas', 'lider@local.test', 'joao@local.test', 'Otimizar consulta da listagem',
+           'Reduzir o tempo de resposta da consulta da listagem.', 'TAREFA', 'ALTA', 'EM_REVISAO', DATE '2026-11-02'
+) AS dados
+JOIN projetos p ON p.nome = dados.projeto COLLATE utf8mb4_0900_as_cs
+JOIN usuarios criador ON criador.email = dados.criador COLLATE utf8mb4_0900_as_cs
+LEFT JOIN usuarios responsavel ON responsavel.email = dados.responsavel COLLATE utf8mb4_0900_as_cs
+WHERE NOT EXISTS (
+    SELECT 1 FROM demandas d
+    WHERE d.titulo = dados.titulo COLLATE utf8mb4_0900_as_cs
+);
 
 INSERT INTO historico_demandas (demanda_id, autor_id, acao, valor_novo)
 SELECT d.id, d.criador_id, 'CRIACAO', d.titulo

@@ -9,10 +9,9 @@ coverage/
 .env.*
 !.env.example
 
-# Oracle Wallet e arquivos de conexão locais
-wallet/
-Wallet_*/
-*.sso
-*.p12
-tnsnames.ora
-sqlnet.ora
+# Credenciais, backups e dados locais do MySQL
+.my.cnf
+.mylogin.cnf
+mysql-data/
+backups/
+*.sql.gz

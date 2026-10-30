@@ -5,19 +5,6 @@ const express = require('express');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const bcrypt = require('bcryptjs');
-const oracledb = require('oracledb');
-const { isNationalHoliday } = require('./holidays');
-
-const STATUS_DEMANDA = ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'];
-const PRIORIDADES = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'];
-const TIPOS = ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO'];
-const TRANSICOES_STATUS = {
-  ABERTA: ['EM_ANDAMENTO'],
-  EM_ANDAMENTO: ['EM_REVISAO'],
-  EM_REVISAO: ['EM_ANDAMENTO', 'CONCLUIDA'],
-  CONCLUIDA: [],
-  CANCELADA: []
-};
 
 function required(body, names) {
   for (const name of names) {
@@ -95,7 +82,6 @@ async function useConnection(database, work) {
   const connection = await database.connection();
   try { return await work(connection); } finally { await connection.close(); }
 }
-const outputId = () => ({ dir: oracledb.BIND_OUT, type: oracledb.NUMBER });
 
 function createApp(database) {
   const app = express();
@@ -105,7 +91,7 @@ function createApp(database) {
   app.get('/', (_req, res) => res.redirect('/frontend/html/login.html'));
 
   app.get('/api/health', async (_req, res, next) => {
-    try { await useConnection(database, (c) => c.query('SELECT 1 AS ok FROM dual')); res.json({ database: 'online' }); }
+    try { await useConnection(database, (c) => c.query('SELECT 1 AS ok')); res.json({ database: 'online' }); }
     catch (error) { next(Object.assign(error, { status: 503 })); }
   });
 
@@ -187,8 +173,8 @@ function createApp(database) {
       if (typeof req.body.senha !== 'string' || req.body.senha.length < 8) throw badRequest('A senha deve ter pelo menos 8 caracteres.');
       const senha_hash = await bcrypt.hash(req.body.senha, 12);
       const userId = await useConnection(database, async (c) => {
-        const result = await c.execute('INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil) RETURNING id INTO :id', { nome, email, senha_hash, perfil: req.body.perfil, id: outputId() });
-        await c.commit(); return result.outBinds.id[0];
+        const result = await c.execute('INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil)', { nome: req.body.nome.trim(), email: req.body.email.trim().toLowerCase(), senha_hash, perfil: req.body.perfil });
+        await c.commit(); return result.insertId;
       });
       res.status(201).json({ id: userId });
     } catch (error) { next(error); }
@@ -201,16 +187,15 @@ function createApp(database) {
       if (!changes.length) throw Object.assign(new Error('Nenhum campo permitido informado.'), { status: 400 });
       await useConnection(database, async (c) => {
         const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id);
-        const result = await c.execute(`UPDATE usuarios SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds);
-        if (!result.rowsAffected) throw notFound('Usuário'); await c.commit();
+        const result = await c.execute(`UPDATE usuarios SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds);
+        if (!result.affectedRows) throw notFound('Usuário'); await c.commit();
       });
       res.status(204).end();
     } catch (error) { next(error); }
   });
   app.delete('/api/usuarios/:id', async (req, res, next) => {
     try {
-      if (req.authUser.perfil !== 'ADMIN') throw forbidden('Somente um administrador pode desativar usuários.');
-      await useConnection(database, async (c) => { const result = await c.execute('UPDATE usuarios SET ativo = 0, atualizado_em = SYSTIMESTAMP WHERE id = :id', { id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Usuário'); await c.commit(); });
+      await useConnection(database, async (c) => { const result = await c.execute('UPDATE usuarios SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Usuário'); await c.commit(); });
       res.status(204).end();
     } catch (error) { next(error); }
   });
@@ -228,7 +213,7 @@ function createApp(database) {
     try {
       if (req.authUser.perfil !== 'ADMIN') throw forbidden('Somente um administrador pode cadastrar projetos.');
       required(req.body, ['nome']);
-      const projectId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao) RETURNING id INTO :id', { nome: req.body.nome.trim(), descricao: req.body.descricao || null, id: outputId() }); await c.commit(); return result.outBinds.id[0]; });
+      const projectId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao)', { nome: req.body.nome.trim(), descricao: req.body.descricao || null }); await c.commit(); return result.insertId; });
       res.status(201).json({ id: projectId });
     } catch (error) { next(error); }
   });
@@ -238,12 +223,12 @@ function createApp(database) {
       const allowed = ['nome', 'descricao', 'ativo'];
       const changes = Object.keys(req.body || {}).filter((key) => allowed.includes(key));
       if (!changes.length) throw Object.assign(new Error('Nenhum campo permitido informado.'), { status: 400 });
-      await useConnection(database, async (c) => { const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id); const result = await c.execute(`UPDATE projetos SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds); if (!result.rowsAffected) throw notFound('Projeto'); await c.commit(); });
+      await useConnection(database, async (c) => { const binds = Object.fromEntries(changes.map((key) => [key, req.body[key]])); binds.id = parseId(req.params.id); const result = await c.execute(`UPDATE projetos SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds); if (!result.affectedRows) throw notFound('Projeto'); await c.commit(); });
       res.status(204).end();
     } catch (error) { next(error); }
   });
   app.delete('/api/projetos/:id', async (req, res, next) => {
-    try { if (req.authUser.perfil !== 'ADMIN') throw forbidden('Somente um administrador pode desativar projetos.'); await useConnection(database, async (c) => { const result = await c.execute('UPDATE projetos SET ativo = 0, atualizado_em = SYSTIMESTAMP WHERE id = :id', { id: parseId(req.params.id) }); if (!result.rowsAffected) throw notFound('Projeto'); await c.commit(); }); res.status(204).end(); }
+    try { await useConnection(database, async (c) => { const result = await c.execute('UPDATE projetos SET ativo = 0, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Projeto'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
   app.post('/api/projetos/:id/membros', async (req, res, next) => {
@@ -264,16 +249,15 @@ function createApp(database) {
       const binds = {}; const filters = [];
       for (const field of ['status', 'prioridade']) if (req.query[field]) { filters.push(`d.${field} = :${field}`); binds[field] = req.query[field]; }
       if (req.query.busca) { filters.push('(LOWER(d.titulo) LIKE :busca OR LOWER(d.descricao) LIKE :busca)'); binds.busca = `%${req.query.busca.toLowerCase()}%`; }
-      if (req.authUser.perfil === 'LIDER') {
-        filters.push('EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :usuario_id)');
-        binds.usuario_id = req.authUser.id;
-      } else if (req.authUser.perfil === 'MEMBRO') {
-        filters.push('(EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :usuario_id) OR d.responsavel_id = :usuario_id)');
-        binds.usuario_id = req.authUser.id;
-      }
-      const sql = `SELECT d.*, TO_CHAR(d.prazo, 'YYYY-MM-DD') AS prazo_iso, p.nome AS projeto_nome, u.nome AS responsavel_nome FROM demandas d JOIN projetos p ON p.id = d.projeto_id LEFT JOIN usuarios u ON u.id = d.responsavel_id ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''} ORDER BY d.criado_em DESC`;
-      const rows = await useConnection(database, (c) => c.query(sql, binds));
-      res.json(rows.map(({ prazo_iso, ...row }) => ({ ...row, prazo: prazo_iso })));
+      const orderByMap = {
+        criacao_desc: 'd.criado_em DESC',
+        prazo_asc: 'd.prazo IS NULL ASC, d.prazo ASC',
+        prioridade_desc: "FIELD(d.prioridade, 'CRITICA', 'ALTA', 'MEDIA', 'BAIXA')",
+        status: "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA')"
+      };
+      const orderBy = orderByMap[req.query.ordenacao] || orderByMap.criacao_desc;
+      const sql = `SELECT d.*, p.nome AS projeto_nome, u.nome AS responsavel_nome FROM demandas d JOIN projetos p ON p.id = d.projeto_id LEFT JOIN usuarios u ON u.id = d.responsavel_id ${filters.length ? `WHERE ${filters.join(' AND ')}` : ''} ORDER BY ${orderBy}`;
+      res.json(await useConnection(database, (c) => c.query(sql, binds)));
     } catch (error) { next(error); }
   });
   app.get('/api/demandas/:id', async (req, res, next) => {
@@ -306,17 +290,9 @@ function createApp(database) {
       if (prazo && await isNationalHoliday(prazo)) throw badRequest('O prazo não pode cair em um feriado nacional.');
       const demandId = await useConnection(database, async (c) => {
         try {
-          const projetos = await c.query('SELECT id FROM projetos WHERE id = :id AND ativo = 1', { id: projetoId });
-          if (!projetos.length) throw notFound('Projeto');
-          if (!(await projetoVinculado(c, req.authUser, projetoId))) throw forbidden('Líderes só podem criar demandas nos projetos aos quais estão vinculados.');
-          const responsavelId = req.body.responsavel_id ? parseId(req.body.responsavel_id) : null;
-          if (responsavelId) {
-            const membro = await c.query('SELECT 1 AS membro FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1', { projeto_id: projetoId, usuario_id: responsavelId });
-            if (!membro.length) throw badRequest('O responsável deve ser um usuário ativo vinculado ao projeto.');
-          }
-          const result = await c.execute('INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo) VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo) RETURNING id INTO :id', { projeto_id: projetoId, criador_id: req.authUser.id, responsavel_id: responsavelId, titulo, descricao, tipo: req.body.tipo, prioridade: req.body.prioridade, prazo: prazo ? new Date(`${prazo}T00:00:00.000Z`) : null, id: outputId() });
-          const createdId = result.outBinds.id[0];
-          await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, valor_novo) VALUES (:id, :autor_id, 'CRIACAO', :titulo)", { id: createdId, autor_id: req.authUser.id, titulo });
+          const result = await c.execute('INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo) VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo)', { projeto_id: req.body.projeto_id, criador_id: req.body.criador_id, responsavel_id: req.body.responsavel_id || null, titulo: req.body.titulo.trim(), descricao: req.body.descricao.trim(), tipo: req.body.tipo, prioridade: req.body.prioridade, prazo: req.body.prazo ? new Date(`${req.body.prazo}T00:00:00`) : null });
+          const createdId = result.insertId;
+          await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, valor_novo) VALUES (:id, :autor_id, 'CRIACAO', :titulo)", { id: createdId, autor_id: req.body.criador_id, titulo: req.body.titulo.trim() });
           await c.commit(); return createdId;
         } catch (error) { await c.rollback(); throw error; }
       });
@@ -333,72 +309,9 @@ function createApp(database) {
           const demandId = parseId(req.params.id);
           const rows = await c.query("SELECT d.*, TO_CHAR(d.prazo, 'YYYY-MM-DD') AS prazo_iso FROM demandas d WHERE d.id = :id FOR UPDATE", { id: demandId });
           if (!rows.length) throw notFound('Demanda');
-          const current = rows[0];
-          await verificarAcessoDemanda(c, req.authUser, current);
-          const hasStatus = Object.hasOwn(req.body, 'status');
-          const fields = changes.filter((field) => field !== 'status');
-          if (req.authUser.perfil === 'MEMBRO') {
-            if (fields.length || !hasStatus) throw forbidden('Membros só podem alterar o status de demandas atribuídas a eles.');
-            if (Number(current.responsavel_id) !== Number(req.authUser.id)) throw forbidden('Você só pode alterar o status de demandas atribuídas a você.');
-          } else if (!isPrivileged(req.authUser)) {
-            throw forbidden('Perfil sem permissão para alterar demandas.');
-          }
-
-          const normalized = {};
-          for (const field of fields) {
-            if (field === 'titulo') normalized[field] = validateText(req.body[field], 'O título', 3, 100);
-            else if (field === 'descricao') normalized[field] = validateText(req.body[field], 'A descrição', 10, 1000);
-            else if (field === 'tipo') {
-              if (!TIPOS.includes(req.body[field])) throw badRequest('Tipo de demanda inválido.');
-              normalized[field] = req.body[field];
-            } else if (field === 'prioridade') {
-              if (!PRIORIDADES.includes(req.body[field])) throw badRequest('Prioridade inválida.');
-              normalized[field] = req.body[field];
-            } else if (field === 'responsavel_id') {
-              normalized[field] = req.body[field] === null || req.body[field] === '' ? null : parseId(req.body[field]);
-            } else if (field === 'prazo') {
-              const prazo = parseDate(req.body[field]);
-              if (prazo && prazo < hojeEmSaoPaulo()) throw badRequest('O prazo não pode estar no passado.');
-              if (prazo && await isNationalHoliday(prazo)) throw badRequest('O prazo não pode cair em um feriado nacional.');
-              normalized[field] = prazo ? new Date(`${prazo}T00:00:00.000Z`) : null;
-            }
-          }
-
-          if (normalized.responsavel_id) {
-            const membro = await c.query('SELECT 1 AS membro FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1', { projeto_id: current.projeto_id, usuario_id: normalized.responsavel_id });
-            if (!membro.length) throw badRequest('O responsável deve ser um usuário ativo vinculado ao projeto.');
-          }
-
-          if (hasStatus) {
-            const novoStatus = req.body.status;
-            if (!STATUS_DEMANDA.includes(novoStatus)) throw badRequest('Status inválido.');
-            const statusAtual = current.status;
-            if (novoStatus === 'CANCELADA') {
-              if (req.authUser.perfil === 'MEMBRO') throw forbidden('Membros não podem cancelar demandas.');
-              if (statusAtual === 'CONCLUIDA') throw badRequest('Uma demanda concluída não pode ser cancelada.');
-              if (statusAtual === 'CANCELADA') throw badRequest('A demanda já está cancelada.');
-            } else if (!TRANSICOES_STATUS[statusAtual]?.includes(novoStatus)) {
-              throw badRequest('Transição de status inválida. Siga o fluxo Aberta → Em andamento → Em revisão → Concluída.');
-            } else if (req.authUser.perfil === 'MEMBRO' && !['ABERTA>EM_ANDAMENTO', 'EM_ANDAMENTO>EM_REVISAO'].includes(`${statusAtual}>${novoStatus}`)) {
-              throw forbidden('Membros só podem mover demandas atribuídas de Aberta para Em andamento e de Em andamento para Em revisão.');
-            }
-            normalized.status = novoStatus;
-          }
-
-          const actualChanges = Object.keys(normalized).filter((field) => {
-            const oldValue = field === 'prazo' ? current.prazo_iso : current[field];
-            const newValue = field === 'prazo' ? (normalized[field] ? normalized[field].toISOString().slice(0, 10) : null) : normalized[field];
-            return String(oldValue ?? '') !== String(newValue ?? '');
-          });
-          if (!actualChanges.length) { await c.commit(); return; }
-          const binds = Object.fromEntries(actualChanges.map((field) => [field, normalized[field]]));
-          binds.id = demandId;
-          await c.execute(`UPDATE demandas SET ${actualChanges.map((field) => `${field} = :${field}`).join(', ')}, atualizado_em = SYSTIMESTAMP WHERE id = :id`, binds);
-          for (const campo of actualChanges) {
-            const valorAnterior = campo === 'prazo' ? current.prazo_iso : current[campo];
-            const valorNovo = campo === 'prazo' && normalized[campo] ? normalized[campo].toISOString().slice(0, 10) : normalized[campo];
-            await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, campo, valor_anterior, valor_novo) VALUES (:id, :autor_id, 'ALTERACAO', :campo, :anterior, :novo)", { id: demandId, autor_id: req.authUser.id, campo, anterior: valorAnterior == null ? null : String(valorAnterior), novo: valorNovo == null ? null : String(valorNovo) });
-          }
+          const binds = Object.fromEntries(changes.map((key) => [key, key === 'prazo' && req.body[key] ? new Date(`${req.body[key]}T00:00:00`) : req.body[key]])); binds.id = demandId;
+          await c.execute(`UPDATE demandas SET ${changes.map((key) => `${key} = :${key}`).join(', ')}, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id`, binds);
+          for (const campo of changes) await c.execute("INSERT INTO historico_demandas (demanda_id, autor_id, acao, campo, valor_anterior, valor_novo) VALUES (:id, :autor_id, 'ALTERACAO', :campo, :anterior, :novo)", { id: demandId, autor_id: req.body.autor_id, campo, anterior: rows[0][campo] == null ? null : String(rows[0][campo]), novo: req.body[campo] == null ? null : String(req.body[campo]) });
           await c.commit();
         } catch (error) { await c.rollback(); throw error; }
       });
@@ -406,35 +319,38 @@ function createApp(database) {
     } catch (error) { next(error); }
   });
   app.delete('/api/demandas/:id', async (req, res, next) => {
-    next(Object.assign(new Error('Demandas não podem ser excluídas. Altere o status para CANCELADA.'), { status: 405 }));
+    try {
+      await useConnection(database, async (c) => {
+        try {
+          const demandId = parseId(req.params.id);
+          await c.execute('DELETE FROM comentarios WHERE demanda_id = :id', { id: demandId });
+          await c.execute('DELETE FROM historico_demandas WHERE demanda_id = :id', { id: demandId });
+          const result = await c.execute('DELETE FROM demandas WHERE id = :id', { id: demandId });
+          if (!result.affectedRows) throw notFound('Demanda');
+          await c.commit();
+        } catch (error) { await c.rollback(); throw error; }
+      });
+      res.status(204).end();
+    } catch (error) { next(error); }
   });
   app.post('/api/demandas/:id/comentarios', async (req, res, next) => {
     try {
-      required(req.body, ['texto']);
-      const texto = validateText(req.body.texto, 'O comentário', 3, 500);
-      const commentId = await useConnection(database, async (c) => {
-        const demandaId = parseId(req.params.id);
-        const rows = await c.query('SELECT id, projeto_id, responsavel_id FROM demandas WHERE id = :id', { id: demandaId });
-        if (!rows.length) throw notFound('Demanda');
-        await verificarAcessoDemanda(c, req.authUser, rows[0]);
-        const result = await c.execute('INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto) RETURNING id INTO :id', { demanda_id: demandaId, autor_id: req.authUser.id, texto, id: outputId() });
-        await c.commit();
-        return result.outBinds.id[0];
-      });
+      required(req.body, ['autor_id', 'texto']);
+      const commentId = await useConnection(database, async (c) => { const result = await c.execute('INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto)', { demanda_id: parseId(req.params.id), autor_id: req.body.autor_id, texto: req.body.texto.trim() }); await c.commit(); return result.insertId; });
       res.status(201).json({ id: commentId });
     } catch (error) { next(error); }
   });
   app.patch('/api/comentarios/:id', async (req, res, next) => {
-    try { required(req.body, ['texto']); await useConnection(database, async (c) => { const comentarioId = parseId(req.params.id); const rows = await c.query('SELECT id, autor_id, demanda_id FROM comentarios WHERE id = :id', { id: comentarioId }); if (!rows.length) throw notFound('Comentário'); const demanda = await c.query('SELECT id, projeto_id, responsavel_id FROM demandas WHERE id = :id', { id: rows[0].demanda_id }); if (!demanda.length) throw notFound('Demanda'); await verificarAcessoDemanda(c, req.authUser, demanda[0]); if (Number(rows[0].autor_id) !== Number(req.authUser.id) && req.authUser.perfil !== 'ADMIN') throw forbidden('Somente o autor ou um administrador pode editar este comentário.'); const texto = validateText(req.body.texto, 'O comentário', 3, 500); await c.execute('UPDATE comentarios SET texto = :texto, atualizado_em = SYSTIMESTAMP WHERE id = :id', { texto, id: comentarioId }); await c.commit(); }); res.status(204).end(); }
+    try { required(req.body, ['texto']); await useConnection(database, async (c) => { const result = await c.execute('UPDATE comentarios SET texto = :texto, atualizado_em = CURRENT_TIMESTAMP(6) WHERE id = :id', { texto: req.body.texto.trim(), id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
   app.delete('/api/comentarios/:id', async (req, res, next) => {
-    try { await useConnection(database, async (c) => { const comentarioId = parseId(req.params.id); const rows = await c.query('SELECT id, autor_id, demanda_id FROM comentarios WHERE id = :id', { id: comentarioId }); if (!rows.length) throw notFound('Comentário'); const demanda = await c.query('SELECT id, projeto_id, responsavel_id FROM demandas WHERE id = :id', { id: rows[0].demanda_id }); if (!demanda.length) throw notFound('Demanda'); await verificarAcessoDemanda(c, req.authUser, demanda[0]); if (Number(rows[0].autor_id) !== Number(req.authUser.id) && req.authUser.perfil !== 'ADMIN') throw forbidden('Somente o autor ou um administrador pode excluir este comentário.'); await c.execute('DELETE FROM comentarios WHERE id = :id', { id: comentarioId }); await c.commit(); }); res.status(204).end(); }
+    try { await useConnection(database, async (c) => { const result = await c.execute('DELETE FROM comentarios WHERE id = :id', { id: parseId(req.params.id) }); if (!result.affectedRows) throw notFound('Comentário'); await c.commit(); }); res.status(204).end(); }
     catch (error) { next(error); }
   });
 
   app.use((error, _req, res, _next) => {
-    const status = error.status || (error.errorNum === 1 ? 409 : 500);
+    const status = error.status || (error.code === 'ER_DUP_ENTRY' ? 409 : 500);
     if (status >= 500) console.error(error);
     res.status(status).json({ error: status >= 500 ? (error.publicMessage || 'Erro interno ao acessar o banco.') : error.message });
   });

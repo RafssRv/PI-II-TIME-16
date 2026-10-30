@@ -1,3 +1,6 @@
+/* Autor: Heloisa L Marinho  
+Descrição: Integração da listagem e validação/ordenação dos filtros de busca */
+
 exigirUsuario();
 const grid = document.querySelector('#demandas-grid');
 
@@ -9,9 +12,11 @@ async function carregarDemandas() {
   const busca = document.querySelector('#filtro-busca').value.trim();
   const status = document.querySelector('#filtro-status').value;
   const prioridade = document.querySelector('#filtro-prioridade').value;
+  const ordenacao = document.querySelector('#filtro-ordenacao')?.value;
   if (busca) params.set('busca', busca);
   if (!['', 'todos', 'selecione'].includes(status)) params.set('status', normalizar(status));
   if (!['', 'todos', 'selecione'].includes(prioridade)) params.set('prioridade', normalizar(prioridade));
+  if (ordenacao && !['', 'selecione'].includes(ordenacao)) params.set('ordenacao', ordenacao);
   grid.textContent = 'Carregando demandas...';
   try {
     const demandas = await api(`/demandas?${params}`);
@@ -19,6 +24,8 @@ async function carregarDemandas() {
     if (!demandas.length) grid.textContent = 'Nenhuma demanda encontrada.';
   } catch (error) { grid.textContent = error.message; }
 }
+
+const realizarBusca = carregarDemandas;
 
 function normalizar(value) {
   const map = { aberta: 'ABERTA', andamento: 'EM_ANDAMENTO', revisao: 'EM_REVISAO', concluida: 'CONCLUIDA', cancelada: 'CANCELADA', critica: 'CRITICA', alta: 'ALTA', media: 'MEDIA', baixa: 'BAIXA' };

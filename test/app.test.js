@@ -12,7 +12,7 @@ function fakeDatabase({ queries = [], execute } = {}) {
         async execute(sql, binds) {
           state.executed.push({ sql, binds });
           if (execute) return execute(sql, binds);
-          return { rowsAffected: 1, outBinds: { id: [10] } };
+          return { affectedRows: 1, insertId: 10 };
         },
         async commit() { state.committed += 1; },
         async rollback() { state.rolledBack += 1; },
@@ -69,4 +69,18 @@ test('exclusão remove dependências antes da demanda', async () => {
   assert.match(database.state.executed[1].sql, /historico_demandas/);
   assert.match(database.state.executed[2].sql, /demandas/);
   assert.equal(database.state.committed, 1);
+});
+
+test('falha ao gravar histórico desfaz a criação da demanda', async () => {
+  const database = fakeDatabase({ execute(sql) {
+    if (sql.includes('historico_demandas')) throw Object.assign(new Error('Autor inexistente'), { status: 400 });
+    return { affectedRows: 1, insertId: 10 };
+  } });
+  const response = await request(createApp(database), '/api/demandas', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ projeto_id: 1, criador_id: 2, titulo: 'Nova demanda', descricao: 'Descrição válida', tipo: 'TAREFA', prioridade: 'MEDIA' })
+  });
+  assert.equal(response.status, 400);
+  assert.equal(database.state.committed, 0);
+  assert.equal(database.state.rolledBack, 1);
 });
