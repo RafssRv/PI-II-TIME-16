@@ -12,6 +12,8 @@ const port = Number(process.env.PORT || 3000);
 const database = createMysqlDatabase();
 const app = createApp(database);
 
+// Dashboard e demandas usam as rotas persistidas registradas em createApp.
+
 const server = app.listen(port, () => {
   console.log(`Servidor disponível em http://localhost:${port}`);
 });

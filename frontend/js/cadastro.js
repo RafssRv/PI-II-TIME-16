@@ -1,3 +1,5 @@
+// Autor: Rafael Roveri Pires - 24007131
+
 const user = exigirUsuario();
 const form = document.querySelector('#form-demanda');
 

@@ -1,3 +1,6 @@
+/* Autor: Heloisa L Marinho  
+Descrição: Integração da listagem e validação/ordenação dos filtros de busca */
+
 // Integração: Vinicius Panutti Salgado — R.A. 25007329.
 // Consulta a API; títulos e descrições recebidos são inseridos como texto.
 const grid = document.querySelector('#demandas-grid');
@@ -25,11 +28,12 @@ if (exigirUsuario()) document.addEventListener('DOMContentLoaded', async () => {
 async function carregarDemandas() {
   const consulta = ++consultaAtual;
   const params = new URLSearchParams();
-  const campos = { busca: 'busca', status: 'status', prioridade: 'prioridade', tipo: 'tipo', projeto: 'projeto_id', responsavel: 'responsavel_id', ordenacao: 'ordenacao' };
-  for (const [id, campo] of Object.entries(campos)) {
-    const value = document.querySelector(`#filtro-${id}`).value.trim();
-    if (!['', 'todos', 'selecione'].includes(value)) params.set(campo, normalizar(value));
-  }
+  const busca = document.querySelector('#filtro-busca').value.trim();
+  const status = document.querySelector('#filtro-status').value;
+  const prioridade = document.querySelector('#filtro-prioridade').value;
+  if (busca) params.set('busca', busca);
+  if (!['', 'todos', 'selecione'].includes(status)) params.set('status', normalizar(status));
+  if (!['', 'todos', 'selecione'].includes(prioridade)) params.set('prioridade', normalizar(prioridade));
   grid.textContent = 'Carregando demandas...';
   grid.setAttribute('aria-busy', 'true');
   try {
@@ -43,6 +47,8 @@ async function carregarDemandas() {
     if (consulta === consultaAtual) grid.setAttribute('aria-busy', 'false');
   }
 }
+
+const realizarBusca = carregarDemandas;
 
 function normalizar(value) {
   return ({ aberta: 'ABERTA', andamento: 'EM_ANDAMENTO', revisao: 'EM_REVISAO', concluida: 'CONCLUIDA', cancelada: 'CANCELADA', critica: 'CRITICA', alta: 'ALTA', media: 'MEDIA', baixa: 'BAIXA' })[value] || value;
