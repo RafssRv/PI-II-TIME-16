@@ -127,6 +127,16 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
     catch (error) { next(Object.assign(error, { status: 503 })); }
   });
 
+  /*
+  Autora: Sophia Franco de Godoy / RA: 24000833
+  Descrição: Rota de autenticação dos usuários do sistema
+  
+  Recebe e-mail e senha, verifica os campos obrigatórios,
+  consulta o usuário no banco e compara a senha com o hash armazenado.
+  Retorna os dados do usuário e o token de sessão, sem expor a senha ou seu hash.
+  Retorna erro quando os dados obrigatórios estão ausentes ou as credenciais
+  são inválidas.
+  */
   app.post('/api/login', async (req, res, next) => {
     try {
       required(req.body, ['email', 'senha']);
@@ -171,6 +181,14 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
     return canAccessProject(connection, usuario, demanda.projeto_id);
   }
 
+  /*
+  Autora: Sophia Franco de Godoy / RA: 24000833
+  Descrição: Rota de listagem dos usuários do sistema
+
+  Consulta os usuários no banco conforme as permissões
+  do usuário autenticado e retorna os dados em formato JSON.
+  A resposta não inclui senhas nem hashes de senha.
+  */
   app.get('/api/usuarios', async (_req, res, next) => {
     try {
       const usuario = _req.authUser;
