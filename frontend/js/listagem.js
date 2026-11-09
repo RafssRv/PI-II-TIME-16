@@ -1,12 +1,14 @@
-/* Autor: Heloisa L Marinho  
+/* Autor: Heloisa L Marinho
 Descrição: Integração da listagem e validação/ordenação dos filtros de busca */
 
 // Integração: Vinicius Panutti Salgado — R.A. 25007329.
 // Consulta a API; títulos e descrições recebidos são inseridos como texto.
 const grid = document.querySelector('#demandas-grid');
 let consultaAtual = 0;
+const usuarioListagem = exigirUsuario();
+if (usuarioListagem?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="cadastro.html"]').hidden = true;
 
-if (exigirUsuario()) document.addEventListener('DOMContentLoaded', async () => {
+if (usuarioListagem) document.addEventListener('DOMContentLoaded', async () => {
   document.querySelector('#filtros').addEventListener('submit', (event) => {
     event.preventDefault();
     carregarDemandas();
@@ -28,12 +30,21 @@ if (exigirUsuario()) document.addEventListener('DOMContentLoaded', async () => {
 async function carregarDemandas() {
   const consulta = ++consultaAtual;
   const params = new URLSearchParams();
-  const busca = document.querySelector('#filtro-busca').value.trim();
-  const status = document.querySelector('#filtro-status').value;
-  const prioridade = document.querySelector('#filtro-prioridade').value;
-  if (busca) params.set('busca', busca);
-  if (!['', 'todos', 'selecione'].includes(status)) params.set('status', normalizar(status));
-  if (!['', 'todos', 'selecione'].includes(prioridade)) params.set('prioridade', normalizar(prioridade));
+  const filtros = [
+    ['filtro-busca', 'busca', (valor) => valor],
+    ['filtro-status', 'status', normalizar],
+    ['filtro-prioridade', 'prioridade', normalizar],
+    ['filtro-tipo', 'tipo', normalizar],
+    ['filtro-projeto', 'projeto_id', (valor) => valor],
+    ['filtro-responsavel', 'responsavel_id', (valor) => valor],
+    ['filtro-ordenacao', 'ordenacao', (valor) => valor],
+  ];
+  for (const [id, parametro, transformar] of filtros) {
+    const valor = document.getElementById(id).value.trim();
+    if (valor && !['todos', 'selecione'].includes(valor.toLowerCase())) {
+      params.set(parametro, transformar(valor));
+    }
+  }
   grid.textContent = 'Carregando demandas...';
   grid.setAttribute('aria-busy', 'true');
   try {
@@ -47,8 +58,6 @@ async function carregarDemandas() {
     if (consulta === consultaAtual) grid.setAttribute('aria-busy', 'false');
   }
 }
-
-const realizarBusca = carregarDemandas;
 
 function normalizar(value) {
   return ({ aberta: 'ABERTA', andamento: 'EM_ANDAMENTO', revisao: 'EM_REVISAO', concluida: 'CONCLUIDA', cancelada: 'CANCELADA', critica: 'CRITICA', alta: 'ALTA', media: 'MEDIA', baixa: 'BAIXA' })[value] || value;

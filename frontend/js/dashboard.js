@@ -179,4 +179,6 @@ function linkDemanda(demanda) {
 function dataDashboard(value) {
     return value ? value.split('-').reverse().join('/') : 'Não definido';
 }
-if (exigirUsuario()) document.addEventListener('DOMContentLoaded', carregarDashboard);
+const usuarioDashboard = exigirUsuario();
+if (usuarioDashboard?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="cadastro.html"]').hidden = true;
+if (usuarioDashboard) document.addEventListener('DOMContentLoaded', carregarDashboard);

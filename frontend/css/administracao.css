@@ -1,0 +1,280 @@
+/*
+Autor: Priscila Amorim
+Tela: Projetos e Usuários (Administrador)
+Descrição: Estilos da tela de consulta. Reaproveita a paleta e os componentes
+(sidebar, cards, tabela, botões) das demais telas para manter o padrão visual.
+*/
+
+:root {
+  /* Cores da paleta - Roxo + cinza escuro (iguais às demais telas) */
+  --cor-primaria: #7C3AED;
+  --cor-primaria-hover: #6D28D9;
+  --cor-primaria-clara: #EDE9FE;
+
+  /* Neutros */
+  --cinza-fundo: #F3F4F6;
+  --cinza-card: #FFFFFF;
+  --cinza-borda: #E5E7EB;
+  --texto-principal: #111827;
+  --texto-secundario: #6B7280;
+
+  /* Cores de estado */
+  --sucesso: #16A34A;
+  --erro: #DC2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Garante que o atributo hidden esconda mesmo elementos com display definido */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Sidebar */
+.sidebar {
+  background: #FFFFFF;
+  border-right: 1px solid var(--cinza-borda);
+  min-height: 100vh;
+  padding: 24px 0;
+  position: fixed;
+  width: 240px;
+}
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--cinza-borda);
+  margin-bottom: 16px;
+}
+.sidebar-logo h4 {
+  color: var(--cor-primaria);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0;
+}
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 24px;
+  color: var(--texto-secundario);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.sidebar-menu a:hover {
+  background: var(--cinza-fundo);
+  color: var(--texto-principal);
+}
+.sidebar-menu a.active {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  border-right: 3px solid var(--cor-primaria);
+}
+
+main {
+  margin-left: 240px;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+.page-title {
+  margin-bottom: 24px;
+  font-size: 24px;
+  color: var(--texto-principal);
+}
+
+/* Botão do menu */
+.btn-primary-custom {
+  background: var(--cor-primaria);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  font-weight: 500;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.btn-primary-custom:hover {
+  background: var(--cor-primaria-hover);
+}
+
+/* Campos de busca e filtro */
+.form-control-custom,
+.form-select-custom {
+  padding: 10px 12px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #FFFFFF;
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.form-control-custom:focus,
+.form-select-custom:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Cards */
+.content-card {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.card-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.card-topo h2 {
+  font-size: 18px;
+}
+.card-topo .form-control-custom {
+  min-width: 240px;
+}
+.filtros-usuarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Resumo no topo */
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.resumo-item {
+  background: var(--cinza-card);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+.resumo-valor {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cor-primaria);
+  line-height: 1.2;
+}
+.resumo-rotulo {
+  color: var(--texto-secundario);
+  font-size: 13px;
+}
+
+/* Tabelas */
+.tabela-rolagem {
+  overflow-x: auto;
+}
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-custom thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-secundario);
+  border-bottom: 1px solid var(--cinza-borda);
+  white-space: nowrap;
+}
+.table-custom tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-borda);
+  vertical-align: top;
+}
+.table-custom tbody tr:last-child td {
+  border-bottom: none;
+}
+.table-custom tbody tr:hover {
+  background: #FAFAFB;
+}
+.celula-nome {
+  font-weight: 600;
+}
+.celula-secundaria {
+  color: var(--texto-secundario);
+}
+
+/* Equipe do projeto e projetos do usuário (etiquetas) */
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.etiqueta {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--cinza-fundo);
+  border: 1px solid var(--cinza-borda);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.etiqueta.lider {
+  background: var(--cor-primaria-clara);
+  border-color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+/* Perfil e situação */
+.badge-custom {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-perfil-admin { background: #FEE2E2; color: #991B1B; }
+.badge-perfil-lider { background: #EDE9FE; color: #5B21B6; }
+.badge-perfil-membro { background: #DBEAFE; color: #1E40AF; }
+.badge-ativo { background: #D1FAE5; color: #065F46; }
+.badge-inativo { background: #E5E7EB; color: #374151; }
+
+/* Mensagens */
+.mensagem-info {
+  color: var(--texto-secundario);
+  margin-bottom: 16px;
+}
+.mensagem-erro {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+/* Telas estreitas: o menu lateral deixa de ocupar a lateral */
+@media (max-width: 800px) {
+  .sidebar { position: static; width: 100%; min-height: 0; }
+  main { margin-left: 0; }
+}

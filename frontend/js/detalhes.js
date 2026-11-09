@@ -134,7 +134,7 @@ async function salvarEdicao(event) {
   if (titulo.length < 3 || titulo.length > 100) return mostrarErroEdicao('O título deve ter entre 3 e 100 caracteres.');
   if (descricao.length < 10 || descricao.length > 1000) return mostrarErroEdicao('A descrição deve ter entre 10 e 1000 caracteres.');
 
-  const payload = { autor_id: usuario.id };
+  const payload = {};
   incluirSeAlterado(payload, 'titulo', titulo, demandaAtual.titulo);
   incluirSeAlterado(payload, 'descricao', descricao, demandaAtual.descricao);
   incluirSeAlterado(payload, 'tipo', document.querySelector('#edicao-tipo').value, demandaAtual.tipo);
@@ -147,7 +147,7 @@ async function salvarEdicao(event) {
   const prazoAtual = demandaAtual.prazo || '';
   const prazoNovo = document.querySelector('#edicao-prazo').value;
   if (prazoAtual !== prazoNovo) payload.prazo = prazoNovo || null;
-  if (Object.keys(payload).length === 1) return fecharEdicao();
+  if (Object.keys(payload).length === 0) return fecharEdicao();
 
   mostrarErroEdicao('');
   const submit = formularioEdicao.querySelector('[type="submit"]');
@@ -171,7 +171,7 @@ async function atualizarStatus() {
   const status = document.querySelector('#novo-status').value;
   if (!status) return;
   try {
-    await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ autor_id: usuario.id, status }) });
+    await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ status }) });
     await carregar();
   } catch (error) {
     exibirErro(error.message);
@@ -181,7 +181,7 @@ async function atualizarStatus() {
 async function cancelarDemanda() {
   if (!demandaAtual || !confirm('Cancelar esta demanda? O registro e o histórico serão mantidos.')) return;
   try {
-    await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ autor_id: usuario.id, status: 'CANCELADA' }) });
+    await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ status: 'CANCELADA' }) });
     await carregar();
   } catch (error) {
     exibirErro(error.message);
@@ -198,7 +198,7 @@ async function comentar() {
     return;
   }
   try {
-    await api(`/demandas/${demandaId}/comentarios`, { method: 'POST', body: JSON.stringify({ autor_id: usuario.id, texto }) });
+    await api(`/demandas/${demandaId}/comentarios`, { method: 'POST', body: JSON.stringify({ texto }) });
     input.value = '';
     erro.style.display = 'none';
     await carregar();

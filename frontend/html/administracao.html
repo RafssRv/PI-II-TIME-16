@@ -1,0 +1,89 @@
+<!-- Autor: Priscila Amorim -->
+<!-- Descrição: Tela de consulta de projetos (com equipes) e usuários, exclusiva do Administrador.
+     Somente visualização: o cadastro dessas entidades é feito pela API, conforme o escopo do projeto. -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/administracao.css">
+    <script src="../js/api.js" defer></script>
+    <script src="../js/administracao.js" defer></script>
+    <title>Projetos e Usuários</title>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h4>DemandasApp</h4>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="listagemDemandas.html">Demandas</a>
+            <a href="administracao.html" class="active">Projetos e usuários</a>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="container">
+            <h1 class="page-title">Projetos e Usuários</h1>
+
+            <!-- Mensagens de carregamento e erro (preenchidas pelo JavaScript) -->
+            <p id="admin-erro" class="mensagem-erro" role="alert" hidden></p>
+            <p id="admin-carregando" class="mensagem-info" role="status">Carregando projetos e usuários...</p>
+
+            <!-- Resumo geral -->
+            <section class="resumo" id="resumo" aria-label="Resumo" hidden>
+                <div class="resumo-item"><span class="resumo-valor" id="resumo-projetos">0</span><span class="resumo-rotulo">Projetos ativos</span></div>
+                <div class="resumo-item"><span class="resumo-valor" id="resumo-usuarios">0</span><span class="resumo-rotulo">Usuários ativos</span></div>
+                <div class="resumo-item"><span class="resumo-valor" id="resumo-lideres">0</span><span class="resumo-rotulo">Líderes de projeto</span></div>
+                <div class="resumo-item"><span class="resumo-valor" id="resumo-membros">0</span><span class="resumo-rotulo">Membros da equipe</span></div>
+            </section>
+
+            <!-- Projetos -->
+            <section class="content-card" id="card-projetos" hidden>
+                <div class="card-topo">
+                    <h2>Projetos</h2>
+                    <input type="search" id="busca-projetos" class="form-control-custom" placeholder="Buscar projeto ou membro..." aria-label="Buscar projeto ou membro">
+                </div>
+                <div class="tabela-rolagem">
+                    <table class="table-custom" id="tabela-projetos">
+                        <thead>
+                            <tr><th>Projeto</th><th>Descrição</th><th>Equipe</th><th>Demandas</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p class="mensagem-info" id="sem-projetos" hidden>Nenhum projeto encontrado.</p>
+            </section>
+
+            <!-- Usuários -->
+            <section class="content-card" id="card-usuarios" hidden>
+                <div class="card-topo">
+                    <h2>Usuários</h2>
+                    <div class="filtros-usuarios">
+                        <select id="filtro-perfil" class="form-select-custom" aria-label="Filtrar por perfil">
+                            <option value="">Todos os perfis</option>
+                            <option value="ADMIN">Administrador</option>
+                            <option value="LIDER">Líder de Projeto</option>
+                            <option value="MEMBRO">Membro da Equipe</option>
+                        </select>
+                        <input type="search" id="busca-usuarios" class="form-control-custom" placeholder="Buscar nome ou e-mail..." aria-label="Buscar nome ou e-mail">
+                    </div>
+                </div>
+                <div class="tabela-rolagem">
+                    <table class="table-custom" id="tabela-usuarios">
+                        <thead>
+                            <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Situação</th><th>Projetos</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p class="mensagem-info" id="sem-usuarios" hidden>Nenhum usuário encontrado.</p>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
