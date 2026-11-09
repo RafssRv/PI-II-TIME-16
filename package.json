@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "Engenharia de Software - Pontifícia Universidade Católica de Campinas - 2 semestre 2026",
   "main": "dist/server.js",
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "test": "node --test",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "seed": "tsx src/seed.ts"
   },
   "repository": {
     "type": "git",

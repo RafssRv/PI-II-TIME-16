@@ -1,5 +1,5 @@
 -- Autor: Vinícius Panutti Salgado - RA 25007329
--- MySQL 8.4. Execute uma única vez em um banco vazio, selecionado na conexão.
+-- MySQL 8.0 ou superior. Execute uma única vez em um banco vazio, selecionado na conexão.
 -- DDL realiza COMMIT implícito: um erro pode deixar objetos já criados.
 
 CREATE TABLE usuarios (

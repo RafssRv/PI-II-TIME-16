@@ -5,8 +5,8 @@
 
 import 'dotenv/config';
 
-const { createApp } = require('./app');
-const { createMysqlDatabase } = require('./database');
+import { createApp } from './app';
+import { createMysqlDatabase } from './database';
 
 const port = Number(process.env.PORT || 3000);
 const database = createMysqlDatabase();
