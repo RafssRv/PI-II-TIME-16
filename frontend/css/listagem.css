@@ -77,6 +77,10 @@ body {
   border-right: 3px solid var(--cor-primaria);
 }
 
+.sidebar-menu a[hidden] {
+  display: none !important;
+}
+
 main {
   margin-left: 240px;
 }
