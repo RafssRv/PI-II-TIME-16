@@ -6,7 +6,8 @@
 import 'dotenv/config';
 import dashboardRoutes from './dashboard/dashboard.routes';
 import detalhesRoutes from './routes/detalhes.routes';
-import listagemRoutes from './routes/listagem.routes';
+import listagemRoutes from './routes/listagem';
+import cadastroRoutes from './routes/cadastro';
 
 const { createApp } = require('./app');
 const { createMysqlDatabase } = require('./database');
@@ -19,6 +20,7 @@ const app = createApp(database);
 app.use('/dashboard', dashboardRoutes);
 app.use('/demandas', detalhesRoutes);
 app.use('/', listagemRoutes);
+app.use('/', cadastroRoutes);
 
 const server = app.listen(port, () => {
   console.log(`Servidor disponível em http://localhost:${port}`);
