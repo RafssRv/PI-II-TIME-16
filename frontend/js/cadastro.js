@@ -3,7 +3,13 @@
 const user = exigirUsuario();
 const form = document.querySelector('#form-demanda');
 
+if (user?.perfil === 'MEMBRO') {
+  window.location.replace('listagemDemandas.html');
+  form.hidden = true;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  if (user?.perfil === 'MEMBRO') return;
   try {
     const [projetos, usuarios] = await Promise.all([api('/projetos'), api('/usuarios')]);
     preencherSelect('projeto', projetos.filter((item) => item.ativo), 'Selecione um projeto...');
@@ -13,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (user?.perfil === 'MEMBRO') return;
   limparErros();
   const valido = [
     validarTexto('titulo', 3, 100), validarTexto('descricao', 10, 1000),
@@ -24,7 +31,6 @@ form.addEventListener('submit', async (event) => {
       method: 'POST',
       body: JSON.stringify({
         projeto_id: Number(document.querySelector('#projeto').value),
-        criador_id: user.id,
         responsavel_id: Number(document.querySelector('#responsavel').value) || null,
         titulo: document.querySelector('#titulo').value.trim(),
         descricao: document.querySelector('#descricao').value.trim(),

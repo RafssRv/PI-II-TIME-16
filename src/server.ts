@@ -4,31 +4,22 @@
 */
 
 import 'dotenv/config';
-import dashboardRoutes from './dashboard/dashboard.routes';
-import detalhesRoutes from './routes/detalhes.routes';
-import listagemRoutes from './routes/listagem';
-import cadastroRoutes from './routes/cadastro';
 
-const { createApp } = require('./app');
-const { createMysqlDatabase } = require('./database');
+import { createApp } from './app';
+import { createMysqlDatabase } from './database';
 
 const port = Number(process.env.PORT || 3000);
 const database = createMysqlDatabase();
 const app = createApp(database);
 
-// Mantém disponíveis as rotas demonstrativas criadas nas etapas anteriores.
-app.use('/dashboard', dashboardRoutes);
-app.use('/demandas', detalhesRoutes);
-app.use('/', listagemRoutes);
-app.use('/', cadastroRoutes);
+// Dashboard e demandas usam as rotas persistidas registradas em createApp.
 
 const server = app.listen(port, () => {
   console.log(`Servidor disponível em http://localhost:${port}`);
 });
 
 async function shutdown() {
-  await database.close();
-  server.close();
+  server.close(async () => { await database.close(); });
 }
 
 process.on('SIGINT', shutdown);

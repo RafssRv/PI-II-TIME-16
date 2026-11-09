@@ -9,11 +9,12 @@ formulario.addEventListener('submit', async (event) => {
   erroEmail.textContent = '';
   erroSenha.textContent = '';
   try {
-    const user = await api('/login', {
+    const sessao = await api('/login', {
       method: 'POST',
       body: JSON.stringify({ email: campoEmail.value.trim(), senha: campoSenha.value })
     });
-    sessionStorage.setItem('usuario', JSON.stringify(user));
+    sessionStorage.setItem('usuario', JSON.stringify(sessao.usuario));
+    sessionStorage.setItem('token', sessao.token);
     window.location.href = 'dashboard.html';
   } catch (error) {
     erroSenha.textContent = error.message;

@@ -1,37 +1,45 @@
-# Banco MySQL
+# Banco MySQL e execução local
 
-O projeto usa MySQL 8.4, `mysql2/promise`, InnoDB e utf8mb4. Não há instalação automática do servidor. O MySQL Workbench é o cliente para conectar e executar SQL; o servidor MySQL precisa estar instalado e ativo.
+O backend usa MySQL 8.0 ou superior, `mysql2/promise`, InnoDB e `utf8mb4`. O banco local da equipe pode ser o MySQL 8.0.46 já instalado; o serviço do banco precisa estar ativo antes de iniciar a API.
 
-## Modelo e comportamento preservados
+## Preparar o banco
 
-- `usuarios`: nome, e-mail único sem diferença de caixa/espaços, hash de senha e perfil.
-- `projetos` e `projeto_membros`: projetos e equipe, sem inscrições duplicadas.
-- `demandas`: projeto, criador, responsável opcional, título, descrição, tipo, prioridade, status e prazo.
-- `comentarios`: texto e autor vinculados à demanda.
-- `historico_demandas`: criação e alterações por campo, autor, valor anterior e novo.
+1. Entre como administrador no MySQL. No Ubuntu:
 
-Usuários e projetos são desativados pela API. A exclusão definitiva de uma demanda remove também seus comentários e histórico em uma transação. Criação/edição da demanda e histórico são atômicos. A conexão inicia transações explicitamente e desfaz qualquer transação aberta antes de voltar ao pool. Senhas da aplicação são gravadas em hash; `atualizado_em` é atualizado pela API. Prazo é devolvido como `YYYY-MM-DD`, e timestamps são tratados em UTC.
+   ```bash
+   sudo mysql -u root -p
+   ```
 
-O login confere credenciais, mas os endpoints ainda não exigem sessão/token e não aplicam autorização por perfil nem pertencimento ao projeto. As rotas legadas `/dashboard` e `/demandas` continuam demonstrativas; a persistência está em `/api`. O dashboard ainda usa dados de exemplo. A migração não altera essas limitações preexistentes.
+2. Crie uma base de desenvolvimento e uma conta de aplicação. Escolha uma senha local e não a salve no repositório:
 
-## Preparação quando o MySQL estiver disponível
+   ```sql
+   CREATE DATABASE demandas_app CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs;
+   CREATE USER 'app_demandas'@'127.0.0.1' IDENTIFIED BY 'escolha-uma-senha-local';
+   GRANT SELECT, INSERT, UPDATE, DELETE ON demandas_app.* TO 'app_demandas'@'127.0.0.1';
+   ```
 
-1. No MySQL Workbench, crie uma conexão com host `127.0.0.1`, porta `3306` e o usuário administrativo definido na instalação. Clique em **Test Connection**. Use a senha real escolhida na instalação.
-2. Conectado como administrador, execute uma vez, substituindo a senha abaixo:
+3. Selecione a base vazia e aplique o schema uma vez:
 
-```sql
-CREATE DATABASE demandas_app CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs;
-CREATE USER 'app_demandas'@'localhost' IDENTIFIED BY 'substitua_por_sua_senha';
-GRANT SELECT, INSERT, UPDATE, DELETE ON demandas_app.* TO 'app_demandas'@'localhost';
+   ```sql
+   USE demandas_app;
+   SOURCE /caminho/absoluto/PI-II-TIME-16/database/schema.sql;
+   SHOW TABLES;
+   ```
+
+   Devem aparecer `usuarios`, `projetos`, `projeto_membros`, `demandas`, `comentarios` e `historico_demandas`. O schema não apaga tabelas e não é uma migration incremental. Não o execute sobre uma base existente sem backup e revisão.
+
+4. Saia do cliente MySQL. A API usa `127.0.0.1`, porta `3306` e as credenciais da conta de aplicação. Não use root na aplicação.
+
+## Configurar e iniciar a API
+
+Na raiz do repositório:
+
+```bash
+cp .env.example .env
+nano .env
 ```
 
-3. Na mesma conexão administrativa, execute `USE demandas_app;`. Abra `database/schema.sql` e execute o script completo. Ele requer um banco vazio e não apaga dados nem recria tabelas já existentes. DDL faz commit implícito: confira todos os resultados e corrija erros antes de continuar. Execute o schema só uma vez por banco vazio.
-4. Confira `SHOW TABLES;`: devem existir seis tabelas. O usuário da aplicação recebe somente acesso aos dados; o administrador executa a criação de tabelas.
-5. Crie uma conexão no Workbench com o usuário `app_demandas`, a senha definida e o banco `demandas_app` para consultar os registros da aplicação.
-
-## Executar a aplicação
-
-Na raiz do repositório, copie `.env.example` para `.env` e preencha:
+Preencha as configurações do banco:
 
 ```dotenv
 PORT=3000
@@ -39,53 +47,69 @@ MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
 MYSQL_DATABASE=demandas_app
 MYSQL_USER=app_demandas
-MYSQL_PASSWORD=sua_senha_real
+MYSQL_PASSWORD=sua_senha_local
 ```
 
-Não use o administrador/root na aplicação. O `.env` não é versionado. Execute:
+Node.js 26 LTS é o requisito do projeto. Instale e execute em desenvolvimento com `npm install` e `npm run dev`; para compilar e iniciar a versão de produção, use `npm run build` e `npm start`. Acesse `http://localhost:3000/api/health`; a resposta esperada é `{"database":"online"}`.
+
+O `SESSION_SECRET` é opcional no ambiente local: sem ele, o servidor gera uma chave temporária e tokens deixam de valer quando o processo reinicia. Para manter sessões entre reinicializações, gere uma chave com `openssl rand -hex 32` e adicione `SESSION_SECRET=<chave-gerada>` ao `.env`. Não compartilhe nem versione esse valor.
+
+## Criar o primeiro ADMIN e entrar
+
+O primeiro usuário só pode ser criado pela API quando a tabela `usuarios` está vazia. O servidor protege esse cadastro inicial com um lock do MySQL e aceita somente perfil `ADMIN`. Nunca insira senha diretamente no banco: a API aplica bcrypt antes de armazenar o hash.
+
+Envie pelo Postman ou curl, trocando a senha por uma senha forte com pelo menos 10 caracteres:
 
 ```bash
-pnpm install
-pnpm build
-pnpm start
+curl -X POST http://localhost:3000/api/usuarios \
+  -H 'Content-Type: application/json' \
+  -d '{"nome":"Administrador","email":"admin@local.test","senha":"escolha-uma-senha-forte","perfil":"ADMIN"}'
 ```
 
-Abra `http://localhost:3000/api/health`: o resultado esperado é `{"database":"online"}`. Esse endpoint verifica a conexão; não confirma sozinho que todas as tabelas foram criadas.
+Faça login pela tela em `http://localhost:3000` ou pela rota `POST /api/login` com `email` e `senha`. A resposta contém `usuario` e `token`. A interface guarda ambos em `sessionStorage` e envia `Authorization: Bearer <token>` nas chamadas protegidas. O token expira após oito horas. Depois do primeiro ADMIN, novos usuários só podem ser criados por uma requisição autenticada de ADMIN.
 
-## Primeiro usuário, projeto e teste manual
+O ADMIN cria um projeto em `POST /api/projetos` e vincula usuários em `POST /api/projetos/:id/membros`, com corpo `{"usuario_id": 2}`. Para testar líder e membro, cadastre os perfis e vincule-os aos projetos pelo ADMIN. O usuário autenticado deve ser usado para gravar criador, responsável pela alteração, autor do histórico e autor dos comentários; esses IDs não são aceitos como fonte confiável do cliente.
 
-No Postman, envie `POST http://localhost:3000/api/usuarios`, Body → raw → JSON:
+## Permissões aplicadas na API
 
-```json
-{"nome":"Administrador","email":"admin@local.test","senha":"defina-uma-senha-forte","perfil":"ADMIN"}
+| Perfil | Acesso atual |
+| --- | --- |
+| ADMIN | Acessa todas as demandas e administra usuários, projetos e equipes. |
+| LIDER | Consulta os projetos aos quais está vinculado; cria, edita e cancela demandas desses projetos. |
+| MEMBRO | Consulta demandas de projetos vinculados, comenta e só pode alterar status de demanda atribuída a si: `ABERTA → EM_ANDAMENTO → EM_REVISAO`. |
+
+Estas são as regras provisórias adotadas para implementar a proteção no servidor; a equipe deve confirmar a matriz com o documento/reunião. Comentários só podem ser editados ou removidos pelo autor ou por ADMIN. A interface oculta ações indisponíveis, mas a autorização também é verificada pela API.
+
+## Regras de demandas
+
+- Criar demanda exige projeto ativo. LIDER precisa estar vinculado a esse projeto; membro não pode criar demandas.
+- Responsável é opcional; quando informado, precisa ser usuário ativo vinculado ao projeto.
+- Prazo vazio é aceito. Prazo informado precisa ser data real, não pode estar no passado nem em feriado nacional. Cadastro e edição usam a BrasilAPI; se a consulta falhar, a API retorna 503 e não grava a mudança.
+- Transições são `ABERTA → EM_ANDAMENTO → EM_REVISAO → CONCLUIDA`; revisão pode retornar a andamento. ADMIN/LIDER podem cancelar uma demanda ainda não concluída. Demanda concluída/cancelada não volta ao fluxo.
+- Exclusão física de demanda é bloqueada (`DELETE` retorna 405). Use `PATCH /api/demandas/:id` com `{"status":"CANCELADA"}`. Comentários e histórico são preservados.
+- Atualizações da demanda e seus eventos de histórico são gravadas na mesma transação.
+
+## Testes com MySQL
+
+`npm test` executa os testes automatizados com banco simulado. Para o teste de integração, crie uma base separada e vazia terminada em `_test`, por exemplo `demandas_app_test`, aplique nela `database/schema.sql` e use credenciais com permissões apenas nessa base. O teste cria e remove seus próprios registros; não rode com dados reais.
+
+```bash
+MYSQL_INTEGRATION=1 MYSQL_DATABASE=demandas_app_test npm test
 ```
 
-Crie o projeto com `POST http://localhost:3000/api/projetos`:
+O teste de integração exige a tabela `usuarios` vazia no início para poder exercitar o cadastro inicial. Se uma execução for interrompida antes da limpeza, revise e limpe manualmente apenas o banco descartável de teste antes de executar de novo.
 
-```json
-{"nome":"Sistema de Demandas","descricao":"Projeto Integrador II"}
-```
+## Consultas de conferência
 
-Abra `http://localhost:3000`, faça login com o usuário criado e acesse a tela de demandas. Cadastre, liste, abra o detalhe, edite, altere status e comente. Recarregue a página para verificar persistência. Confira no Workbench:
+Após cadastrar e usar a aplicação, confira persistência e autoria no MySQL:
 
 ```sql
-SELECT * FROM demandas ORDER BY id;
-SELECT * FROM comentarios ORDER BY id;
-SELECT * FROM historico_demandas ORDER BY id;
 SELECT id, nome, email, perfil, ativo FROM usuarios;
-SELECT * FROM projetos;
+SELECT id, nome, ativo FROM projetos;
+SELECT id, projeto_id, criador_id, responsavel_id, status, prazo FROM demandas ORDER BY id;
+SELECT id, demanda_id, autor_id, texto, criado_em FROM comentarios ORDER BY id;
+SELECT id, demanda_id, autor_id, acao, campo, valor_anterior, valor_novo
+FROM historico_demandas ORDER BY id;
 ```
 
-Depois exclua uma demanda de teste: ela, seus comentários e seu histórico devem desaparecer. Usuários e projetos são gerenciados pela API; não há telas administrativas próprias. `GET/POST/PATCH/DELETE /api/usuarios` e `/api/projetos` cobrem listagem, criação, edição por `/:id` e desativação por `/:id`. Membros usam `/api/projetos/:id/membros`; comentários usam `/api/demandas/:id/comentarios` e `/api/comentarios/:id`.
-
-## Testes automatizados
-
-`pnpm test` roda testes com adaptador simulado, sem exigir MySQL. O teste real é ignorado por padrão. Para executá-lo, crie um banco separado `demandas_app_test`, aplique nele o mesmo schema e conceda ao usuário acesso somente às tabelas desse banco de testes. Configure `MYSQL_DATABASE=demandas_app_test` e execute:
-
-```bash
-MYSQL_INTEGRATION=1 pnpm test
-```
-
-O teste exige nome terminado em `_test`, cria registros próprios, verifica login, IDs, datas, edição, comentário, histórico e exclusão e remove os registros que criou. Não use dados reais nesse banco.
-
-Esta entrega prepara uma instalação nova em MySQL; não transfere dados de uma instância Oracle existente.
+Esta instalação é local para desenvolvimento. Não contém usuários de demonstração; o primeiro ADMIN e os demais dados são cadastrados pela API.

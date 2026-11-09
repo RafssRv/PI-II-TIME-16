@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projetos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/projetos.css">
+    <script src="../js/api.js" defer></script>
+    <script src="../js/projetos.js" defer></script>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <h4>DemandasApp</h4>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="cadastro.html" id="link-nova-demanda" class="link-nova">+ Nova Demanda</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="listagemDemandas.html">Demandas</a>
+            <a href="projetos.html" class="active">Projetos</a>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="container">
+            <header class="page-header">
+                <h1 class="page-title">Meus projetos</h1>
+                <p>Projetos dos quais você participa e suas respectivas equipes.</p>
+            </header>
+
+            <label class="busca-label" for="busca-projetos">Buscar projeto</label>
+            <input
+                type="search"
+                id="busca-projetos"
+                class="campo-busca"
+                placeholder="Digite o nome ou a descrição do projeto..."
+            >
+
+            <p id="projetos-carregando" class="mensagem-info" role="status">
+                Carregando projetos...
+            </p>
+            <p id="projetos-erro" class="mensagem-erro" role="alert" hidden></p>
+            <p id="projetos-vazio" class="mensagem-info" hidden>
+                Você não está vinculado a nenhum projeto.
+            </p>
+            <p id="projetos-sem-resultado" class="mensagem-info" hidden>
+                Nenhum projeto corresponde à busca.
+            </p>
+
+            <section id="lista-projetos" class="projetos-grid" aria-label="Projetos vinculados"></section>
+        </div>
+    </main>
+</body>
+</html>
