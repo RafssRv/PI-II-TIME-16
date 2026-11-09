@@ -29,6 +29,32 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
   try {
     await call('/health');
     await call('/projetos', 'GET', undefined, 401);
+
+    // Em banco populado, autentica com um ADMIN existente.
+    // Em banco vazio, mantém o teste do cadastro inicial por bootstrap.
+    const connection = await database.connection();
+    let totalUsuarios;
+    try {
+      const rows = await connection.query('SELECT COUNT(*) AS total FROM usuarios');
+      totalUsuarios = Number(rows[0]?.total || 0);
+    } finally {
+      await connection.close();
+    }
+
+    if (totalUsuarios > 0) {
+      const adminEmail = process.env.MYSQL_TEST_ADMIN_EMAIL;
+      const adminPassword = process.env.MYSQL_TEST_ADMIN_PASSWORD;
+      assert.ok(
+        adminEmail && adminPassword,
+        'Banco populado: informe MYSQL_TEST_ADMIN_EMAIL e MYSQL_TEST_ADMIN_PASSWORD de um ADMIN.'
+      );
+      const adminSession = await call('/login', 'POST', {
+        email: adminEmail,
+        senha: adminPassword
+      });
+      assert.equal(adminSession.usuario.perfil, 'ADMIN');
+      token = adminSession.token;
+    }
     const email = `mysql-${Date.now()}@local.test`;
     created.usuario = (await call('/usuarios', 'POST', { nome: 'Teste MySQL', email, senha: 'SenhaTeste123!', perfil: 'ADMIN' }, 201)).id;
     const sessao = await call('/login', 'POST', { email, senha: 'SenhaTeste123!' });
