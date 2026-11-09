@@ -14,7 +14,6 @@ body {
     margin: 0;
 }
 
-/* Container com Flexbox para centralizar o card no meio da tela */
 .pagina-login {
     display: flex;
     justify-content: center;
@@ -22,7 +21,6 @@ body {
     height: 100vh;
 }
 
-/* Card centralizado usando o Box Model */
 .card-login {
     background-color: white;
     width: 380px;
@@ -32,7 +30,7 @@ body {
     text-align: center;
 }
 
-/* Título e logo */
+
 .logo {
     color: #7c3aed;
     font-size: 28px;
@@ -46,7 +44,6 @@ body {
     margin-bottom: 6px;
 }
 
-/* Botão estilizado */
 .botao-entrar {
     background-color: #7c3aed;
     border: none;

@@ -13,33 +13,68 @@ para comunicação com a API e tratamento do formulário
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DemandasApp - Login</title>
+    <title> DemandasApp - Login </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/login.css">
 </head>
+
 <body class="bg-light">
 
+    <!-- Agrupa os elementos da página de login para facilitar sua organização -->
     <div class="pagina-login">
 
+        <!-- Cria o cartão que contém o formulário, com uma sombra leve do Bootstrap -->
         <div class="card-login shadow-sm">
 
-            <h1 class="logo">DemandasApp</h1>
-            <h2>Acesse sua conta</h2>
-            <p class="text-secondary">Preencha os campos abaixo para entrar no sistema.</p>
+            <!-- Exibe o nome do sistema como título principal -->
+            <h1 class="logo"> DemandasApp </h1>
 
+            <!-- Exibe o título da área de acesso -->
+            <h2> Acesse sua conta </h2>
+
+            <!-- Mostra uma instrução ao usuário com a cor de texto secundária do Bootstrap -->
+            <p class="text-secondary"> Preencha os campos abaixo para entrar no sistema. </p>
+
+            <!-- Formulário de login --> 
             <form id="form-login" novalidate>
+
+                <!-- Campo de e-mail -->
                 <div class="campo mb-3 text-start">
+
+                    <!-- Identifica o campo de e-mail e o associa ao input pelo atributo for -->
                     <label for="email" class="form-label"><strong>E-mail *</strong></label>
+
+                    <!--
+                    Campo onde o usuário digita seu e-mail
+                    - form-control aplica o estilo de campo do Bootstrap
+                    - placeholder mostra um exemplo antes de o usuário digitar
+                    - required indica que o preenchimento é obrigatório
+                    -->
                     <input type="email" id="email" class="form-control" placeholder="seu.email@empresa.com" required>
+
+                    <!-- Espaço utilizado para mostrar uma mensagem de erro relacionada ao e-mail -->
                     <div id="erro-email" class="invalid-feedback"></div>
                 </div>
 
+                <!-- Campo de senha -->
                 <div class="campo mb-3 text-start">
+
+                    <!-- Identifica o campo de senha e o associa ao input correspondente -->
                     <label for="senha" class="form-label"><strong>Senha *</strong></label>
+
+                    <!--
+                    Campo onde o usuário digita sua senha
+                    - form-control aplica o estilo de campo do Bootstrap
+                    - placeholder mostra uma indicação visual antes da digitação
+                    - required indica que o preenchimento é obrigatório
+                    -->
                     <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
+
+                    <!-- Espaço utilizado para mostrar uma mensagem de erro relacionada à senha -->
                     <div id="erro-senha" class="invalid-feedback"></div>
                 </div>
 
+                <!-- Botão de envio do formulário -->
                 <button type="submit" class="btn btn-primary w-100 mt-3 botao-entrar">Entrar</button>
             </form>
 
@@ -47,7 +82,10 @@ para comunicação com a API e tratamento do formulário
 
     </div>
 
+    <!-- Carrega o arquivo responsável pela comunicação com a API -->
     <script src="../js/api.js"></script>
+
+    <!-- Carrega o arquivo responsável pelo funcionamento do formulário de login -->
     <script src="../js/login.js"></script>
 </body>
 </html>
