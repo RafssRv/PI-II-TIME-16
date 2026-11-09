@@ -138,8 +138,8 @@ router.post("/demandas", (req, res) => {
       responsavelId === ""
         ? null
         : responsavelId,
-    dataCriacao: hoje,
-    dataAtualizacao: hoje,
+    criadaEm: new Date().toISOString(),
+    atualizadaEm: new Date().toISOString(),
     prazo:
       prazo === undefined ||
       prazo === null ||

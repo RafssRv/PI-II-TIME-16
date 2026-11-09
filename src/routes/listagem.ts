@@ -142,7 +142,7 @@ router.get("/listagem", (req, res) => {
       if (!b.prazo) return -1;
       comparacao = a.prazo.localeCompare(b.prazo);
     } else {
-      comparacao = a.dataCriacao.localeCompare(b.dataCriacao);
+      comparacao = a.criadaEm.localeCompare(b.criadaEm);
     }
 
     return comparacao * config.fator;
@@ -157,7 +157,7 @@ router.get("/listagem", (req, res) => {
     status: d.status,
     projeto: projetos.find(p => p.id === d.projetoId)?.nome ?? null,
     responsavel: usuarios.find(u => u.id === d.responsavelId)?.nome ?? null,
-    dataCriacao: d.dataCriacao,
+    dataCriacao: d.criadaEm,
     prazo: d.prazo,
   }));
 

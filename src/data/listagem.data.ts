@@ -1,5 +1,5 @@
 // Autor: Heloisa Marinho
-// Dados de teste em memória.
+// Dados de teste em memória para a rota demonstrativa de listagem.
 
 export const TIPOS = ["Tarefa", "Defeito", "Melhoria", "Documentação"] as const;
 export const PRIORIDADES = ["Crítica", "Alta", "Média", "Baixa"] as const;
@@ -9,7 +9,7 @@ export type Tipo = (typeof TIPOS)[number];
 export type Prioridade = (typeof PRIORIDADES)[number];
 export type Status = (typeof STATUS)[number];
 
-export interface Demanda {
+export interface DemandaListagem {
   id: number;
   titulo: string;
   descricao: string;
@@ -36,7 +36,7 @@ export const usuarios = [
   { id: 4, nome: "Heloisa",  email: "heloisa@exemplo.com",  senha: "123456", perfil: "Administrador" },
 ];
 
-export const demandas: Demanda[] = [
+export const demandas: DemandaListagem[] = [
   {
     id: 1, titulo: "Corrigir erro no login com Google",
     descricao: "Usuários não conseguem entrar usando a conta Google; o login retorna erro 500.",
@@ -83,7 +83,7 @@ export const demandas: Demanda[] = [
     id: 7, titulo: "Escrever manual do usuário",
     descricao: "Redigir o manual de uso do sistema para os usuários finais.",
     tipo: "Documentação", prioridade: "Baixa", status: "Concluída",
-    projetoId: 2, responsavelId: null, // sem responsável
+    projetoId: 2, responsavelId: null,
     dataCriacao: "2026-07-15", dataAtualizacao: "2026-08-10", prazo: "2026-08-10",
   },
   {
@@ -91,6 +91,6 @@ export const demandas: Demanda[] = [
     descricao: "Comparar bibliotecas de gráficos para o dashboard; pesquisa cancelada.",
     tipo: "Tarefa", prioridade: "Baixa", status: "Cancelada",
     projetoId: 2, responsavelId: 2,
-    dataCriacao: "2026-08-01", dataAtualizacao: "2026-08-05", prazo: null, // sem prazo
+    dataCriacao: "2026-08-01", dataAtualizacao: "2026-08-05", prazo: null,
   },
 ];

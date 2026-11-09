@@ -26,31 +26,13 @@ de desenvolvimento.
 ### Professora Orientadora
 Professora orientadora: **Renata Arantes**
 
----
+## Execução local
 
-## Como executar o backend
+Requisitos: Node.js 20 ou superior, pnpm e MySQL 8.4 com o schema de `database/schema.sql`.
 
-O backend utiliza **Node.js**, **Express** e **TypeScript**.
+1. Copie `.env.example` para `.env` e informe host, porta, banco, usuário e senha nas variáveis `MYSQL_*`.
+2. Execute `pnpm install`.
+3. Execute `pnpm build` e depois `pnpm start`.
+4. Acesse `http://localhost:3000`.
 
-### Pré-requisitos
-- [Node.js](https://nodejs.org/) (versão LTS)
-- npm (instalado junto com o Node.js)
-
-### Instalação das dependências
-```bash
-git clone https://github.com/RafssRv/PI-II-TIME-16.git
-cd PI-II-TIME-16
-npm install
-```
-
-### Execução do servidor
-```bash
-npm run dev
-```
-O servidor inicia em `http://localhost:3000`. Para parar, use `Ctrl+C`.
-
-### Outros comandos
-| Comando | O que faz |
-|---|---|
-| `npm run build` | Compila o TypeScript para a pasta `dist` |
-| `npm start` | Executa a versão compilada (rode `npm run build` antes) |
+Consulte `database/README.md` para criar as tabelas e preparar o primeiro usuário.
