@@ -1,6 +1,10 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createApp } = require('../src/app');
+const { createApp: buildApp } = require('../src/app');
+
+function createApp(database, options = {}) {
+  return buildApp(database, { skipAuthorization: true, ...options });
+}
 
 function fakeDatabase({ queries = [], execute } = {}) {
   const state = { committed: 0, rolledBack: 0, executed: [], queried: [] };
@@ -8,7 +12,14 @@ function fakeDatabase({ queries = [], execute } = {}) {
     state,
     async connection() {
       return {
-        async query(sql, binds) { state.queried.push({sql, binds}); const match = queries.find((item) => sql.includes(item.sql)); return match ? match.rows : []; },
+        async query(sql, binds) {
+          state.queried.push({sql, binds});
+          const match = queries.find((item) => sql.includes(item.sql));
+          if (match) return match.rows;
+          if (sql.includes('FROM projetos WHERE id = :id AND ativo = 1')) return [{ id: 1 }];
+          if (sql.includes('FROM projeto_membros pm JOIN usuarios u')) return [{ id: 2 }];
+          return [];
+        },
         async execute(sql, binds) {
           state.executed.push({ sql, binds });
           if (execute) return execute(sql, binds);
@@ -52,7 +63,7 @@ test('criação de demanda e histórico usam uma transação', async () => {
   const response = await request(createApp(database), '/api/demandas', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ projeto_id: 1, criador_id: 2, titulo: 'Nova demanda', descricao: 'Descrição válida', tipo: 'TAREFA', prioridade: 'MEDIA' })
+    body: JSON.stringify({ projeto_id: 1, titulo: 'Nova demanda', descricao: 'Descrição válida', tipo: 'TAREFA', prioridade: 'MEDIA' })
   });
   assert.equal(response.status, 201);
   assert.deepEqual(await response.json(), { id: 10 });
@@ -75,7 +86,7 @@ test('falha ao gravar histórico desfaz a criação da demanda', async () => {
   } });
   const response = await request(createApp(database), '/api/demandas', {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ projeto_id: 1, criador_id: 2, titulo: 'Nova demanda', descricao: 'Descrição válida', tipo: 'TAREFA', prioridade: 'MEDIA' })
+    body: JSON.stringify({ projeto_id: 1, titulo: 'Nova demanda', descricao: 'Descrição válida', tipo: 'TAREFA', prioridade: 'MEDIA' })
   });
   assert.equal(response.status, 400);
   assert.equal(database.state.committed, 0);
@@ -124,7 +135,7 @@ function demandDb(row = current, execute) {
   return fakeDatabase({ queries: [{ sql: 'FOR UPDATE', rows: [row] }, { sql: 'projeto_membros', rows: [{ id: 2 }] }], execute });
 }
 function patch(app, body) {
-  return request(app, '/api/demandas/5', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ autor_id: 2, ...body }) });
+  return request(app, '/api/demandas/5', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 }
 test('edição registra apenas alterações reais com valores anterior e novo', async () => {
   const db = demandDb();
@@ -172,7 +183,7 @@ test('edição valida tipos, datas, texto e feriados', async () => {
 test('comentários inválidos são rejeitados antes de escrever', async () => {
   for (const texto of ['', 'ab', 'x'.repeat(501), 123]) {
     const db = fakeDatabase();
-    const response = await request(createApp(db), '/api/demandas/5/comentarios', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ autor_id: 2, texto }) });
+    const response = await request(createApp(db), '/api/demandas/5/comentarios', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ texto }) });
     assert.equal(response.status, 400);
     assert.equal(db.state.executed.length, 0);
   }

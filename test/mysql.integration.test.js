@@ -14,9 +14,12 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}/api`;
   const created = {};
+  let token = null;
   async function call(path, method = 'GET', body, status = 200) {
+    const headers = { 'content-type': 'application/json' };
+    if (token && path !== '/login') headers.authorization = `Bearer ${token}`;
     const response = await fetch(`${base}${path}`, {
-      method, headers: { 'content-type': 'application/json' },
+      method, headers,
       body: body === undefined ? undefined : JSON.stringify(body)
     });
     const result = response.status === 204 ? null : await response.json();
@@ -25,17 +28,20 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
   }
   try {
     await call('/health');
+    await call('/projetos', 'GET', undefined, 401);
     const email = `mysql-${Date.now()}@local.test`;
     created.usuario = (await call('/usuarios', 'POST', { nome: 'Teste MySQL', email, senha: 'SenhaTeste123!', perfil: 'ADMIN' }, 201)).id;
-    assert.equal((await call('/login', 'POST', { email, senha: 'SenhaTeste123!' })).id, created.usuario);
+    const sessao = await call('/login', 'POST', { email, senha: 'SenhaTeste123!' });
+    assert.equal(sessao.usuario.id, created.usuario);
+    token = sessao.token;
     created.projeto = (await call('/projetos', 'POST', { nome: 'Projeto teste MySQL' }, 201)).id;
     await call(`/projetos/${created.projeto}/membros`, 'POST', { usuario_id: created.usuario }, 204);
     created.demanda = (await call('/demandas', 'POST', {
-      projeto_id: created.projeto, criador_id: created.usuario, responsavel_id: created.usuario,
+      projeto_id: created.projeto, responsavel_id: created.usuario,
       titulo: 'Teste de persistência', descricao: 'Demanda criada pelo teste de integração.', tipo: 'TAREFA', prioridade: 'MEDIA', prazo: '2030-12-31'
     }, 201)).id;
-    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, status: 'EM_ANDAMENTO' }, 204);
-    created.comentario = (await call(`/demandas/${created.demanda}/comentarios`, 'POST', { autor_id: created.usuario, texto: 'Comentário de teste' }, 201)).id;
+    await call(`/demandas/${created.demanda}`, 'PATCH', { status: 'EM_ANDAMENTO' }, 204);
+    created.comentario = (await call(`/demandas/${created.demanda}/comentarios`, 'POST', { texto: 'Comentário de teste' }, 201)).id;
     await call(`/comentarios/${created.comentario}`, 'PATCH', { texto: 'Comentário editado' }, 204);
     const detail = await call(`/demandas/${created.demanda}`);
     assert.equal(detail.status, 'EM_ANDAMENTO');
@@ -43,15 +49,14 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
     assert.equal(detail.comentarios[0].texto, 'Comentário editado');
     assert.equal(detail.historico.length, 2);
     assert.equal((await call(`/demandas/${created.demanda}/comentarios`)).length, 1);
-    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, titulo: 'Demanda editada no MySQL', tipo: 'DOCUMENTACAO', prioridade: 'CRITICA', prazo: null }, 204);
-    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: 2147483647, titulo: 'Edição sem autor deve reverter' }, 400);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { titulo: 'Demanda editada no MySQL', tipo: 'DOCUMENTACAO', prioridade: 'CRITICA', prazo: null }, 204);
     const persisted = await call(`/demandas/${created.demanda}`);
     assert.equal(persisted.titulo, 'Demanda editada no MySQL');
     assert.equal(persisted.tipo, 'DOCUMENTACAO');
     assert.equal(persisted.prioridade, 'CRITICA');
     assert.equal(persisted.prazo, null);
     await call(`/demandas/${created.demanda}`, 'DELETE', undefined, 405);
-    await call(`/demandas/${created.demanda}`, 'PATCH', { autor_id: created.usuario, status: 'CANCELADA' }, 204);
+    await call(`/demandas/${created.demanda}`, 'PATCH', { status: 'CANCELADA' }, 204);
     const cancelled = await call(`/demandas/${created.demanda}`);
     assert.equal(cancelled.status, 'CANCELADA');
     assert.equal(cancelled.historico.length, 7);
