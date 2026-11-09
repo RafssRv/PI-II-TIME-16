@@ -1,3 +1,8 @@
+/*
+  Autor: Rafael Roveri Pires - RA: 24007131
+  Descrição: Estilos da tela de cadastro de demandas (formulário, cards, sidebar, validações e alertas).
+*/
+
 :root {
   /* Cores da paleta - Roxo + cinza escuro */
   --cor-primaria: #7C3AED;

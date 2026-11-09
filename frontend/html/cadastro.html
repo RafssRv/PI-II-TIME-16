@@ -1,5 +1,5 @@
 <!--
-  Autor: Rafael Roveri 
+  Autor: Rafael Roveri Pires - RA: 24007131
   Tela: Cadastro de Demanda
   Descrição: Interface para cadastro de uma nova demanda, com campos para título, 
   descrição, projeto, tipo, responsável, prioridade e prazo de finalização.
@@ -25,7 +25,7 @@
         <nav class="sidebar-menu">
             <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
             <a href="dashboard.html">Dashboard</a>
-            <a href="listagemDemandas.html" class="active">Demandas</a>
+            <a href="listagemDemandas.html">Demandas</a>
             <a href="projetos.html">Projetos</a>
         </nav>
     </aside>
@@ -34,7 +34,7 @@
     <main class="main-content">
 
         <div class="breadcrumb-custom">
-            <a href="#">Demandas</a> / <span>Nova demanda</span>
+            <a href="listagemDemandas.html">Demandas</a> / <span>Nova demanda</span>
         </div>
 
         <div class="page-header">
@@ -45,6 +45,8 @@
         <div class="info-banner">
             A demanda será criada automaticamente com o status <strong>Aberta</strong>.
         </div>
+
+        <div id="cadastro-alerta-erro" class="alert alert-danger" role="alert" style="display: none; border-radius: 8px; margin-bottom: 24px;"></div>
 
         <form id="form-demanda">
             <div class="form-card">
@@ -120,7 +122,7 @@
             </div>
 
             <div class="actions-bar">
-                <button type="button" class="btn-secondary-custom">Cancelar</button>
+                <button type="button" id="btn-cancelar" class="btn-secondary-custom">Cancelar</button>
                 <button type="submit" class="btn-primary-custom">Criar demanda</button>
             </div>
         </form>
