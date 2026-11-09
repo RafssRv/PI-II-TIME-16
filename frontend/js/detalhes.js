@@ -33,6 +33,7 @@ if (usuario?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="
 
 async function carregar() {
   if (!Number.isInteger(demandaId) || demandaId < 1) {
+    ocultarConteudoDemanda();
     exibirErro('Identificador de demanda inválido.');
     return;
   }
@@ -45,8 +46,17 @@ async function carregar() {
     renderizarComentarios(demandaAtual.comentarios || []);
     renderizarHistorico(demandaAtual.historico || []);
   } catch (error) {
+    ocultarConteudoDemanda();
     exibirErro(error.message);
   }
+}
+
+function ocultarConteudoDemanda() {
+  document.querySelectorAll(
+    '.main-content > .content-card, .main-content > .details-grid'
+  ).forEach((elemento) => {
+    elemento.hidden = true;
+  });
 }
 
 function preencherDetalhes(demanda) {

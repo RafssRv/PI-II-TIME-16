@@ -168,7 +168,6 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
   }
   async function canAccessDemand(connection: DbConnection, usuario: AuthUser, demanda: any) {
     if (usuario.perfil === 'ADMIN') return true;
-    if (usuario.perfil === 'MEMBRO' && Number(demanda.responsavel_id) === Number(usuario.id)) return true;
     return canAccessProject(connection, usuario, demanda.projeto_id);
   }
 
@@ -336,7 +335,7 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
         filters.push('EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id)');
         binds.scope_usuario_id = req.authUser.id;
       } else if (req.authUser.perfil === 'MEMBRO') {
-        filters.push('(EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id) OR d.responsavel_id = :scope_usuario_id)');
+        filters.push('EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id)');
         binds.scope_usuario_id = req.authUser.id;
       }
       if (query.busca) { filters.push('(LOWER(d.titulo) LIKE :busca OR LOWER(d.descricao) LIKE :busca)'); binds.busca = `%${query.busca.toLowerCase()}%`; }
@@ -359,7 +358,7 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
       const usuario = _req.authUser;
       const scope = usuario.perfil === 'ADMIN' ? '' : usuario.perfil === 'LIDER'
         ? 'WHERE EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id)'
-        : 'WHERE (EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id) OR d.responsavel_id = :scope_usuario_id)';
+        : 'WHERE EXISTS (SELECT 1 FROM projeto_membros pm WHERE pm.projeto_id = d.projeto_id AND pm.usuario_id = :scope_usuario_id)';
       const demandas = await useConnection(database, (c) => c.query(`SELECT d.*, p.nome AS projeto_nome, u.nome AS responsavel_nome FROM demandas d JOIN projetos p ON p.id = d.projeto_id LEFT JOIN usuarios u ON u.id = d.responsavel_id ${scope} ORDER BY d.prazo IS NULL, d.prazo, d.id`, usuario.perfil === 'ADMIN' ? {} : { scope_usuario_id: usuario.id }));
       const hoje = hojeCivil(now());
       const limite = new Date(`${hoje}T00:00:00Z`); limite.setUTCDate(limite.getUTCDate() + 7);

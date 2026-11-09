@@ -1,0 +1,240 @@
+:root {
+    --cor-primaria: #7C3AED;
+    --cor-primaria-hover: #6D28D9;
+    --cor-primaria-clara: #EDE9FE;
+    --cinza-fundo: #F3F4F6;
+    --cinza-card: #FFFFFF;
+    --cinza-borda: #E5E7EB;
+    --texto-principal: #111827;
+    --texto-secundario: #6B7280;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--cinza-fundo);
+    color: var(--texto-principal);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid var(--cinza-borda);
+    min-height: 100vh;
+    padding: 24px 0;
+    position: fixed;
+    width: 240px;
+}
+
+.sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--cinza-borda);
+    margin-bottom: 16px;
+}
+
+.sidebar-logo h4 {
+    color: var(--cor-primaria);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 10px 24px;
+    color: var(--texto-secundario);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+
+.sidebar-menu a:hover {
+    background: var(--cinza-fundo);
+    color: var(--texto-principal);
+}
+
+.sidebar-menu a.active {
+    background: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+    border-right: 3px solid var(--cor-primaria);
+}
+
+.sidebar-menu .link-nova {
+    color: var(--cor-primaria);
+    font-weight: 600;
+}
+
+main {
+    margin-left: 240px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.page-header p {
+    color: var(--texto-secundario);
+}
+
+.busca-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.campo-busca {
+    width: 100%;
+    max-width: 520px;
+    padding: 11px 14px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    background: white;
+    font: inherit;
+    margin-bottom: 24px;
+}
+
+.campo-busca:focus {
+    outline: 2px solid var(--cor-primaria-clara);
+    border-color: var(--cor-primaria);
+}
+
+.projetos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.projeto-card {
+    background: var(--cinza-card);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 22px;
+    min-width: 0;
+}
+
+.projeto-card h2 {
+    color: var(--texto-principal);
+    font-size: 18px;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.projeto-descricao {
+    color: var(--texto-secundario);
+    min-height: 42px;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.projeto-equipe-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.projeto-equipe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.membro-equipe {
+    display: inline-flex;
+    flex-direction: column;
+    background: var(--cinza-fundo);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    padding: 7px 10px;
+    max-width: 100%;
+}
+
+.membro-nome {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.membro-perfil {
+    color: var(--texto-secundario);
+    font-size: 11px;
+}
+
+.mensagem-info,
+.mensagem-erro {
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+}
+
+.mensagem-info {
+    background: var(--cor-primaria-clara);
+    color: #5B21B6;
+}
+
+.mensagem-erro {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+        padding: 16px 0;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar-menu a {
+        flex: 1 1 130px;
+        padding: 10px 16px;
+    }
+
+    main {
+        margin-left: 0;
+    }
+
+    .container {
+        width: 100%;
+        padding: 24px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px 12px;
+    }
+
+    .projetos-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .projeto-card {
+        padding: 16px;
+    }
+}

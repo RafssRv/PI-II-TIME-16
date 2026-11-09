@@ -58,7 +58,7 @@ function formatarData(value) {
 // Os demais perfis mantêm o atalho original para o filtro de projeto da listagem.
 document.addEventListener('DOMContentLoaded', () => {
   if (usuarioAtual()?.perfil !== 'ADMIN') return;
-  const link = document.querySelector('.sidebar-menu a[href$="#filtro-projeto"]');
+  const link = document.querySelector('.sidebar-menu a[href$="projetos.html"]');
   if (!link) return;
   link.setAttribute('href', 'administracao.html');
   link.textContent = 'Projetos e usuários';
