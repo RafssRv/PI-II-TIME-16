@@ -180,6 +180,19 @@ function incluirSeAlterado(payload, campo, novo, atual) {
 async function atualizarStatus() {
   const status = document.querySelector('#novo-status').value;
   if (!status) return;
+
+  if (
+    demandaAtual.status === 'ABERTA' &&
+    status === 'EM_ANDAMENTO' &&
+    !demandaAtual.prazo
+  ) {
+    const continuar = confirm(
+      'Esta demanda não possui data prevista de finalização. Deseja continuar mesmo assim?'
+    );
+
+    if (!continuar) return;
+  }
+
   try {
     await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ status }) });
     await carregar();
