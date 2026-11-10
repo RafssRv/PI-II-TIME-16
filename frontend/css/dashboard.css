@@ -51,7 +51,17 @@ body {
     font-weight: 700;
     margin: 0;
 }
-.sidebar-menu a {
+/* Mantém o botão Sair com a aparência dos demais itens do menu. */
+.sidebar-menu .btn-sair {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.sidebar-menu a,
+.sidebar-menu .btn-sair {
     display: flex;
     align-items: center;
     padding: 10px 24px;
@@ -60,7 +70,9 @@ body {
     font-weight: 500;
     transition: all 0.15s;
 }
-.sidebar-menu a:hover {
+.sidebar-menu a:hover,
+.sidebar-menu .btn-sair:hover,
+.sidebar-menu .btn-sair:focus-visible {
     background: var(--cinza-fundo);
     color: var(--texto-principal);
 }
@@ -204,6 +216,25 @@ body {
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 20px;
+}
+
+/* Estiliza os títulos clicáveis das demandas sem o azul e o sublinhado padrão. */
+.link-demanda,
+.link-demanda:visited {
+    color: var(--texto-principal);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+.link-demanda:hover,
+.link-demanda:focus-visible {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+.link-demanda:focus-visible {
+    outline: 2px solid var(--cor-primaria);
+    outline-offset: 3px;
+    border-radius: 2px;
 }
 
 /* Tabela */

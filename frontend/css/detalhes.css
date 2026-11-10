@@ -57,7 +57,17 @@ body {
   font-weight: 700;
   margin: 0;
 }
-.sidebar-menu a {
+/* Mantém o botão Sair com a aparência dos demais itens do menu. */
+.sidebar-menu .btn-sair {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-menu a,
+.sidebar-menu .btn-sair {
   display: flex;
   align-items: center;
   padding: 10px 24px;
@@ -66,7 +76,9 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
-.sidebar-menu a:hover {
+.sidebar-menu a:hover,
+.sidebar-menu .btn-sair:hover,
+.sidebar-menu .btn-sair:focus-visible {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }

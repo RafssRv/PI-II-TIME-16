@@ -70,7 +70,17 @@ body {
 
 /* Organiza os links do menu lateral e define seu
    alinhamento, espaçamento e aparência inicial. */
-.sidebar-menu a {
+/* Mantém o botão Sair com a aparência dos demais itens do menu. */
+.sidebar-menu .btn-sair {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.sidebar-menu a,
+.sidebar-menu .btn-sair {
     display: flex;
     align-items: center;
     padding: 10px 24px;
@@ -82,7 +92,9 @@ body {
 
 /* Altera a aparência dos links quando o usuário passa
    o cursor sobre eles, indicando que são interativos. */
-.sidebar-menu a:hover {
+.sidebar-menu a:hover,
+.sidebar-menu .btn-sair:hover,
+.sidebar-menu .btn-sair:focus-visible {
     background: var(--cinza-fundo);
     color: var(--texto-principal);
 }

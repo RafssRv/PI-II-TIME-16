@@ -174,6 +174,7 @@ async function carregarDashboard() {
 }
 function linkDemanda(demanda) {
     const link = document.createElement('a');
+    link.className = 'link-demanda';
     link.href = `detalhes.html?id=${demanda.id}`; link.textContent = demanda.titulo; return link;
 }
 function dataDashboard(value) {

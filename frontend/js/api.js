@@ -41,11 +41,23 @@ function exigirUsuario() {
   if (!user || !sessionStorage.getItem('token')) {
     sessionStorage.removeItem('usuario');
     sessionStorage.removeItem('token');
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
     return null;
   }
   return user;
 }
+
+// Encerra a sessão desta aba e volta ao login sem manter a tela atual no histórico.
+function encerrarSessao() {
+  sessionStorage.removeItem('usuario');
+  sessionStorage.removeItem('token');
+  window.location.replace('login.html');
+}
+
+// Revalida a sessão quando o navegador restaura uma tela interna pelo botão Voltar.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted && document.querySelector('.sidebar-menu')) exigirUsuario();
+});
 
 const rotulos = {
   ABERTA: 'Aberta', EM_ANDAMENTO: 'Em andamento', EM_REVISAO: 'Em revisão',
@@ -61,6 +73,9 @@ function formatarData(value) {
 // Para o ADMIN, o item "Projetos" do menu lateral abre a tela de consulta de projetos e usuários.
 // Os demais perfis mantêm o atalho original para o filtro de projeto da listagem.
 document.addEventListener('DOMContentLoaded', () => {
+  const botaoSair = document.querySelector('#btn-sair');
+  if (botaoSair) botaoSair.addEventListener('click', encerrarSessao);
+
   if (usuarioAtual()?.perfil !== 'ADMIN') return;
   const link = document.querySelector('.sidebar-menu a[href$="projetos.html"]');
   if (!link) return;
