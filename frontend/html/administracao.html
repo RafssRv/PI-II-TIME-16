@@ -1,6 +1,6 @@
 <!-- Autor: Priscila Amorim -->
-<!-- Descrição: Tela de consulta de projetos (com equipes) e usuários, exclusiva do Administrador.
-     Somente visualização: o cadastro dessas entidades é feito pela API, conforme o escopo do projeto. -->
+<!-- Descrição: Tela exclusiva do Administrador para cadastrar e desativar projetos,
+     consultar suas equipes e demandas e visualizar os usuários do sistema. -->
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,10 +29,14 @@
 
     <main>
         <div class="container">
-            <h1 class="page-title">Projetos e Usuários</h1>
+            <div class="page-header">
+                <h1 class="page-title">Projetos e Usuários</h1>
+                <button type="button" class="btn-primary-custom" id="btn-novo-projeto" hidden>+ Novo projeto</button>
+            </div>
 
             <!-- Mensagens de carregamento e erro (preenchidas pelo JavaScript) -->
             <p id="admin-erro" class="mensagem-erro" role="alert" hidden></p>
+            <p id="admin-sucesso" class="mensagem-sucesso" role="status" hidden></p>
             <p id="admin-carregando" class="mensagem-info" role="status">Carregando projetos e usuários...</p>
 
             <!-- Resumo geral -->
@@ -47,12 +51,19 @@
             <section class="content-card" id="card-projetos" hidden>
                 <div class="card-topo">
                     <h2>Projetos</h2>
-                    <input type="search" id="busca-projetos" class="form-control-custom" placeholder="Buscar projeto ou membro..." aria-label="Buscar projeto ou membro">
+                    <div class="filtros-projetos">
+                        <select id="filtro-situacao-projeto" class="form-select-custom" aria-label="Filtrar projetos por situação">
+                            <option value="todos">Todos os projetos</option>
+                            <option value="ativos">Ativos</option>
+                            <option value="inativos">Inativos</option>
+                        </select>
+                        <input type="search" id="busca-projetos" class="form-control-custom" placeholder="Buscar projeto ou membro..." aria-label="Buscar projeto ou membro">
+                    </div>
                 </div>
                 <div class="tabela-rolagem">
                     <table class="table-custom" id="tabela-projetos">
                         <thead>
-                            <tr><th>Projeto</th><th>Descrição</th><th>Equipe</th><th>Demandas</th></tr>
+                            <tr><th>Projeto</th><th>Descrição</th><th>Equipe</th><th>Demandas</th><th>Situação</th><th>Ações</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>
@@ -86,5 +97,28 @@
             </section>
         </div>
     </main>
+
+    <!-- O cadastro cria um projeto ativo; a desativação preserva os registros associados. -->
+    <dialog class="project-dialog" id="dialog-projeto" aria-labelledby="titulo-dialog-projeto">
+        <form id="form-projeto" method="dialog">
+            <div class="dialog-header">
+                <h2 id="titulo-dialog-projeto">Novo projeto</h2>
+                <button type="button" class="dialog-close" id="fechar-projeto" aria-label="Fechar">×</button>
+            </div>
+            <div class="form-group">
+                <label for="projeto-nome">Nome do projeto</label>
+                <input type="text" class="form-control-custom" id="projeto-nome" minlength="2" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="projeto-descricao">Descrição (opcional)</label>
+                <textarea class="form-control-custom" id="projeto-descricao" rows="4" maxlength="1000"></textarea>
+            </div>
+            <p class="mensagem-erro" id="projeto-erro" role="alert" hidden></p>
+            <div class="dialog-actions">
+                <button type="button" class="btn-secondary-custom" id="cancelar-projeto">Cancelar</button>
+                <button type="submit" class="btn-primary-custom" id="salvar-projeto">Criar projeto</button>
+            </div>
+        </form>
+    </dialog>
 </body>
 </html>

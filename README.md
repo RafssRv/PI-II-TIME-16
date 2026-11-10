@@ -24,8 +24,10 @@ A aplicação integra frontend, API e banco de dados relacional, com autenticaç
 
 - Autenticação de usuários.
 - Consulta de projetos e integrantes das equipes.
+- Cadastro e desativação de projetos pela interface do Administrador, com consulta de projetos ativos e inativos.
 - Cadastro, listagem, detalhamento e edição de demandas.
 - Atribuição e alteração de responsável, prioridade e prazo.
+- Troca do projeto de uma demanda pela janela de edição, respeitando as permissões de acesso.
 - Atualização de status conforme o ciclo de vida da demanda.
 - Cancelamento sem exclusão física do registro.
 - Registro de comentários e histórico de alterações.
@@ -215,7 +217,7 @@ Usuários, projetos e vínculos também podem ser cadastrados pela API. Consulte
 
 O Membro da Equipe pode alterar o status de `Aberta` para `Em andamento` e de `Em andamento` para `Em revisão`. Não pode concluir ou cancelar demandas, alterar prioridades ou atribuir responsáveis.
 
-As permissões são verificadas no backend.
+As permissões são verificadas no backend. Na tela **Projetos e usuários**, o Administrador pode criar projetos informando nome e descrição e desativá-los sem apagar as demandas, os comentários ou o histórico. O filtro de situação permite consultar projetos inativos. Projetos novos começam sem integrantes; os vínculos de equipe são cadastrados pela API.
 
 ## Regras das demandas
 
@@ -244,6 +246,7 @@ O Administrador ou o Líder autorizado pode cancelar uma demanda enquanto ela n�
 - Toda demanda pertence a um projeto.
 - O responsável pode ficar em branco.
 - Quando atribuído, o responsável precisa estar ativo e vinculado ao projeto.
+- Ao trocar de projeto, o responsável é mantido se participar da equipe de destino. Caso contrário, a demanda fica sem responsável até uma nova atribuição.
 - O prazo é opcional. Quando informado pela API, deve ser uma data válida, não pode estar no passado nem coincidir com um feriado nacional.
 - A validação de feriados utiliza a BrasilAPI. Se a consulta falhar, a operação que informa o prazo é rejeitada com uma mensagem de erro.
 - Datas de criação e atualização são registradas automaticamente.

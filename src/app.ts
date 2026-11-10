@@ -277,8 +277,12 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
   app.get('/api/projetos', async (_req, res, next) => {
     try {
       const usuario = _req.authUser;
+      const incluirInativos = _req.query.incluir_inativos;
+      if (incluirInativos !== undefined && (typeof incluirInativos !== 'string' || !['0', '1'].includes(incluirInativos))) throw badRequest('Filtro de projetos inválido.');
+      if (incluirInativos === '1' && usuario.perfil !== 'ADMIN') throw forbidden('Somente um administrador pode consultar todos os projetos inativos.');
+      // Cadastros e transferências continuam recebendo somente projetos ativos por padrão.
       const projects = await useConnection(database, (c) => usuario.perfil === 'ADMIN'
-        ? c.query('SELECT id, nome, descricao, ativo, criado_em, atualizado_em FROM projetos WHERE ativo = 1 ORDER BY nome')
+        ? c.query(`SELECT id, nome, descricao, ativo, criado_em, atualizado_em FROM projetos ${incluirInativos === '1' ? '' : 'WHERE ativo = 1'} ORDER BY nome`)
         : c.query(`SELECT p.id, p.nome, p.descricao, p.ativo, p.criado_em, p.atualizado_em
             FROM projetos p JOIN projeto_membros pm ON pm.projeto_id = p.id
             WHERE pm.usuario_id = :usuario_id AND p.ativo = 1 ORDER BY p.nome`, { usuario_id: usuario.id }));
@@ -447,7 +451,7 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
   });
   app.patch('/api/demandas/:id', async (req, res, next) => {
     try {
-      const allowed = ['titulo', 'descricao', 'tipo', 'prioridade', 'status', 'prazo', 'responsavel_id'];
+      const allowed = ['titulo', 'descricao', 'tipo', 'prioridade', 'status', 'prazo', 'responsavel_id', 'projeto_id'];
       const changes = Object.keys(req.body).filter((key) => allowed.includes(key));
       if (!changes.length) throw badRequest('Nenhum campo permitido informado.');
       const membro = req.authUser.perfil === 'MEMBRO';
@@ -460,7 +464,8 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
         else if (ENUMS[field]) {
           if (!ENUMS[field].includes(value)) throw badRequest(`Valor inválido: ${field}.`);
           values[field] = value;
-        } else if (field === 'responsavel_id') values[field] = value === null || value === '' ? null : parseId(value);
+        } else if (field === 'projeto_id') values[field] = parseId(value);
+        else if (field === 'responsavel_id') values[field] = value === null || value === '' ? null : parseId(value);
         else if (field === 'prazo') {
           values[field] = dataCivil(value);
           if (values[field] && values[field] < hojeCivil(now())) throw badRequest('O prazo não pode estar no passado.');
@@ -476,9 +481,23 @@ function createApp(database: Database, { isHoliday = isNationalHoliday, now = ()
           if (membro && Number(rows[0].responsavel_id) !== Number(req.authUser.id)) throw forbidden('Membros só podem alterar o status das demandas atribuídas a eles.');
           if (membro && (!values.status || !TRANSICOES_MEMBRO[rows[0].status]?.includes(values.status))) throw forbidden('Membros só podem avançar demandas atribuídas de Aberta para Em andamento e de Em andamento para Em revisão.');
           if (values.status && values.status !== rows[0].status && !TRANSICOES[rows[0].status]?.includes(values.status)) throw badRequest('Transição de status inválida. Siga o ciclo Aberta → Em andamento → Em revisão → Concluída.');
-          if (values.responsavel_id) {
-            const membros = await c.query('SELECT u.id FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1', { projeto_id: rows[0].projeto_id, usuario_id: values.responsavel_id });
-            if (!membros.length) throw badRequest('O responsável deve ser um usuário ativo vinculado ao projeto.');
+          const projetoId = values.projeto_id ?? Number(rows[0].projeto_id);
+          const mudouProjeto = projetoId !== Number(rows[0].projeto_id);
+          if (mudouProjeto) {
+            const projetos = await c.query('SELECT id FROM projetos WHERE id = :id AND ativo = 1', { id: projetoId });
+            if (!projetos.length) throw badRequest('O projeto de destino precisa existir e estar ativo.');
+            if (!await canAccessProject(c, req.authUser, projetoId)) throw forbidden('Você precisa ter acesso aos projetos de origem e de destino para mover a demanda.');
+          }
+          // Valida o responsável no destino e registra sua remoção quando ele não pertence à nova equipe.
+          const informouResponsavel = changes.includes('responsavel_id');
+          const responsavelId = informouResponsavel ? values.responsavel_id : rows[0].responsavel_id;
+          if (responsavelId && (mudouProjeto || informouResponsavel)) {
+            const membros = await c.query('SELECT u.id FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1', { projeto_id: projetoId, usuario_id: responsavelId });
+            if (!membros.length) {
+              if (informouResponsavel) throw badRequest('O responsável deve ser um usuário ativo vinculado ao projeto.');
+              values.responsavel_id = null;
+              changes.push('responsavel_id');
+            }
           }
           const actualChanges = changes.filter((field) => String(rows[0][field] ?? '') !== String(values[field] ?? ''));
           if (actualChanges.length) {

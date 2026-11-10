@@ -7,7 +7,7 @@ function createApp(database, options = {}) {
   return buildApp(database, { skipAuthorization: true, ...options });
 }
 
-function fakeDatabase({ queries = [], execute } = {}) {
+function fakeDatabase({ queries = [], execute, query: queryResult } = {}) {
   const state = { committed: 0, rolledBack: 0, executed: [], queried: [] };
   return {
     state,
@@ -15,6 +15,7 @@ function fakeDatabase({ queries = [], execute } = {}) {
       return {
         async query(sql, binds) {
           state.queried.push({sql, binds});
+          if (queryResult) return queryResult(sql, binds);
           const match = queries.find((item) => sql.includes(item.sql));
           if (match) return match.rows;
           if (sql.includes('FROM projetos WHERE id = :id AND ativo = 1')) return [{ id: 1 }];
@@ -181,6 +182,180 @@ test('edição valida tipos, datas, texto e feriados', async () => {
   assert.equal((await patch(createApp(db, { isHoliday: async () => false }), { prazo: '2030-12-30' })).status, 204);
   assert.equal(db.state.executed[0].binds.prazo, '2030-12-30');
 });
+// A troca de projeto usa autenticação real para conferir também os limites de cada perfil.
+const senhaMovimentacao = 'SenhaTeste123!';
+const hashMovimentacao = require('bcryptjs').hashSync(senhaMovimentacao, 4);
+function moveDb({ perfil = 'ADMIN', origemPermitida = true, destinoPermitido = true, destinoAtivo = true, membrosDestino = [2], row = { ...current, responsavel_id: 2 } } = {}) {
+  const usuario = { id: 9, nome: 'Pessoa de teste', email: 'movimentacao@local.test', perfil, senha_hash: hashMovimentacao };
+  return fakeDatabase({ query(sql, binds = {}) {
+    if (sql.includes('FROM usuarios WHERE LOWER(email)') || sql.includes('FROM usuarios WHERE id = :id')) return [usuario];
+    if (sql.includes('FOR UPDATE')) return [row];
+    if (sql.includes('FROM projetos WHERE id = :id AND ativo = 1')) return destinoAtivo && binds.id === 3 ? [{ id: 3 }] : [];
+    if (sql.includes('SELECT 1 FROM projeto_membros WHERE')) {
+      const permitido = Number(binds.projeto_id) === Number(row.projeto_id) ? origemPermitida : destinoPermitido;
+      return permitido ? [{ ok: 1 }] : [];
+    }
+    if (sql.includes('FROM projeto_membros pm JOIN usuarios u')) {
+      return Number(binds.projeto_id) === 3 && membrosDestino.includes(Number(binds.usuario_id)) ? [{ id: Number(binds.usuario_id) }] : [];
+    }
+    throw new Error(`Consulta inesperada no teste de movimentação: ${sql}`);
+  } });
+}
+async function authenticatedRequest(database, path, method = 'GET', body) {
+  const app = buildApp(database, { sessionSecret: 'segredo-exclusivo-dos-testes-de-movimentacao' });
+  const login = await request(app, '/api/login', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email: 'movimentacao@local.test', senha: senhaMovimentacao })
+  });
+  assert.equal(login.status, 200);
+  const { token } = await login.json();
+  return request(app, path, {
+    method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+}
+function moveDemand(database, body) {
+  return authenticatedRequest(database, '/api/demandas/5', 'PATCH', body);
+}
+
+test('ADMIN troca projeto, mantém responsável da equipe de destino e registra histórico', async () => {
+  const db = moveDb({ origemPermitida: false, destinoPermitido: false });
+  assert.equal((await moveDemand(db, { projeto_id: 3 })).status, 204);
+  assert.equal(db.state.executed[0].binds.projeto_id, 3);
+  assert.equal(Object.hasOwn(db.state.executed[0].binds, 'responsavel_id'), false);
+  assert.equal(db.state.executed[1].binds.campo, 'projeto_id');
+  assert.equal(db.state.executed[1].binds.anterior, '2');
+  assert.equal(db.state.executed[1].binds.novo, '3');
+  assert.equal(db.state.executed[1].binds.autor_id, 9);
+  assert.equal(db.state.executed.length, 2);
+  assert.equal(db.state.committed, 1);
+});
+
+test('troca de projeto remove e registra responsável que não participa da nova equipe', async () => {
+  const db = moveDb({ membrosDestino: [] });
+  assert.equal((await moveDemand(db, { projeto_id: 3 })).status, 204);
+  assert.equal(db.state.executed[0].binds.responsavel_id, null);
+  const historico = db.state.executed.slice(1).map(({ binds }) => [binds.campo, binds.anterior, binds.novo]);
+  assert.deepEqual(historico, [['projeto_id', '2', '3'], ['responsavel_id', '2', null]]);
+  assert.ok(db.state.executed.every(({ sql }) => !sql.includes('DELETE')));
+});
+
+test('troca de projeto aceita novo responsável apenas quando ele pertence ao destino', async () => {
+  const db = moveDb({ membrosDestino: [4] });
+  assert.equal((await moveDemand(db, { projeto_id: 3, responsavel_id: 4 })).status, 204);
+  assert.equal(db.state.executed[0].binds.responsavel_id, 4);
+  const invalido = moveDb({ membrosDestino: [4] });
+  assert.equal((await moveDemand(invalido, { projeto_id: 3, responsavel_id: 2 })).status, 400);
+  assert.equal(invalido.state.executed.length, 0);
+  assert.equal(invalido.state.rolledBack, 1);
+});
+
+test('LIDER precisa estar vinculado aos projetos de origem e de destino para mover a demanda', async () => {
+  for (const [origemPermitida, destinoPermitido, status] of [[true, true, 204], [true, false, 403], [false, true, 404]]) {
+    const db = moveDb({ perfil: 'LIDER', origemPermitida, destinoPermitido });
+    assert.equal((await moveDemand(db, { projeto_id: 3 })).status, status);
+    if (status !== 204) {
+      assert.equal(db.state.executed.length, 0);
+      assert.equal(db.state.rolledBack, 1);
+    }
+  }
+});
+
+test('MEMBRO não pode alterar o projeto mesmo quando participa dos dois projetos', async () => {
+  const db = moveDb({ perfil: 'MEMBRO' });
+  assert.equal((await moveDemand(db, { projeto_id: 3 })).status, 403);
+  assert.equal(db.state.executed.length, 0);
+});
+
+test('troca de projeto rejeita identificadores inválidos e projeto de destino indisponível', async () => {
+  for (const projeto_id of [null, 0, -1, 'abc', 3.5]) {
+    const db = moveDb();
+    assert.equal((await moveDemand(db, { projeto_id })).status, 400);
+    assert.equal(db.state.executed.length, 0);
+  }
+  const db = moveDb({ destinoAtivo: false });
+  assert.equal((await moveDemand(db, { projeto_id: 3 })).status, 400);
+  assert.equal(db.state.executed.length, 0);
+});
+
+test('salvar o mesmo projeto não altera o responsável nem gera histórico', async () => {
+  const db = moveDb({ membrosDestino: [] });
+  assert.equal((await moveDemand(db, { projeto_id: current.projeto_id })).status, 204);
+  assert.equal(db.state.executed.length, 0);
+});
+
+// Confere a administração de projetos sem permitir exclusão física dos registros associados.
+function projectDb({ perfil = 'ADMIN', execute } = {}) {
+  const usuario = { id: 9, nome: 'Pessoa de teste', email: 'movimentacao@local.test', perfil, senha_hash: hashMovimentacao };
+  const projetos = [{ id: 1, nome: 'Projeto ativo', ativo: 1 }, { id: 2, nome: 'Projeto inativo', ativo: 0 }];
+  return fakeDatabase({ execute, query(sql) {
+    if (sql.includes('FROM usuarios WHERE LOWER(email)') || sql.includes('FROM usuarios WHERE id = :id')) return [usuario];
+    if (sql.includes('FROM projetos')) return /ativo\s*=\s*1/.test(sql) ? projetos.filter((projeto) => projeto.ativo) : projetos;
+    throw new Error(`Consulta inesperada no teste de projetos: ${sql}`);
+  } });
+}
+
+test('listagem padrão mantém apenas projetos ativos e ADMIN pode incluir inativos', async () => {
+  const db = projectDb();
+  const ativos = await authenticatedRequest(db, '/api/projetos');
+  assert.equal(ativos.status, 200);
+  assert.deepEqual((await ativos.json()).map((projeto) => projeto.id), [1]);
+  const todos = await authenticatedRequest(db, '/api/projetos?incluir_inativos=1');
+  assert.equal(todos.status, 200);
+  assert.deepEqual((await todos.json()).map((projeto) => projeto.id), [1, 2]);
+});
+
+test('LIDER e MEMBRO não podem criar, desativar ou consultar todos os projetos inativos', async () => {
+  for (const perfil of ['LIDER', 'MEMBRO']) {
+    const db = projectDb({ perfil });
+    assert.equal((await authenticatedRequest(db, '/api/projetos', 'POST', { nome: 'Novo projeto' })).status, 403);
+    assert.equal((await authenticatedRequest(db, '/api/projetos/1', 'DELETE')).status, 403);
+    assert.equal((await authenticatedRequest(db, '/api/projetos?incluir_inativos=1')).status, 403);
+    assert.equal(db.state.executed.length, 0);
+  }
+});
+
+test('ADMIN cadastra projeto com nome normalizado e descrição opcional', async () => {
+  const db = projectDb();
+  const response = await authenticatedRequest(db, '/api/projetos', 'POST', { nome: '  Novo projeto  ', descricao: null });
+  assert.equal(response.status, 201);
+  assert.deepEqual(await response.json(), { id: 10 });
+  assert.equal(db.state.executed[0].binds.nome, 'Novo projeto');
+  assert.equal(db.state.executed[0].binds.descricao, null);
+  assert.equal(db.state.committed, 1);
+});
+
+test('cadastro de projeto rejeita nome inválido e descrição muito longa', async () => {
+  for (const body of [{ nome: '' }, { nome: 'a' }, { nome: 'x'.repeat(101) }, { nome: 'Projeto', descricao: 'x'.repeat(1001) }]) {
+    const db = projectDb();
+    assert.equal((await authenticatedRequest(db, '/api/projetos', 'POST', body)).status, 400);
+    assert.equal(db.state.executed.length, 0);
+  }
+});
+
+test('desativação do projeto somente atualiza ativo sem apagar demandas ou histórico', async () => {
+  const db = projectDb();
+  assert.equal((await authenticatedRequest(db, '/api/projetos/1', 'DELETE')).status, 204);
+  assert.equal(db.state.executed.length, 1);
+  assert.match(db.state.executed[0].sql, /^UPDATE projetos SET ativo = 0/);
+  assert.equal(db.state.executed[0].binds.id, 1);
+  assert.ok(db.state.executed.every(({ sql }) => !sql.includes('DELETE')));
+  assert.equal(db.state.committed, 1);
+});
+
+test('desativação de projeto inexistente retorna 404', async () => {
+  const db = projectDb({ execute: () => ({ affectedRows: 0 }) });
+  assert.equal((await authenticatedRequest(db, '/api/projetos/999', 'DELETE')).status, 404);
+  assert.equal(db.state.committed, 0);
+});
+
+test('filtro de projetos rejeita valores inválidos e parâmetros repetidos', async () => {
+  for (const query of ['incluir_inativos=sim', 'incluir_inativos=1&incluir_inativos=0']) {
+    const db = projectDb();
+    assert.equal((await authenticatedRequest(db, '/api/projetos?' + query)).status, 400);
+  }
+});
+
 test('comentários inválidos são rejeitados antes de escrever', async () => {
   for (const texto of ['', 'ab', 'x'.repeat(501), 123]) {
     const db = fakeDatabase();

@@ -8,10 +8,14 @@ const formularioEdicao = document.querySelector('#form-edicao');
 const mensagemErro = document.querySelector('#mensagem-erro');
 const rotulosHistorico = {
   titulo: 'o título', descricao: 'a descrição', tipo: 'o tipo', prioridade: 'a prioridade',
-  status: 'o status', prazo: 'o prazo', responsavel_id: 'o responsável'
+  status: 'o status', prazo: 'o prazo', responsavel_id: 'o responsável', projeto_id: 'o projeto'
 };
 let demandaAtual = null;
 let membrosProjeto = [];
+let projetosDisponiveis = [];
+let projetoEdicaoAtual = '';
+let consultaMembrosEdicao = 0;
+let carregandoMembrosEdicao = false;
 
 const opcoesStatus = {
   ABERTA: ['EM_ANDAMENTO'],
@@ -29,6 +33,7 @@ document.querySelector('#btn-cancelar-demanda').addEventListener('click', cancel
 document.querySelector('#fechar-edicao').addEventListener('click', fecharEdicao);
 document.querySelector('#cancelar-edicao').addEventListener('click', fecharEdicao);
 formularioEdicao.addEventListener('submit', salvarEdicao);
+document.querySelector('#edicao-projeto').addEventListener('change', trocarProjetoEdicao);
 if (usuario?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="cadastro.html"]').hidden = true;
 
 async function carregar() {
@@ -43,6 +48,7 @@ async function carregar() {
     demandaAtual = await api(`/demandas/${demandaId}`);
     preencherDetalhes(demandaAtual);
     await carregarMembros();
+    document.querySelector('#btn-editar').disabled = false;
     renderizarComentarios(demandaAtual.comentarios || []);
     renderizarHistorico(demandaAtual.historico || []);
   } catch (error) {
@@ -82,6 +88,7 @@ function preencherDetalhes(demanda) {
 
   const podeGerenciar = ['ADMIN', 'LIDER'].includes(usuario.perfil);
   document.querySelector('#btn-editar').hidden = !podeGerenciar;
+  document.querySelector('#btn-editar').disabled = true;
   document.querySelector('#btn-cancelar-demanda').hidden = !podeGerenciar || ['CONCLUIDA', 'CANCELADA'].includes(demanda.status);
   preencherTransicoes(demanda);
 }
@@ -104,9 +111,12 @@ function preencherTransicoes(demanda) {
 
 async function carregarMembros() {
   membrosProjeto = [];
+  projetosDisponiveis = [];
   if (!demandaAtual || !['ADMIN', 'LIDER'].includes(usuario.perfil)) return;
   try {
-    membrosProjeto = await api(`/projetos/${demandaAtual.projeto_id}/membros`);
+    [membrosProjeto, projetosDisponiveis] = await Promise.all([
+      api(`/projetos/${demandaAtual.projeto_id}/membros`), api('/projetos')
+    ]);
   } catch (error) {
     exibirErro(error.message);
   }
@@ -114,13 +124,29 @@ async function carregarMembros() {
 
 function abrirEdicao() {
   if (!demandaAtual || !['ADMIN', 'LIDER'].includes(usuario.perfil)) return;
+  consultaMembrosEdicao += 1;
+  carregandoMembrosEdicao = false;
+  formularioEdicao.querySelector('[type="submit"]').disabled = false;
   document.querySelector('#edicao-titulo').value = demandaAtual.titulo;
   document.querySelector('#edicao-descricao').value = demandaAtual.descricao;
   document.querySelector('#edicao-tipo').value = demandaAtual.tipo;
   document.querySelector('#edicao-prioridade').value = demandaAtual.prioridade;
   document.querySelector('#edicao-prazo').value = demandaAtual.prazo || '';
 
+  const projeto = document.querySelector('#edicao-projeto');
+  projeto.replaceChildren(...projetosDisponiveis.map((item) => new Option(item.nome, item.id)));
+  if (!projetosDisponiveis.some((item) => Number(item.id) === Number(demandaAtual.projeto_id))) {
+    const atual = new Option(demandaAtual.projeto_nome, demandaAtual.projeto_id);
+    atual.disabled = true;
+    projeto.add(atual);
+  }
+  projeto.value = String(demandaAtual.projeto_id);
+  projeto.disabled = false;
+  projetoEdicaoAtual = projeto.value;
+  document.querySelector('#edicao-projeto-aviso').hidden = true;
+
   const responsavel = document.querySelector('#edicao-responsavel');
+  responsavel.disabled = false;
   responsavel.replaceChildren(new Option('Sem responsável definido', ''));
   membrosProjeto.forEach((membro) => responsavel.add(new Option(membro.nome, membro.id)));
   if (demandaAtual.responsavel_id && !membrosProjeto.some((membro) => Number(membro.id) === Number(demandaAtual.responsavel_id))) {
@@ -131,13 +157,50 @@ function abrirEdicao() {
   dialogoEdicao.showModal();
 }
 
+// Recarrega a equipe ao trocar de projeto e evita manter um responsável sem vínculo no destino.
+async function trocarProjetoEdicao() {
+  const consulta = ++consultaMembrosEdicao;
+  const projeto = document.querySelector('#edicao-projeto');
+  const responsavel = document.querySelector('#edicao-responsavel');
+  const submit = formularioEdicao.querySelector('[type="submit"]');
+  const aviso = document.querySelector('#edicao-projeto-aviso');
+  const anterior = projetoEdicaoAtual;
+  const responsavelAnterior = responsavel.value;
+  const projetoId = projeto.value;
+  carregandoMembrosEdicao = true;
+  projeto.disabled = responsavel.disabled = submit.disabled = true;
+  aviso.textContent = 'Carregando responsáveis do projeto...';
+  aviso.hidden = false;
+  mostrarErroEdicao('');
+  try {
+    const membros = await api(`/projetos/${projetoId}/membros`);
+    if (consulta !== consultaMembrosEdicao || !dialogoEdicao.open) return;
+    responsavel.replaceChildren(new Option('Sem responsável definido', ''), ...membros.map((membro) => new Option(membro.nome, membro.id)));
+    const manterResponsavel = membros.some((membro) => String(membro.id) === responsavelAnterior);
+    responsavel.value = manterResponsavel ? responsavelAnterior : '';
+    projetoEdicaoAtual = projetoId;
+    aviso.textContent = 'O responsável anterior não pertence ao projeto selecionado. Escolha outro ou mantenha a demanda sem responsável.';
+    aviso.hidden = !responsavelAnterior || manterResponsavel;
+  } catch (error) {
+    if (consulta !== consultaMembrosEdicao || !dialogoEdicao.open) return;
+    projeto.value = anterior;
+    aviso.hidden = true;
+    mostrarErroEdicao(error.message);
+  } finally {
+    if (consulta === consultaMembrosEdicao && dialogoEdicao.open) {
+      carregandoMembrosEdicao = false;
+      projeto.disabled = responsavel.disabled = submit.disabled = false;
+    }
+  }
+}
+
 function fecharEdicao() {
   dialogoEdicao.close();
 }
 
 async function salvarEdicao(event) {
   event.preventDefault();
-  if (!demandaAtual) return;
+  if (!demandaAtual || carregandoMembrosEdicao) return;
 
   const titulo = document.querySelector('#edicao-titulo').value.trim();
   const descricao = document.querySelector('#edicao-descricao').value.trim();
@@ -149,6 +212,9 @@ async function salvarEdicao(event) {
   incluirSeAlterado(payload, 'descricao', descricao, demandaAtual.descricao);
   incluirSeAlterado(payload, 'tipo', document.querySelector('#edicao-tipo').value, demandaAtual.tipo);
   incluirSeAlterado(payload, 'prioridade', document.querySelector('#edicao-prioridade').value, demandaAtual.prioridade);
+  const projetoId = Number(document.querySelector('#edicao-projeto').value);
+  if (!Number.isInteger(projetoId) || projetoId < 1) return mostrarErroEdicao('Selecione um projeto válido.');
+  incluirSeAlterado(payload, 'projeto_id', projetoId, Number(demandaAtual.projeto_id));
 
   const responsavelAtual = demandaAtual.responsavel_id == null ? '' : String(demandaAtual.responsavel_id);
   const responsavelNovo = document.querySelector('#edicao-responsavel').value;
@@ -294,6 +360,12 @@ function criarHistorico(item) {
 
 function rotularValor(campo, valor) {
   if (valor == null || valor === '') return 'vazio';
+  if (campo === 'projeto_id') {
+    const projeto = projetosDisponiveis.find((item) => Number(item.id) === Number(valor));
+    if (projeto) return projeto.nome;
+    if (Number(valor) === Number(demandaAtual?.projeto_id)) return demandaAtual.projeto_nome;
+    return `projeto #${valor}`;
+  }
   if (campo === 'responsavel_id') {
     const membro = membrosProjeto.find((item) => Number(item.id) === Number(valor));
     return membro ? membro.nome : `usuário #${valor}`;

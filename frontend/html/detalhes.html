@@ -232,6 +232,10 @@
                     </select>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="edicao-projeto">Projeto</label>
+                <select class="form-select-custom" id="edicao-projeto" required></select>
+            </div>
             <div class="edit-form-grid">
                 <div class="form-group">
                     <label for="edicao-responsavel">Responsável</label>
@@ -242,6 +246,7 @@
                     <input class="form-control-custom" id="edicao-prazo" type="date">
                 </div>
             </div>
+            <p class="form-hint" id="edicao-projeto-aviso" role="status" hidden></p>
             <p class="form-hint">O responsável deve pertencer ao projeto. Feriados nacionais não podem ser usados como prazo.</p>
             <p class="form-error" id="edicao-erro" role="alert" hidden></p>
             <div class="dialog-actions">

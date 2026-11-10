@@ -1,6 +1,6 @@
 // Autor: Priscila Amorim
-// Descrição: Tela de consulta de projetos (com equipe e contagem de demandas) e de usuários. 
-// Somente leitura: usa os endpoints GET já existentes da API.
+// Descrição: Cadastro e desativação de projetos, consulta de equipes, demandas e usuários.
+// Projetos desativados permanecem disponíveis para consulta, sem apagar suas demandas.
 // Todo texto vindo da API é inserido com textContent, nunca como HTML.
 
 const usuarioAdmin = exigirUsuario();
@@ -15,21 +15,33 @@ const rotulosPerfil = { ADMIN: 'Administrador', LIDER: 'Líder de Projeto', MEMB
 // Dados já carregados, mantidos em memória para os filtros não precisarem chamar a API de novo.
 let linhasProjetos = [];
 let linhasUsuarios = [];
+let consultaAdministracao = 0;
+let criandoProjeto = false;
+const projetosEmDesativacao = new Set();
+const dialogoProjeto = document.querySelector('#dialog-projeto');
+const formularioProjeto = document.querySelector('#form-projeto');
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (usuarioAdmin?.perfil === 'ADMIN') carregarAdministracao();
+  if (usuarioAdmin?.perfil === 'ADMIN') {
+    document.querySelector('#btn-novo-projeto').hidden = false;
+    carregarAdministracao();
+  }
 });
 
 // Busca projetos, usuários, demandas e a equipe de cada projeto, e monta as duas tabelas.
 async function carregarAdministracao() {
+  const consulta = ++consultaAdministracao;
   const erro = document.querySelector('#admin-erro');
   const carregando = document.querySelector('#admin-carregando');
+  erro.hidden = true;
+  carregando.hidden = false;
   try {
     const [projetos, usuarios, demandas] = await Promise.all([
-      api('/projetos'), api('/usuarios'), api('/demandas')
+      api('/projetos?incluir_inativos=1'), api('/usuarios'), api('/demandas')
     ]);
     // A equipe é uma consulta por projeto; em paralelo, pois são poucos projetos.
     const equipes = await Promise.all(projetos.map((projeto) => api(`/projetos/${projeto.id}/membros`)));
+    if (consulta !== consultaAdministracao) return;
 
     // Cada projeto, com sua equipe e a contagem de demandas (total e ainda em aberto).
     linhasProjetos = projetos.map((projeto, indice) => {
@@ -57,6 +69,7 @@ async function carregarAdministracao() {
     carregando.hidden = true;
     for (const id of ['resumo', 'card-projetos', 'card-usuarios']) document.getElementById(id).hidden = false;
   } catch (error) {
+    if (consulta !== consultaAdministracao) return;
     carregando.hidden = true;
     erro.textContent = `Não foi possível carregar os dados: ${error.message}`;
     erro.hidden = false;
@@ -66,7 +79,7 @@ async function carregarAdministracao() {
 // Totais do topo da página (somente usuários ativos entram na contagem).
 function preencherResumo(projetos, usuarios) {
   const ativos = usuarios.filter((usuario) => usuario.ativo);
-  document.querySelector('#resumo-projetos').textContent = projetos.length;
+  document.querySelector('#resumo-projetos').textContent = projetos.filter((projeto) => Number(projeto.ativo) === 1).length;
   document.querySelector('#resumo-usuarios').textContent = ativos.length;
   document.querySelector('#resumo-lideres').textContent = ativos.filter((usuario) => usuario.perfil === 'LIDER').length;
   document.querySelector('#resumo-membros').textContent = ativos.filter((usuario) => usuario.perfil === 'MEMBRO').length;
@@ -75,9 +88,13 @@ function preencherResumo(projetos, usuarios) {
 // Desenha a tabela de projetos já aplicando a busca digitada (projeto, descrição ou membro).
 function renderizarProjetos() {
   const termo = normalizarTexto(document.querySelector('#busca-projetos').value);
+  const situacao = document.querySelector('#filtro-situacao-projeto').value;
   const corpo = document.querySelector('#tabela-projetos tbody');
-  const visiveis = linhasProjetos.filter(({ projeto, equipe }) =>
-    !termo || normalizarTexto([projeto.nome, projeto.descricao, ...equipe.map((membro) => membro.nome)].join(' ')).includes(termo));
+  const visiveis = linhasProjetos.filter(({ projeto, equipe }) => {
+    const ativo = Number(projeto.ativo) === 1;
+    const correspondeSituacao = situacao === 'todos' || (situacao === 'ativos' ? ativo : !ativo);
+    return correspondeSituacao && (!termo || normalizarTexto([projeto.nome, projeto.descricao, ...equipe.map((membro) => membro.nome)].join(' ')).includes(termo));
+  });
 
   corpo.replaceChildren(...visiveis.map(({ projeto, equipe, total, emAberto }) => {
     const linha = document.createElement('tr');
@@ -87,11 +104,103 @@ function renderizarProjetos() {
       celulaEtiquetas(equipe.map((membro) => ({
         texto: membro.nome, destaque: membro.perfil === 'LIDER', titulo: rotulosPerfil[membro.perfil]
       })), 'Sem equipe vinculada'),
-      celula(`${total} no total · ${emAberto} em aberto`)
+      celula(`${total} no total · ${emAberto} em aberto`),
+      celulaBadge(Number(projeto.ativo) === 1 ? 'Ativo' : 'Inativo', Number(projeto.ativo) === 1 ? 'badge-ativo' : 'badge-inativo')
     );
+    const acoes = celula('');
+    if (Number(projeto.ativo) === 1) {
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'btn-danger-custom';
+      botao.textContent = 'Desativar';
+      botao.setAttribute('aria-label', `Desativar projeto ${projeto.nome}`);
+      botao.disabled = projetosEmDesativacao.has(projeto.id);
+      botao.addEventListener('click', () => desativarProjeto(projeto));
+      acoes.append(botao);
+    } else {
+      acoes.textContent = '—';
+    }
+    linha.append(acoes);
     return linha;
   }));
   document.querySelector('#sem-projetos').hidden = visiveis.length > 0;
+}
+
+// Cria o projeto pela API e mantém erros de validação junto ao formulário.
+function abrirCadastroProjeto() {
+  if (usuarioAdmin?.perfil !== 'ADMIN' || criandoProjeto) return;
+  formularioProjeto.reset();
+  document.querySelector('#projeto-erro').hidden = true;
+  dialogoProjeto.showModal();
+  document.querySelector('#projeto-nome').focus();
+}
+
+function fecharCadastroProjeto() {
+  if (!criandoProjeto) dialogoProjeto.close();
+}
+
+function mostrarErroProjeto(mensagem) {
+  const erro = document.querySelector('#projeto-erro');
+  erro.textContent = mensagem;
+  erro.hidden = false;
+}
+
+function mostrarSucessoAdministracao(mensagem) {
+  const sucesso = document.querySelector('#admin-sucesso');
+  sucesso.textContent = mensagem;
+  sucesso.hidden = false;
+}
+
+async function criarProjeto(event) {
+  event.preventDefault();
+  if (usuarioAdmin?.perfil !== 'ADMIN' || criandoProjeto) return;
+  const nome = document.querySelector('#projeto-nome').value.trim();
+  const descricao = document.querySelector('#projeto-descricao').value.trim();
+  if (nome.length < 2 || nome.length > 100) return mostrarErroProjeto('O nome deve ter entre 2 e 100 caracteres.');
+  if (descricao.length > 1000) return mostrarErroProjeto('A descrição deve ter no máximo 1000 caracteres.');
+  criandoProjeto = true;
+  document.querySelector('#projeto-erro').hidden = true;
+  document.querySelector('#admin-sucesso').hidden = true;
+  const campos = ['projeto-nome', 'projeto-descricao', 'salvar-projeto', 'cancelar-projeto', 'fechar-projeto'];
+  campos.forEach((id) => { document.getElementById(id).disabled = true; });
+  document.querySelector('#salvar-projeto').textContent = 'Criando...';
+  try {
+    await api('/projetos', { method: 'POST', body: JSON.stringify({ nome, descricao: descricao || null }) });
+    dialogoProjeto.close();
+    document.querySelector('#busca-projetos').value = '';
+    document.querySelector('#filtro-situacao-projeto').value = 'todos';
+    await carregarAdministracao();
+    mostrarSucessoAdministracao(`Projeto "${nome}" criado com sucesso.`);
+  } catch (error) {
+    mostrarErroProjeto(error.message);
+  } finally {
+    criandoProjeto = false;
+    campos.forEach((id) => { document.getElementById(id).disabled = false; });
+    document.querySelector('#salvar-projeto').textContent = 'Criar projeto';
+  }
+}
+
+// DELETE desativa o projeto no backend; demandas, comentários e histórico são preservados.
+async function desativarProjeto(projeto) {
+  if (usuarioAdmin?.perfil !== 'ADMIN' || Number(projeto.ativo) !== 1 || projetosEmDesativacao.has(projeto.id)) return;
+  if (!confirm(`Desativar o projeto "${projeto.nome}"? Ele deixará de aceitar novas demandas. As demandas existentes, comentários e históricos serão preservados.`)) return;
+  projetosEmDesativacao.add(projeto.id);
+  document.querySelector('#admin-sucesso').hidden = true;
+  document.querySelector('#admin-erro').hidden = true;
+  renderizarProjetos();
+  try {
+    await api(`/projetos/${projeto.id}`, { method: 'DELETE' });
+    projeto.ativo = 0;
+    await carregarAdministracao();
+    mostrarSucessoAdministracao(`Projeto "${projeto.nome}" desativado. As demandas e o histórico foram preservados.`);
+  } catch (error) {
+    const erro = document.querySelector('#admin-erro');
+    erro.textContent = error.message;
+    erro.hidden = false;
+  } finally {
+    projetosEmDesativacao.delete(projeto.id);
+    renderizarProjetos();
+  }
 }
 
 // Desenha a tabela de usuários já aplicando o filtro de perfil e a busca (nome ou e-mail).
@@ -123,6 +232,14 @@ function renderizarUsuarios() {
 
 // Os filtros reagem enquanto a pessoa digita ou muda a seleção.
 document.querySelector('#busca-projetos').addEventListener('input', renderizarProjetos);
+document.querySelector('#filtro-situacao-projeto').addEventListener('change', renderizarProjetos);
+document.querySelector('#btn-novo-projeto').addEventListener('click', abrirCadastroProjeto);
+document.querySelector('#fechar-projeto').addEventListener('click', fecharCadastroProjeto);
+document.querySelector('#cancelar-projeto').addEventListener('click', fecharCadastroProjeto);
+formularioProjeto.addEventListener('submit', criarProjeto);
+dialogoProjeto.addEventListener('cancel', (event) => {
+  if (criandoProjeto) event.preventDefault();
+});
 document.querySelector('#busca-usuarios').addEventListener('input', renderizarUsuarios);
 document.querySelector('#filtro-perfil').addEventListener('change', renderizarUsuarios);
 
