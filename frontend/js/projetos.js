@@ -1,4 +1,12 @@
-// Consulta os projetos e as equipes vinculadas ao usuário autenticado.
+/*
+Autor: Priscila Amorim
+Tela: Projetos
+Descrição: Responsável por consultar e exibir os projetos vinculados
+ao usuário autenticado, incluindo os integrantes e seus respectivos
+perfis. Implementa a pesquisa de projetos por nome, descrição ou
+membros da equipe, além do controle de acesso conforme o perfil
+do usuário e do tratamento de carregamento, resultados vazios e erros.
+*/
 
 const usuarioProjetos = exigirUsuario();
 

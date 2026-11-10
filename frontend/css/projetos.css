@@ -1,3 +1,13 @@
+/*
+Autor: Priscila Amorim
+Tela: Projetos
+Descrição: Define os estilos da tela de visualização de projetos,
+incluindo menu lateral, cabeçalho, campo de pesquisa, cartões de projetos
+e identificação dos integrantes das equipes. Também estabelece a
+identidade visual da aplicação e adapta o layout para diferentes
+tamanhos de tela.
+*/
+
 :root {
     --cor-primaria: #7C3AED;
     --cor-primaria-hover: #6D28D9;
@@ -9,16 +19,22 @@
     --texto-secundario: #6B7280;
 }
 
+/* Aplica um padrão inicial aos elementos, removendo
+   margens e espaçamentos padrão do navegador. */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* Garante que elementos marcados como hidden permaneçam
+   ocultos, mesmo quando outras regras de CSS são aplicadas. */
 [hidden] {
     display: none !important;
 }
 
+/* Configura a aparência geral das páginas, definindo
+   fonte, cor de fundo, cor do texto e espaçamento das linhas. */
 body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--cinza-fundo);
@@ -27,6 +43,7 @@ body {
     line-height: 1.5;
 }
 
+/* Menu lateral fixo, ocupando toda a altura da tela. */
 .sidebar {
     background: #FFFFFF;
     border-right: 1px solid var(--cinza-borda);
@@ -36,12 +53,14 @@ body {
     width: 240px;
 }
 
+/* Área de identificação da aplicação dentro do menu lateral. */
 .sidebar-logo {
     padding: 0 24px 24px;
     border-bottom: 1px solid var(--cinza-borda);
     margin-bottom: 16px;
 }
 
+/* Destaca o nome da aplicação utilizando a cor principal. */
 .sidebar-logo h4 {
     color: var(--cor-primaria);
     font-size: 1.5rem;
@@ -49,6 +68,8 @@ body {
     font-weight: 700;
 }
 
+/* Organiza os links do menu lateral e define seu
+   alinhamento, espaçamento e aparência inicial. */
 .sidebar-menu a {
     display: flex;
     align-items: center;
@@ -59,51 +80,68 @@ body {
     transition: background 0.15s;
 }
 
+/* Altera a aparência dos links quando o usuário passa
+   o cursor sobre eles, indicando que são interativos. */
 .sidebar-menu a:hover {
     background: var(--cinza-fundo);
     color: var(--texto-principal);
 }
 
+/* Identifica visualmente a página atualmente selecionada
+   no menu de navegação. */
 .sidebar-menu a.active {
     background: var(--cor-primaria-clara);
     color: var(--cor-primaria);
     border-right: 3px solid var(--cor-primaria);
 }
 
+/* Dá destaque ao link responsável por iniciar um novo cadastro. */
 .sidebar-menu .link-nova {
     color: var(--cor-primaria);
     font-weight: 600;
 }
 
+/* Desloca o conteúdo principal para não ficar sobreposto
+   pelo menu lateral fixo. */
 main {
     margin-left: 240px;
 }
 
+/* Define a largura máxima e o espaçamento interno
+   do conteúdo das páginas. */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 32px 24px;
 }
 
+/* Organiza o cabeçalho da página e cria espaço
+   entre ele e os demais elementos. */
 .page-header {
     margin-bottom: 24px;
 }
 
+/* Define o destaque visual do título principal. */
 .page-title {
     font-size: 24px;
     margin-bottom: 6px;
 }
 
+/* Utiliza a cor secundária para informações complementares
+   apresentadas no cabeçalho. */
 .page-header p {
     color: var(--texto-secundario);
 }
 
+/* Formata o texto que identifica o campo de pesquisa. */
 .busca-label {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
+/* Configura o campo de pesquisa, limitando sua largura
+   e padronizando bordas, fundo e espaçamento. */
 .campo-busca {
     width: 100%;
     max-width: 520px;
@@ -115,17 +153,24 @@ main {
     margin-bottom: 24px;
 }
 
+/* Destaca o campo de pesquisa quando recebe foco,
+   facilitando a identificação durante a interação. */
 .campo-busca:focus {
     outline: 2px solid var(--cor-primaria-clara);
     border-color: var(--cor-primaria);
 }
 
+/* Organiza os cartões de projetos em uma grade,
+   ajustando automaticamente a quantidade de colunas
+   conforme o espaço disponível. */
 .projetos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 18px;
 }
 
+/* Define a estrutura visual dos cartões individuais
+   utilizados para apresentar os projetos. */
 .projeto-card {
     background: var(--cinza-card);
     border: 1px solid var(--cinza-borda);
@@ -134,6 +179,8 @@ main {
     min-width: 0;
 }
 
+/* Formata o título de cada projeto e permite a quebra
+   de nomes extensos para evitar estouro do cartão. */
 .projeto-card h2 {
     color: var(--texto-principal);
     font-size: 18px;
@@ -141,6 +188,8 @@ main {
     overflow-wrap: anywhere;
 }
 
+/* Apresenta a descrição do projeto com menor destaque
+   e reserva espaço para manter os cartões organizados. */
 .projeto-descricao {
     color: var(--texto-secundario);
     min-height: 42px;
@@ -148,18 +197,24 @@ main {
     overflow-wrap: anywhere;
 }
 
+/* Destaca o título da seção que apresenta os integrantes
+   vinculados ao projeto. */
 .projeto-equipe-titulo {
     font-size: 13px;
     font-weight: 700;
     margin-bottom: 10px;
 }
 
+/* Organiza os integrantes da equipe, permitindo que
+   os elementos ocupem novas linhas quando necessário. */
 .projeto-equipe {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
+/* Apresenta cada integrante em um pequeno bloco,
+   separando visualmente seu nome e perfil. */
 .membro-equipe {
     display: inline-flex;
     flex-direction: column;
@@ -170,16 +225,22 @@ main {
     max-width: 100%;
 }
 
+/* Destaca o nome do integrante e permite a quebra
+   de textos longos. */
 .membro-nome {
     font-weight: 600;
     overflow-wrap: anywhere;
 }
 
+/* Exibe o perfil do integrante com tamanho e cor
+   secundários em relação ao nome. */
 .membro-perfil {
     color: var(--texto-secundario);
     font-size: 11px;
 }
 
+/* Define o espaçamento e o formato compartilhado
+   pelas mensagens informativas e de erro. */
 .mensagem-info,
 .mensagem-erro {
     padding: 14px 16px;
@@ -187,16 +248,23 @@ main {
     margin-bottom: 18px;
 }
 
+/* Identifica visualmente mensagens informativas
+   utilizando tons da cor principal. */
 .mensagem-info {
     background: var(--cor-primaria-clara);
     color: #5B21B6;
 }
 
+/* Utiliza tons de vermelho para destacar mensagens
+   relacionadas a erros ou problemas. */
 .mensagem-erro {
     background: #FEE2E2;
     color: #B91C1C;
 }
 
+/* Adapta a estrutura da interface para telas menores,
+   transformando o menu lateral fixo em um menu
+   posicionado no fluxo normal da página. */
 @media (max-width: 900px) {
     .sidebar {
         position: static;
@@ -205,6 +273,8 @@ main {
         padding: 16px 0;
     }
 
+    /* Permite que os links do menu sejam distribuídos
+       em várias linhas conforme a largura disponível. */
     .sidebar-menu {
         display: flex;
         flex-wrap: wrap;
@@ -215,6 +285,8 @@ main {
         padding: 10px 16px;
     }
 
+    /* Remove o deslocamento lateral aplicado ao conteúdo
+       na versão para telas menores. */
     main {
         margin-left: 0;
     }
@@ -225,6 +297,8 @@ main {
     }
 }
 
+/* Ajustes adicionais para celulares, reduzindo os
+   espaçamentos e exibindo os projetos em uma única coluna. */
 @media (max-width: 600px) {
     .container {
         padding: 20px 12px;
