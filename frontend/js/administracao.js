@@ -1,12 +1,10 @@
 // Autor: Priscila Amorim
-// Descrição: Tela de consulta de projetos (com equipe e contagem de demandas) e de usuários,
-// exclusiva do Administrador. Somente leitura: usa os endpoints GET já existentes da API.
+// Descrição: Tela de consulta de projetos (com equipe e contagem de demandas) e de usuários. 
+// Somente leitura: usa os endpoints GET já existentes da API.
 // Todo texto vindo da API é inserido com textContent, nunca como HTML.
 
 const usuarioAdmin = exigirUsuario();
 
-// Esta tela é só do Administrador; os demais perfis voltam ao dashboard.
-// (A API continua sendo quem de fato protege os dados; isto só evita uma tela vazia.)
 if (usuarioAdmin && usuarioAdmin.perfil !== 'ADMIN') {
   window.location.replace('dashboard.html');
 }

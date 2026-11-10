@@ -1,3 +1,4 @@
+// Autor: Vinicius Panutti Salgado — R.A. 25007329
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApp: buildApp } = require('../src/app');

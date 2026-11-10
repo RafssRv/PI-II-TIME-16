@@ -1,3 +1,5 @@
+**Autor:** Vinícius Panutti Salgado — RA 25007329
+
 # Banco MySQL e execução local
 
 O backend usa MySQL 8.0 ou superior, `mysql2/promise`, InnoDB e `utf8mb4`. O banco local da equipe pode ser o MySQL 8.0.46 já instalado; o serviço do banco precisa estar ativo antes de iniciar a API.

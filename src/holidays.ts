@@ -1,4 +1,4 @@
-// Autor: Priscila Amorim dos Santos
+// Autor: Priscila Amorim 
 // Descrição: Consulta e mantém em cache os feriados nacionais da BrasilAPI por ano.
 
 const feriadosPorAno = new Map();

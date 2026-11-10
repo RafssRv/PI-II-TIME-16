@@ -1,3 +1,8 @@
+// Autor: Priscila Amorim 
+// Descrição: Aplicação Express da API (autenticação, projetos, usuários, demandas, comentários,
+// histórico e dashboard) com persistência em MySQL. Migrada para TypeScript em 08/11/2026 a partir
+// do app.js original.
+
 import express, { NextFunction, Request, Response } from 'express';
 const path = require('node:path');
 const bcrypt = require('bcryptjs');

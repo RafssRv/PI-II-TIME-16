@@ -1,3 +1,7 @@
+// Autor: Vinícius Panutti Salgado — R.A. 25007329
+// Descrição: Cliente compartilhado da API usado por todas as telas: envia o token da sessão,
+// trata erros, guarda o usuário logado e traz rótulos e funções de apoio comuns ao frontend.
+ 
 const API_BASE = '/api';
 
 async function api(path, options = {}) {

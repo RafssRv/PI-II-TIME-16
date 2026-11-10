@@ -1,6 +1,7 @@
 /*
-  Autor: equipe (ponto de entrada do servidor)
-  Descrição: Servidor Express com TypeScript e persistência MySQL.
+  Autor: Vinícius Panutti Salgado — R.A. 25007329
+  Descrição: Ponto de entrada do servidor Express (TypeScript) com persistência MySQL: lê a porta
+  do ambiente, abre a conexão com o banco, cria o app e encerra o pool ao receber SIGINT/SIGTERM.
 */
 
 import 'dotenv/config';
