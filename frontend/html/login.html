@@ -1,11 +1,17 @@
 <!--
 Autora: Sophia Franco de Godoy / RA: 24000833
-Descrição: Estrutura da tela de login do DemandasApp
+Descrição: Estrutura e organização da tela de acesso ao DemandasApp
 
-Define o idioma e a codificação da página, carrega o Bootstrap
-e o CSS próprio e organiza o cartão de login com os campos de e-mail e senha
-Inclui espaços para mensagens de erro, o botão de envio e os scripts necessários
-para comunicação com a API e tratamento do formulário
+1. Definir o idioma, a codificação dos caracteres e a área de visualização
+   de acordo com a largura do dispositivo
+2. Carregar os estilos do Bootstrap e as personalizações de login.css
+3. Apresentar o nome do sistema, o título da área de acesso e as orientações
+   de preenchimento do formulário
+4. Organizar os campos obrigatórios de e-mail e senha, associando cada campo
+   ao seu respectivo rótulo de identificação
+5. Reservar os espaços utilizados pelo JavaScript para exibir mensagens de erro
+6. Disponibilizar o botão de entrada e carregar os scripts de comunicação
+   com a API e de controle do formulário
 -->
 
 <!DOCTYPE html>
@@ -20,61 +26,51 @@ para comunicação com a API e tratamento do formulário
 
 <body class="bg-light">
 
-    <!-- Agrupa os elementos da página de login para facilitar sua organização -->
+    <!-- Área usada pelo CSS para centralizar o cartão de login -->
     <div class="pagina-login">
 
-        <!-- Cria o cartão que contém o formulário, com uma sombra leve do Bootstrap -->
+        <!-- Cartão do formulário com uma sombra leve do Bootstrap -->
         <div class="card-login shadow-sm">
 
-            <!-- Exibe o nome do sistema como título principal -->
+            <!-- Exibe o nome do sistema -->
             <h1 class="logo"> DemandasApp </h1>
 
-            <!-- Exibe o título da área de acesso -->
+            <!-- Apresenta o título da área de acesso -->
             <h2> Acesse sua conta </h2>
 
-            <!-- Mostra uma instrução ao usuário com a cor de texto secundária do Bootstrap -->
+            <!-- Orienta o usuário antes do preenchimento -->
             <p class="text-secondary"> Preencha os campos abaixo para entrar no sistema. </p>
 
-            <!-- Formulário de login --> 
+            <!-- novalidate deixa a validação do envio sob o controle de login.js -->
             <form id="form-login" novalidate>
 
-                <!-- Campo de e-mail -->
+                <!-- Grupo do campo de e-mail -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Identifica o campo de e-mail e o associa ao input pelo atributo for -->
+                    <!-- Associa o nome do campo ao input de e-mail -->
                     <label for="email" class="form-label"><strong>E-mail *</strong></label>
 
-                    <!--
-                    Campo onde o usuário digita seu e-mail
-                    - form-control aplica o estilo de campo do Bootstrap
-                    - placeholder mostra um exemplo antes de o usuário digitar
-                    - required indica que o preenchimento é obrigatório
-                    -->
+                    <!-- Campo obrigatório com um exemplo de e-mail -->
                     <input type="email" id="email" class="form-control" placeholder="seu.email@empresa.com" required>
 
-                    <!-- Espaço utilizado para mostrar uma mensagem de erro relacionada ao e-mail -->
+                    <!-- Recebe a mensagem de erro do e-mail -->
                     <div id="erro-email" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Campo de senha -->
+                <!-- Grupo do campo de senha -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Identifica o campo de senha e o associa ao input correspondente -->
+                    <!-- Associa o nome do campo ao input de senha -->
                     <label for="senha" class="form-label"><strong>Senha *</strong></label>
 
-                    <!--
-                    Campo onde o usuário digita sua senha
-                    - form-control aplica o estilo de campo do Bootstrap
-                    - placeholder mostra uma indicação visual antes da digitação
-                    - required indica que o preenchimento é obrigatório
-                    -->
+                    <!-- Campo obrigatório que oculta os caracteres da senha -->
                     <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
 
-                    <!-- Espaço utilizado para mostrar uma mensagem de erro relacionada à senha -->
+                    <!-- Recebe erros de preenchimento da senha ou da solicitação de acesso -->
                     <div id="erro-senha" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Botão de envio do formulário -->
+                <!-- Envia o formulário e ocupa toda a largura disponível -->
                 <button type="submit" class="btn btn-primary w-100 mt-3 botao-entrar">Entrar</button>
             </form>
 
@@ -82,10 +78,10 @@ para comunicação com a API e tratamento do formulário
 
     </div>
 
-    <!-- Carrega o arquivo responsável pela comunicação com a API -->
+    <!-- Carrega a função de comunicação com o servidor -->
     <script src="../js/api.js"></script>
 
-    <!-- Carrega o arquivo responsável pelo funcionamento do formulário de login -->
+    <!-- Carrega a validação e o controle do login -->
     <script src="../js/login.js"></script>
 </body>
 </html>

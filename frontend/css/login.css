@@ -1,19 +1,27 @@
 /*
 Autora: Sophia Franco de Godoy / RA: 24000833
-Descrição: Estilos próprios da tela de login do DemandasApp
+Descrição: Personalização visual da tela de login do DemandasApp.
 
-Define a fonte e o fundo da página, centraliza o cartão com Flexbox
-e configura suas dimensões, borda, cantos arredondados e espaçamento interno
-Também estiliza o nome do sistema, o título e o botão de entrada, incluindo
-a mudança de cor do botão quando o usuário passa o mouse sobre ele
+1. Estabelecer os estilos gerais de fonte, fundo e margem da página
+2. Centralizar o cartão de login na horizontal e na vertical com Flexbox,
+   utilizando a altura da janela do navegador como referência
+3. Configurar o fundo branco, a largura, a borda, os cantos arredondados
+   e o espaçamento interno do cartão que contém o formulário
+4. Definir as cores, os tamanhos e os espaçamentos do nome do sistema
+   e do título da área de acesso
+5. Aplicar a cor principal da aplicação e o texto em negrito ao botão Entrar
+6. Alterar a cor do botão quando o usuário passa o mouse sobre ele,
+   oferecendo uma indicação visual de interação
 */
 
+/* Define a fonte, o fundo e a margem da página */
 body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
     margin: 0;
 }
 
+/* Centraliza o cartão usando a altura da janela do navegador */
 .pagina-login {
     display: flex;
     justify-content: center;
@@ -21,6 +29,7 @@ body {
     height: 100vh;
 }
 
+/* Define a aparência e o espaço interno do cartão de login */
 .card-login {
     background-color: white;
     width: 380px;
@@ -31,6 +40,7 @@ body {
 }
 
 
+/* Destaca o nome do sistema com a cor principal da aplicação */
 .logo {
     color: #7c3aed;
     font-size: 28px;
@@ -38,18 +48,21 @@ body {
     margin-bottom: 8px;
 }
 
+/* Ajusta a cor e os espaçamentos do título dentro do cartão */
 .card-login h2 {
     color: #111827;
     margin-top: 0;
     margin-bottom: 6px;
 }
 
+/* Personaliza a cor e o texto do botão Entrar */
 .botao-entrar {
     background-color: #7c3aed;
     border: none;
     font-weight: bold;
 }
 
+/* Escurece o botão quando o mouse passa sobre ele */
 .botao-entrar:hover {
     background-color: #6d28d9;
 }
