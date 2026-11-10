@@ -45,7 +45,8 @@ const TRANSICOES: Record<string, string[]> = {
   ABERTA: ['EM_ANDAMENTO', 'CANCELADA'],
   EM_ANDAMENTO: ['EM_REVISAO', 'CANCELADA'],
   EM_REVISAO: ['EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA'],
-  CONCLUIDA: [], CANCELADA: []
+  // A reabertura é exclusiva de ADMIN/LIDER; membros continuam limitados ao fluxo abaixo.
+  CONCLUIDA: [], CANCELADA: ['ABERTA']
 };
 const TRANSICOES_MEMBRO: Record<string, string[]> = {
   ABERTA: ['EM_ANDAMENTO'],

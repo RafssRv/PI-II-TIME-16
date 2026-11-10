@@ -87,7 +87,7 @@ Estas são as regras provisórias adotadas para implementar a proteção no serv
 - Criar demanda exige projeto ativo. LIDER precisa estar vinculado a esse projeto; membro não pode criar demandas.
 - Responsável é opcional; quando informado, precisa ser usuário ativo vinculado ao projeto.
 - Prazo vazio é aceito. Prazo informado precisa ser data real, não pode estar no passado nem em feriado nacional. Cadastro e edição usam a BrasilAPI; se a consulta falhar, a API retorna 503 e não grava a mudança.
-- Transições são `ABERTA → EM_ANDAMENTO → EM_REVISAO → CONCLUIDA`; revisão pode retornar a andamento. ADMIN/LIDER podem cancelar uma demanda ainda não concluída. Demanda concluída/cancelada não volta ao fluxo.
+- Transições são `ABERTA → EM_ANDAMENTO → EM_REVISAO → CONCLUIDA`; revisão pode retornar a andamento. ADMIN/LIDER podem cancelar uma demanda ainda não concluída. Como melhoria adicional, ADMIN ou LIDER vinculado ao projeto pode reabrir uma demanda de `CANCELADA → ABERTA`, preservando os dados e o histórico e registrando a alteração de status. MEMBRO não pode reabrir demandas. Demanda concluída não volta ao fluxo.
 - Exclusão física de demanda é bloqueada (`DELETE` retorna 405). Use `PATCH /api/demandas/:id` com `{"status":"CANCELADA"}`. Comentários e histórico são preservados.
 - Atualizações da demanda e seus eventos de histórico são gravadas na mesma transação.
 

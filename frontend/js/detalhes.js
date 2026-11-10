@@ -22,7 +22,7 @@ const opcoesStatus = {
   EM_ANDAMENTO: ['EM_REVISAO'],
   EM_REVISAO: ['EM_ANDAMENTO', 'CONCLUIDA'],
   CONCLUIDA: [],
-  CANCELADA: []
+  CANCELADA: ['ABERTA']
 };
 
 document.addEventListener('DOMContentLoaded', carregar);
@@ -105,8 +105,11 @@ function preencherTransicoes(demanda) {
 
   select.replaceChildren(new Option(statusPossiveis.length ? 'Escolha o próximo status...' : 'Sem transição disponível', ''));
   statusPossiveis.forEach((status) => select.add(new Option(rotulos[status], status)));
-  select.hidden = statusPossiveis.length === 0;
+  const podeReabrir = demanda.status === 'CANCELADA' && statusPossiveis.includes('ABERTA');
+  if (podeReabrir) select.value = 'ABERTA';
+  select.hidden = statusPossiveis.length === 0 || podeReabrir;
   botao.hidden = statusPossiveis.length === 0;
+  botao.textContent = podeReabrir ? 'Reabrir demanda' : 'Salvar status';
 }
 
 async function carregarMembros() {
@@ -246,6 +249,10 @@ function incluirSeAlterado(payload, campo, novo, atual) {
 async function atualizarStatus() {
   const status = document.querySelector('#novo-status').value;
   if (!status) return;
+
+  // A reabertura altera somente o status e mantém os dados e o histórico da demanda.
+  if (demandaAtual.status === 'CANCELADA' && status === 'ABERTA' &&
+      !confirm('Reabrir esta demanda como Aberta? Os dados, comentários e o histórico serão mantidos.')) return;
 
   if (
     demandaAtual.status === 'ABERTA' &&

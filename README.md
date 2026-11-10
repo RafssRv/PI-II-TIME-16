@@ -30,6 +30,7 @@ A aplicação integra frontend, API e banco de dados relacional, com autenticaç
 - Troca do projeto de uma demanda pela janela de edição, respeitando as permissões de acesso.
 - Atualização de status conforme o ciclo de vida da demanda.
 - Cancelamento sem exclusão física do registro.
+- Reabertura de demandas canceladas por Administrador ou Líder autorizado, preservando os dados e o histórico.
 - Registro de comentários e histórico de alterações.
 - Filtros por status, prioridade, tipo, projeto e responsável.
 - Busca textual por título ou descrição.
@@ -239,7 +240,9 @@ Aberta → Em andamento → Em revisão → Concluída
 
 Uma demanda em revisão pode retornar para `Em andamento`.
 
-O Administrador ou o Líder autorizado pode cancelar uma demanda enquanto ela não estiver concluída. Demandas concluídas ou canceladas não retornam ao fluxo.
+O Administrador ou o Líder autorizado pode cancelar uma demanda enquanto ela não estiver concluída. Demandas concluídas não retornam ao fluxo.
+
+Como funcionalidade adicional ao fluxo principal, Administradores e Líderes vinculados ao projeto podem reabrir uma demanda de `Cancelada` para `Aberta`, pelo botão **Reabrir demanda** na tela de detalhes. Os dados, comentários e o histórico anterior são mantidos, e a reabertura gera um novo registro de alteração de status. Membros da Equipe não podem reabrir demandas.
 
 ### Responsável, prazo e histórico
 

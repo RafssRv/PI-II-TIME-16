@@ -151,7 +151,7 @@ test('edição registra apenas alterações reais com valores anterior e novo', 
   assert.equal(noop.state.executed.length, 0);
 });
 test('transições inválidas e cancelamento após conclusão são rejeitados', async () => {
-  for (const [from, to] of [['ABERTA','CONCLUIDA'], ['EM_ANDAMENTO','ABERTA'], ['CONCLUIDA','CANCELADA'], ['CANCELADA','EM_ANDAMENTO']]) {
+  for (const [from, to] of [['ABERTA','CONCLUIDA'], ['EM_ANDAMENTO','ABERTA'], ['CONCLUIDA','CANCELADA'], ['CONCLUIDA','ABERTA'], ['CANCELADA','EM_ANDAMENTO'], ['CANCELADA','EM_REVISAO'], ['CANCELADA','CONCLUIDA']]) {
     const db = demandDb({ ...current, status: from });
     assert.equal((await patch(createApp(db), { status: to })).status, 400);
     assert.equal(db.state.executed.length, 0);
@@ -217,6 +217,36 @@ async function authenticatedRequest(database, path, method = 'GET', body) {
 function moveDemand(database, body) {
   return authenticatedRequest(database, '/api/demandas/5', 'PATCH', body);
 }
+
+test('ADMIN e LIDER autorizado reabrem demanda cancelada e registram histórico sem apagar dados', async () => {
+  for (const perfil of ['ADMIN', 'LIDER']) {
+    const db = moveDb({ perfil, row: { ...current, status: 'CANCELADA', responsavel_id: 9 } });
+    const response = await authenticatedRequest(db, '/api/demandas/5', 'PATCH', { status: 'ABERTA' });
+    assert.equal(response.status, 204);
+    assert.equal(db.state.executed.length, 2);
+    assert.deepEqual(db.state.executed[0].binds, { status: 'ABERTA', id: 5 });
+    assert.match(db.state.executed[0].sql, /atualizado_em = CURRENT_TIMESTAMP/);
+    const evento = db.state.executed[1].binds;
+    assert.equal(evento.campo, 'status');
+    assert.equal(evento.anterior, 'CANCELADA');
+    assert.equal(evento.novo, 'ABERTA');
+    assert.equal(evento.autor_id, 9);
+    assert.ok(db.state.executed.every(({ sql }) => !sql.includes('DELETE')));
+    assert.equal(db.state.committed, 1);
+  }
+});
+
+test('MEMBRO não reabre demanda cancelada nem quando ela está atribuída a si', async () => {
+  const db = moveDb({ perfil: 'MEMBRO', row: { ...current, status: 'CANCELADA', responsavel_id: 9 } });
+  assert.equal((await authenticatedRequest(db, '/api/demandas/5', 'PATCH', { status: 'ABERTA' })).status, 403);
+  assert.equal(db.state.executed.length, 0);
+});
+
+test('LIDER não reabre demanda de projeto ao qual não está vinculado', async () => {
+  const db = moveDb({ perfil: 'LIDER', origemPermitida: false, row: { ...current, status: 'CANCELADA' } });
+  assert.equal((await authenticatedRequest(db, '/api/demandas/5', 'PATCH', { status: 'ABERTA' })).status, 404);
+  assert.equal(db.state.executed.length, 0);
+});
 
 test('ADMIN troca projeto, mantém responsável da equipe de destino e registra histórico', async () => {
   const db = moveDb({ origemPermitida: false, destinoPermitido: false });
