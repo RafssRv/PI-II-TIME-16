@@ -201,51 +201,59 @@
     </main>
 
     <dialog class="edit-dialog" id="dialog-edicao" aria-labelledby="titulo-edicao">
-        <form id="form-edicao" method="dialog">
+        <!-- As mensagens de validação são preenchidas pelo JavaScript da Aula 05. -->
+        <form id="form-edicao" method="dialog" novalidate>
             <div class="dialog-header">
                 <h2 id="titulo-edicao">Editar demanda</h2>
                 <button class="dialog-close" id="fechar-edicao" type="button" aria-label="Fechar">×</button>
             </div>
             <div class="form-group">
                 <label for="edicao-titulo">Título</label>
-                <input class="form-control-custom" id="edicao-titulo" maxlength="100" required>
+                <input class="form-control-custom" id="edicao-titulo" minlength="3" maxlength="100" required aria-describedby="erro-edicao-titulo">
+                <div id="erro-edicao-titulo" class="erro-campo"></div>
             </div>
             <div class="form-group">
                 <label for="edicao-descricao">Descrição</label>
-                <textarea class="form-control-custom" id="edicao-descricao" rows="4" maxlength="1000" required></textarea>
+                <textarea class="form-control-custom" id="edicao-descricao" rows="4" minlength="10" maxlength="1000" required aria-describedby="erro-edicao-descricao"></textarea>
+                <div id="erro-edicao-descricao" class="erro-campo"></div>
             </div>
             <div class="edit-form-grid">
                 <div class="form-group">
                     <label for="edicao-tipo">Tipo</label>
-                    <select class="form-select-custom" id="edicao-tipo" required>
+                    <select class="form-select-custom" id="edicao-tipo" required aria-describedby="erro-edicao-tipo">
                         <option value="TAREFA">Tarefa</option>
                         <option value="DEFEITO">Defeito</option>
                         <option value="MELHORIA">Melhoria</option>
                         <option value="DOCUMENTACAO">Documentação</option>
                     </select>
+                    <div id="erro-edicao-tipo" class="erro-campo"></div>
                 </div>
                 <div class="form-group">
                     <label for="edicao-prioridade">Prioridade</label>
-                    <select class="form-select-custom" id="edicao-prioridade" required>
+                    <select class="form-select-custom" id="edicao-prioridade" required aria-describedby="erro-edicao-prioridade">
                         <option value="CRITICA">Crítica</option>
                         <option value="ALTA">Alta</option>
                         <option value="MEDIA">Média</option>
                         <option value="BAIXA">Baixa</option>
                     </select>
+                    <div id="erro-edicao-prioridade" class="erro-campo"></div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="edicao-projeto">Projeto</label>
-                <select class="form-select-custom" id="edicao-projeto" required></select>
+                <select class="form-select-custom" id="edicao-projeto" required aria-describedby="erro-edicao-projeto"></select>
+                <div id="erro-edicao-projeto" class="erro-campo"></div>
             </div>
             <div class="edit-form-grid">
                 <div class="form-group">
                     <label for="edicao-responsavel">Responsável</label>
-                    <select class="form-select-custom" id="edicao-responsavel"></select>
+                    <select class="form-select-custom" id="edicao-responsavel" aria-describedby="erro-edicao-responsavel"></select>
+                    <div id="erro-edicao-responsavel" class="erro-campo"></div>
                 </div>
                 <div class="form-group">
                     <label for="edicao-prazo">Prazo de finalização</label>
-                    <input class="form-control-custom" id="edicao-prazo" type="date">
+                    <input class="form-control-custom" id="edicao-prazo" type="date" max="9999-12-31" aria-describedby="erro-edicao-prazo">
+                    <div id="erro-edicao-prazo" class="erro-campo"></div>
                 </div>
             </div>
             <p class="form-hint" id="edicao-projeto-aviso" role="status" hidden></p>

@@ -413,6 +413,17 @@ body {
   margin: 0 0 16px;
 }
 .form-error { margin: 12px 0 0; }
+
+/* Mensagem e destaque dos campos inválidos, conforme a Aula 05. */
+.erro-campo {
+  color: var(--erro);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.is-invalid {
+  border-color: var(--erro) !important;
+}
+
 [hidden] { display: none !important; }
 .empty-state {
   color: var(--texto-secundario);

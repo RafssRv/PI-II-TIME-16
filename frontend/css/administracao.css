@@ -300,6 +300,15 @@ main {
 .badge-inativo { background: #E5E7EB; color: #374151; }
 
 /* Mensagens */
+.erro-campo {
+  color: var(--erro);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.is-invalid {
+  border-color: var(--erro) !important;
+}
+
 .mensagem-info {
   color: var(--texto-secundario);
   margin-bottom: 16px;

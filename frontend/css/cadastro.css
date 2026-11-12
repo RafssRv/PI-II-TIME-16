@@ -289,6 +289,6 @@ textarea.form-control-custom {
   margin-top: 4px;
 }
 
-.campo-invalido {
+.is-invalid {
   border-color: #dc3545 !important;
 }

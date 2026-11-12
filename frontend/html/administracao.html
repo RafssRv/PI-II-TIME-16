@@ -103,18 +103,21 @@
 
     <!-- O cadastro cria um projeto ativo; a desativação preserva os registros associados. -->
     <dialog class="project-dialog" id="dialog-projeto" aria-labelledby="titulo-dialog-projeto">
-        <form id="form-projeto" method="dialog">
+        <!-- O JavaScript mostra os erros junto aos campos, como na Aula 05. -->
+        <form id="form-projeto" method="dialog" novalidate>
             <div class="dialog-header">
                 <h2 id="titulo-dialog-projeto">Novo projeto</h2>
                 <button type="button" class="dialog-close" id="fechar-projeto" aria-label="Fechar">×</button>
             </div>
             <div class="form-group">
                 <label for="projeto-nome">Nome do projeto</label>
-                <input type="text" class="form-control-custom" id="projeto-nome" minlength="2" maxlength="100" required>
+                <input type="text" class="form-control-custom" id="projeto-nome" minlength="2" maxlength="100" required aria-describedby="erro-projeto-nome">
+                <div id="erro-projeto-nome" class="erro-campo"></div>
             </div>
             <div class="form-group">
                 <label for="projeto-descricao">Descrição (opcional)</label>
-                <textarea class="form-control-custom" id="projeto-descricao" rows="4" maxlength="1000"></textarea>
+                <textarea class="form-control-custom" id="projeto-descricao" rows="4" maxlength="1000" aria-describedby="erro-projeto-descricao"></textarea>
+                <div id="erro-projeto-descricao" class="erro-campo"></div>
             </div>
             <p class="mensagem-erro" id="projeto-erro" role="alert" hidden></p>
             <div class="dialog-actions">

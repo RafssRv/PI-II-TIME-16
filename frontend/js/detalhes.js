@@ -1,5 +1,6 @@
 // Autor: Priscila Amorim
 // Descrição: Consulta detalhes, comentários e histórico; permite editar e acompanhar o ciclo da demanda.
+// As validações da edição seguem a Aula 05: ler, validar, mostrar os erros e só então enviar.
 
 let usuario = null;
 const demandaId = Number(new URLSearchParams(window.location.search).get('id'));
@@ -16,6 +17,7 @@ let projetosDisponiveis = [];
 let projetoEdicaoAtual = '';
 let consultaMembrosEdicao = 0;
 let carregandoMembrosEdicao = false;
+let salvandoEdicao = false;
 
 const opcoesStatus = {
   ABERTA: ['EM_ANDAMENTO'],
@@ -36,6 +38,9 @@ document.querySelector('#btn-cancelar-demanda').addEventListener('click', cancel
 document.querySelector('#fechar-edicao').addEventListener('click', fecharEdicao);
 document.querySelector('#cancelar-edicao').addEventListener('click', fecharEdicao);
 formularioEdicao.addEventListener('submit', salvarEdicao);
+dialogoEdicao.addEventListener('cancel', function (event) {
+  if (salvandoEdicao) event.preventDefault();
+});
 document.querySelector('#edicao-projeto').addEventListener('change', trocarProjetoEdicao);
 
 async function carregar() {
@@ -98,12 +103,7 @@ function preencherDetalhes(demanda) {
 function preencherTransicoes(demanda) {
   const select = document.querySelector('#novo-status');
   const botao = document.querySelector('#btn-atualizar-status');
-  const statusPossiveis = [...(opcoesStatus[demanda.status] || [])];
-  if (usuario?.perfil === 'MEMBRO') {
-    const apenasMembro = { ABERTA: ['EM_ANDAMENTO'], EM_ANDAMENTO: ['EM_REVISAO'] };
-    statusPossiveis.splice(0, statusPossiveis.length, ...(apenasMembro[demanda.status] || []));
-    if (Number(demanda.responsavel_id) !== Number(usuario.id)) statusPossiveis.length = 0;
-  }
+  const statusPossiveis = obterStatusPossiveis(demanda);
 
   select.replaceChildren(new Option(statusPossiveis.length ? 'Escolha o próximo status...' : 'Sem transição disponível', ''));
   statusPossiveis.forEach((status) => select.add(new Option(rotulos[status], status)));
@@ -112,6 +112,16 @@ function preencherTransicoes(demanda) {
   select.hidden = statusPossiveis.length === 0 || podeReabrir;
   botao.hidden = statusPossiveis.length === 0;
   botao.textContent = podeReabrir ? 'Reabrir demanda' : 'Salvar status';
+}
+
+// Mantém as transições e as permissões definidas no escopo do projeto.
+function obterStatusPossiveis(demanda) {
+  if (usuario.perfil === 'MEMBRO') {
+    if (Number(demanda.responsavel_id) !== Number(usuario.id)) return [];
+    const apenasMembro = { ABERTA: ['EM_ANDAMENTO'], EM_ANDAMENTO: ['EM_REVISAO'] };
+    return apenasMembro[demanda.status] || [];
+  }
+  return opcoesStatus[demanda.status] || [];
 }
 
 async function carregarMembros() {
@@ -128,7 +138,7 @@ async function carregarMembros() {
 }
 
 function abrirEdicao() {
-  if (!demandaAtual || !['ADMIN', 'LIDER'].includes(usuario.perfil)) return;
+  if (!demandaAtual || salvandoEdicao || !['ADMIN', 'LIDER'].includes(usuario.perfil)) return;
   consultaMembrosEdicao += 1;
   carregandoMembrosEdicao = false;
   formularioEdicao.querySelector('[type="submit"]').disabled = false;
@@ -158,12 +168,13 @@ function abrirEdicao() {
     responsavel.add(new Option(demandaAtual.responsavel_nome || `Usuário ${demandaAtual.responsavel_id}`, demandaAtual.responsavel_id));
   }
   responsavel.value = demandaAtual.responsavel_id || '';
-  mostrarErroEdicao('');
+  limparErrosEdicao();
   dialogoEdicao.showModal();
 }
 
 // Recarrega a equipe ao trocar de projeto e evita manter um responsável sem vínculo no destino.
 async function trocarProjetoEdicao() {
+  if (salvandoEdicao) return;
   const consulta = ++consultaMembrosEdicao;
   const projeto = document.querySelector('#edicao-projeto');
   const responsavel = document.querySelector('#edicao-responsavel');
@@ -200,29 +211,77 @@ async function trocarProjetoEdicao() {
 }
 
 function fecharEdicao() {
-  dialogoEdicao.close();
+  if (!salvandoEdicao) dialogoEdicao.close();
 }
 
 async function salvarEdicao(event) {
   event.preventDefault();
-  if (!demandaAtual || carregandoMembrosEdicao) return;
+  if (!demandaAtual || carregandoMembrosEdicao || salvandoEdicao || !['ADMIN', 'LIDER'].includes(usuario.perfil)) return;
 
-  const titulo = document.querySelector('#edicao-titulo').value.trim();
-  const descricao = document.querySelector('#edicao-descricao').value.trim();
-  if (titulo.length < 3 || titulo.length > 100) return mostrarErroEdicao('O título deve ter entre 3 e 100 caracteres.');
-  if (descricao.length < 10 || descricao.length > 1000) return mostrarErroEdicao('A descrição deve ter entre 10 e 1000 caracteres.');
+  limparErrosEdicao();
+  const campoTitulo = document.querySelector('#edicao-titulo');
+  const campoDescricao = document.querySelector('#edicao-descricao');
+  const campoTipo = document.querySelector('#edicao-tipo');
+  const campoPrioridade = document.querySelector('#edicao-prioridade');
+  const campoProjeto = document.querySelector('#edicao-projeto');
+  const campoResponsavel = document.querySelector('#edicao-responsavel');
+  const titulo = campoTitulo.value.trim();
+  const descricao = campoDescricao.value.trim();
+  const tipo = campoTipo.value;
+  const prioridade = campoPrioridade.value;
+  const projetoId = Number(campoProjeto.value);
+  const responsavelNovo = campoResponsavel.value;
+  let formularioValido = true;
 
+  // Apresenta todos os erros da tentativa, como no Exemplo 03 da Aula 05.
+  if (titulo === '') {
+    mostrarErroCampo(campoTitulo, document.querySelector('#erro-edicao-titulo'), 'O título é obrigatório.');
+    formularioValido = false;
+  } else if (titulo.length < 3 || titulo.length > 100) {
+    mostrarErroCampo(campoTitulo, document.querySelector('#erro-edicao-titulo'), 'O título deve ter entre 3 e 100 caracteres.');
+    formularioValido = false;
+  }
+
+  if (descricao === '') {
+    mostrarErroCampo(campoDescricao, document.querySelector('#erro-edicao-descricao'), 'A descrição é obrigatória.');
+    formularioValido = false;
+  } else if (descricao.length < 10 || descricao.length > 1000) {
+    mostrarErroCampo(campoDescricao, document.querySelector('#erro-edicao-descricao'), 'A descrição deve ter entre 10 e 1000 caracteres.');
+    formularioValido = false;
+  }
+
+  if (tipo !== 'TAREFA' && tipo !== 'DEFEITO' && tipo !== 'MELHORIA' && tipo !== 'DOCUMENTACAO') {
+    mostrarErroCampo(campoTipo, document.querySelector('#erro-edicao-tipo'), 'Selecione Tarefa, Defeito, Melhoria ou Documentação.');
+    formularioValido = false;
+  }
+
+  if (prioridade !== 'CRITICA' && prioridade !== 'ALTA' && prioridade !== 'MEDIA' && prioridade !== 'BAIXA') {
+    mostrarErroCampo(campoPrioridade, document.querySelector('#erro-edicao-prioridade'), 'Selecione Crítica, Alta, Média ou Baixa.');
+    formularioValido = false;
+  }
+
+  if (!Number.isInteger(projetoId) || projetoId < 1) {
+    mostrarErroCampo(campoProjeto, document.querySelector('#erro-edicao-projeto'), 'Selecione um projeto válido.');
+    formularioValido = false;
+  }
+
+  if (responsavelNovo !== '' && (!Number.isInteger(Number(responsavelNovo)) || Number(responsavelNovo) < 1)) {
+    mostrarErroCampo(campoResponsavel, document.querySelector('#erro-edicao-responsavel'), 'Selecione um responsável válido ou deixe sem responsável.');
+    formularioValido = false;
+  }
+
+  if (!validarPrazoEdicao()) formularioValido = false;
+  if (!formularioValido) return;
+
+  // Envia somente os campos alterados para preservar os demais dados e o histórico.
   const payload = {};
   incluirSeAlterado(payload, 'titulo', titulo, demandaAtual.titulo);
   incluirSeAlterado(payload, 'descricao', descricao, demandaAtual.descricao);
-  incluirSeAlterado(payload, 'tipo', document.querySelector('#edicao-tipo').value, demandaAtual.tipo);
-  incluirSeAlterado(payload, 'prioridade', document.querySelector('#edicao-prioridade').value, demandaAtual.prioridade);
-  const projetoId = Number(document.querySelector('#edicao-projeto').value);
-  if (!Number.isInteger(projetoId) || projetoId < 1) return mostrarErroEdicao('Selecione um projeto válido.');
+  incluirSeAlterado(payload, 'tipo', tipo, demandaAtual.tipo);
+  incluirSeAlterado(payload, 'prioridade', prioridade, demandaAtual.prioridade);
   incluirSeAlterado(payload, 'projeto_id', projetoId, Number(demandaAtual.projeto_id));
 
   const responsavelAtual = demandaAtual.responsavel_id == null ? '' : String(demandaAtual.responsavel_id);
-  const responsavelNovo = document.querySelector('#edicao-responsavel').value;
   if (responsavelAtual !== responsavelNovo) payload.responsavel_id = responsavelNovo ? Number(responsavelNovo) : null;
 
   const prazoAtual = demandaAtual.prazo || '';
@@ -230,18 +289,64 @@ async function salvarEdicao(event) {
   if (prazoAtual !== prazoNovo) payload.prazo = prazoNovo || null;
   if (Object.keys(payload).length === 0) return fecharEdicao();
 
-  mostrarErroEdicao('');
   const submit = formularioEdicao.querySelector('[type="submit"]');
+  salvandoEdicao = true;
   submit.disabled = true;
   try {
     await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify(payload) });
-    fecharEdicao();
+    dialogoEdicao.close();
     await carregar();
   } catch (error) {
-    mostrarErroEdicao(error.message);
+    if (error.message.toLowerCase().includes('prazo') || error.message.toLowerCase().includes('feriado')) {
+      mostrarErroCampo(document.querySelector('#edicao-prazo'), document.querySelector('#erro-edicao-prazo'), error.message);
+    } else {
+      mostrarErroEdicao(error.message);
+    }
   } finally {
+    salvandoEdicao = false;
     submit.disabled = false;
   }
+}
+
+// Uma data já vencida pode permanecer ao editar outro campo; um prazo novo não pode ser passado.
+function validarPrazoEdicao() {
+  const campo = document.querySelector('#edicao-prazo');
+  const erro = document.querySelector('#erro-edicao-prazo');
+  const valor = campo.value;
+  if (campo.validity.badInput || (valor !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(valor))) {
+    mostrarErroCampo(campo, erro, 'Informe uma data válida.');
+    return false;
+  }
+  if (valor === '') return true;
+
+  const partes = valor.split('-');
+  const prazo = new Date(`${valor}T00:00:00`);
+  if (prazo.getFullYear() !== Number(partes[0]) || prazo.getMonth() + 1 !== Number(partes[1]) || prazo.getDate() !== Number(partes[2])) {
+    mostrarErroCampo(campo, erro, 'Informe uma data válida.');
+    return false;
+  }
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  if (valor !== demandaAtual.prazo && prazo < hoje) {
+    mostrarErroCampo(campo, erro, 'O prazo não pode estar no passado.');
+    return false;
+  }
+  return true;
+}
+
+function mostrarErroCampo(campo, elementoErro, mensagem) {
+  campo.classList.add('is-invalid');
+  elementoErro.innerText = mensagem;
+}
+
+function limparErrosEdicao() {
+  formularioEdicao.querySelectorAll('.is-invalid').forEach(function (campo) {
+    campo.classList.remove('is-invalid');
+  });
+  formularioEdicao.querySelectorAll('.erro-campo').forEach(function (elementoErro) {
+    elementoErro.innerText = '';
+  });
+  mostrarErroEdicao('');
 }
 
 function incluirSeAlterado(payload, campo, novo, atual) {
@@ -249,8 +354,13 @@ function incluirSeAlterado(payload, campo, novo, atual) {
 }
 
 async function atualizarStatus() {
+  if (!demandaAtual || document.querySelector('#btn-atualizar-status').disabled) return;
   const status = document.querySelector('#novo-status').value;
-  if (!status) return;
+  mensagemErro.hidden = true;
+  if (!obterStatusPossiveis(demandaAtual).includes(status)) {
+    exibirErro('Selecione um próximo status válido.');
+    return;
+  }
 
   // A reabertura altera somente o status e mantém os dados e o histórico da demanda.
   if (demandaAtual.status === 'CANCELADA' && status === 'ABERTA' &&
@@ -268,11 +378,15 @@ async function atualizarStatus() {
     if (!continuar) return;
   }
 
+  const botao = document.querySelector('#btn-atualizar-status');
+  botao.disabled = true;
   try {
     await api(`/demandas/${demandaId}`, { method: 'PATCH', body: JSON.stringify({ status }) });
     await carregar();
   } catch (error) {
     exibirErro(error.message);
+  } finally {
+    botao.disabled = false;
   }
 }
 
@@ -287,22 +401,31 @@ async function cancelarDemanda() {
 }
 
 async function comentar() {
+  if (!demandaAtual) return;
+  const botao = document.querySelector('#btn-comentar');
+  if (botao.disabled) return;
   const input = document.querySelector('#comentario-input');
   const texto = input.value.trim();
   const erro = document.querySelector('#comentario-erro');
+  input.classList.remove('is-invalid');
+  erro.innerText = '';
+  erro.style.display = 'none';
   if (texto.length < 3 || texto.length > 500) {
-    erro.textContent = 'O comentário deve ter entre 3 e 500 caracteres.';
+    mostrarErroCampo(input, erro, 'O comentário deve ter entre 3 e 500 caracteres.');
     erro.style.display = 'block';
     return;
   }
+  botao.disabled = true;
   try {
     await api(`/demandas/${demandaId}/comentarios`, { method: 'POST', body: JSON.stringify({ texto }) });
     input.value = '';
     erro.style.display = 'none';
     await carregar();
   } catch (error) {
-    erro.textContent = error.message;
+    mostrarErroCampo(input, erro, error.message);
     erro.style.display = 'block';
+  } finally {
+    botao.disabled = false;
   }
 }
 

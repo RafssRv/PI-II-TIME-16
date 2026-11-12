@@ -2,6 +2,7 @@
 // Descrição: Cadastro e desativação de projetos, consulta de equipes, demandas e usuários.
 // Projetos desativados permanecem disponíveis para consulta, sem apagar suas demandas.
 // Todo texto vindo da API é inserido com textContent, nunca como HTML.
+// O cadastro usa o fluxo de validação da Aula 05, com mensagens junto aos campos.
 
 let usuarioAdmin = null;
 
@@ -132,7 +133,7 @@ function renderizarProjetos() {
 function abrirCadastroProjeto() {
   if (usuarioAdmin?.perfil !== 'ADMIN' || criandoProjeto) return;
   formularioProjeto.reset();
-  document.querySelector('#projeto-erro').hidden = true;
+  limparErrosProjeto();
   dialogoProjeto.showModal();
   document.querySelector('#projeto-nome').focus();
 }
@@ -147,6 +148,23 @@ function mostrarErroProjeto(mensagem) {
   erro.hidden = false;
 }
 
+// Os espaços das mensagens ficam no HTML, como no Exemplo 03 da Aula 05.
+function mostrarErroCampoProjeto(campo, elementoErro, mensagem) {
+  campo.classList.add('is-invalid');
+  elementoErro.innerText = mensagem;
+}
+
+function limparErrosProjeto() {
+  formularioProjeto.querySelectorAll('.is-invalid').forEach(function (campo) {
+    campo.classList.remove('is-invalid');
+  });
+  formularioProjeto.querySelectorAll('.erro-campo').forEach(function (elementoErro) {
+    elementoErro.innerText = '';
+  });
+  document.querySelector('#projeto-erro').innerText = '';
+  document.querySelector('#projeto-erro').hidden = true;
+}
+
 function mostrarSucessoAdministracao(mensagem) {
   const sucesso = document.querySelector('#admin-sucesso');
   sucesso.textContent = mensagem;
@@ -156,10 +174,29 @@ function mostrarSucessoAdministracao(mensagem) {
 async function criarProjeto(event) {
   event.preventDefault();
   if (usuarioAdmin?.perfil !== 'ADMIN' || criandoProjeto) return;
-  const nome = document.querySelector('#projeto-nome').value.trim();
-  const descricao = document.querySelector('#projeto-descricao').value.trim();
-  if (nome.length < 2 || nome.length > 100) return mostrarErroProjeto('O nome deve ter entre 2 e 100 caracteres.');
-  if (descricao.length > 1000) return mostrarErroProjeto('A descrição deve ter no máximo 1000 caracteres.');
+  limparErrosProjeto();
+  const campoNome = document.querySelector('#projeto-nome');
+  const campoDescricao = document.querySelector('#projeto-descricao');
+  const nome = campoNome.value.trim();
+  const descricao = campoDescricao.value.trim();
+  let formularioValido = true;
+
+  if (nome === '') {
+    mostrarErroCampoProjeto(campoNome, document.querySelector('#erro-projeto-nome'), 'O nome do projeto é obrigatório.');
+    formularioValido = false;
+  } else if (nome.length < 2 || nome.length > 100) {
+    mostrarErroCampoProjeto(campoNome, document.querySelector('#erro-projeto-nome'), 'O nome deve ter entre 2 e 100 caracteres.');
+    formularioValido = false;
+  }
+
+  // A descrição permanece opcional, conforme a regra já utilizada pelo projeto.
+  if (descricao.length > 1000) {
+    mostrarErroCampoProjeto(campoDescricao, document.querySelector('#erro-projeto-descricao'), 'A descrição deve ter no máximo 1000 caracteres.');
+    formularioValido = false;
+  }
+  if (!formularioValido) return;
+
+  const projeto = { nome, descricao: descricao || null };
   criandoProjeto = true;
   document.querySelector('#projeto-erro').hidden = true;
   document.querySelector('#admin-sucesso').hidden = true;
@@ -167,7 +204,7 @@ async function criarProjeto(event) {
   campos.forEach((id) => { document.getElementById(id).disabled = true; });
   document.querySelector('#salvar-projeto').textContent = 'Criando...';
   try {
-    await api('/projetos', { method: 'POST', body: JSON.stringify({ nome, descricao: descricao || null }) });
+    await api('/projetos', { method: 'POST', body: JSON.stringify(projeto) });
     dialogoProjeto.close();
     document.querySelector('#busca-projetos').value = '';
     document.querySelector('#filtro-situacao-projeto').value = 'todos';
