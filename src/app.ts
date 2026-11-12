@@ -16,10 +16,9 @@ const crypto = require('node:crypto');
 const { isNationalHoliday } = require('./holidays');
 
 type AuthUser = { id: number; nome: string; email: string; perfil: 'ADMIN' | 'LIDER' | 'MEMBRO' };
-type Bindings = Record<string, any>;
 type DbConnection = {
-  query(sql: string, binds?: Bindings): Promise<any[]>;
-  execute(sql: string, binds?: Bindings): Promise<{ affectedRows: number; insertId: number }>;
+  query(sql: string, binds?: any): Promise<any[]>;
+  execute(sql: string, binds?: any): Promise<{ affectedRows: number; insertId: number }>;
   commit(): Promise<void>;
   rollback(): Promise<void>;
   close(): Promise<void>;

@@ -235,7 +235,7 @@ export function registrarUsuarios(app: Express, database?: Database) {
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
-      const binds: Record<string, any> = {};
+      const binds: any = {};
       for (const chave of alteracoes) {
         binds[chave] = corpo[chave];
       }

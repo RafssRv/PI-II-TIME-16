@@ -27,11 +27,11 @@ function createMysqlDatabase({ driver = mysql, env = process.env } = {}) {
       throw error;
     }
     return {
-      async query(sql: string, binds: Record<string, unknown> = {}) {
+      async query(sql: string, binds: any = {}) {
         const [rows] = await conn.execute(sql, binds);
         return rows;
       },
-      async execute(sql: string, binds: Record<string, unknown> = {}) {
+      async execute(sql: string, binds: any = {}) {
         const [result] = await conn.execute(sql, binds);
         return result;
       },

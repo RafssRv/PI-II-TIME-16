@@ -145,16 +145,19 @@ export function registrarListagemDemandas(app: Express, database?: Database) {
       }
     }
 
-    // 4. Define as opções válidas de ordenação.
-    const ordenacoesBanco: Record<string, string> = {
-      criacao_desc: 'd.criado_em DESC, d.id DESC',
-      prazo_asc: 'd.prazo IS NULL, d.prazo ASC, d.id DESC',
-      prioridade_desc: "FIELD(d.prioridade, 'CRITICA', 'ALTA', 'MEDIA', 'BAIXA'), d.id DESC",
-      status: "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'), d.id DESC"
-    };
-
+    // 4. Define as opções válidas de ordenação com if / else if.
     const criterioOrdenacao = typeof ordenacao === 'string' && ordenacao !== '' ? ordenacao : 'criacao_desc';
-    if (!Object.hasOwn(ordenacoesBanco, criterioOrdenacao)) {
+    let sqlOrdenacao = '';
+
+    if (criterioOrdenacao === 'criacao_desc') {
+      sqlOrdenacao = 'd.criado_em DESC, d.id DESC';
+    } else if (criterioOrdenacao === 'prazo_asc') {
+      sqlOrdenacao = 'd.prazo IS NULL, d.prazo ASC, d.id DESC';
+    } else if (criterioOrdenacao === 'prioridade_desc') {
+      sqlOrdenacao = "FIELD(d.prioridade, 'CRITICA', 'ALTA', 'MEDIA', 'BAIXA'), d.id DESC";
+    } else if (criterioOrdenacao === 'status') {
+      sqlOrdenacao = "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'), d.id DESC";
+    } else {
       return res.status(400).json({ error: 'Ordenação inválida.' });
     }
 
@@ -200,7 +203,7 @@ export function registrarListagemDemandas(app: Express, database?: Database) {
       conexao = await database.connection();
 
       const filtrosSql: string[] = [];
-      const binds: Record<string, any> = {};
+      const binds: any = {};
 
       if (typeof status === 'string' && status !== '') {
         filtrosSql.push('d.status = :status');
@@ -246,7 +249,7 @@ export function registrarListagemDemandas(app: Express, database?: Database) {
         JOIN projetos p ON p.id = d.projeto_id
         LEFT JOIN usuarios u ON u.id = d.responsavel_id
         ${clausulaWhere}
-        ORDER BY ${ordenacoesBanco[criterioOrdenacao]}`;
+        ORDER BY ${sqlOrdenacao}`;
 
       const demandas = await conexao.query(sql, binds);
       return res.status(200).json(demandas);
