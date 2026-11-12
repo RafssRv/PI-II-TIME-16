@@ -1,87 +1,31 @@
 // Autor: Vinícius Panutti - 25007329
-// Descrição: Pesquisa e filtros da tabela "Demandas próximas do prazo" no dashboard.
+// Descrição: Pesquisa e filtros fixos da tabela "Demandas próximas do prazo" no dashboard.
 
-/**
- * Lê o texto digitado no campo de busca e aplica o filtro da tabela.
- * Se o campo estiver vazio, não restringe por texto (todas as linhas voltam a aparecer,
- * respeitando apenas os filtros de status/prioridade, se existirem).
- */
-function pesquisarDemanda() {
+// Seleciona o formulário e os campos que já estão no HTML.
+const formularioFiltros = document.querySelector('#filtros-ativos');
+const campoBusca = document.querySelector('#campo-busca');
+const filtroStatus = document.querySelector('#filtro-status');
+const filtroPrioridade = document.querySelector('#filtro-prioridade');
+
+// Pesquisa pela tecla Enter sem recarregar a página.
+formularioFiltros.addEventListener('submit', function (event) {
+    event.preventDefault();
     aplicarFiltrosTabela();
-}
+});
 
-/**
- * Cria, uma única vez, os selects de Status e Prioridade dentro do card da tabela.
- * Cliques seguintes no botão não duplicam os campos. Ao mudar um select, a tabela é filtrada.
- */
-function adicionarFiltro() {
-    if (document.getElementById('filtros-ativos')) {
-        return;
-    }
-
-    const card = document.getElementById('card-demandas-prazo');
-    const titulo = card.querySelector('h5');
-
-    const container = document.createElement('div');
-    container.id = 'filtros-ativos';
-    container.className = 'filtros-ativos';
-
-    const selectStatus = criarSelectFiltro(
-        'filtro-status',
-        [
-            { valor: '', texto: 'Todos os status' },
-            { valor: 'Aberta', texto: 'Aberta' },
-            { valor: 'Em andamento', texto: 'Em andamento' },
-            { valor: 'Em revisão', texto: 'Em revisão' },
-            { valor: 'Concluída', texto: 'Concluída' },
-            { valor: 'Cancelada', texto: 'Cancelada' }
-        ]
-    );
-
-    const selectPrioridade = criarSelectFiltro(
-        'filtro-prioridade',
-        [
-            { valor: '', texto: 'Todas as prioridades' },
-            { valor: 'Crítica', texto: 'Crítica' },
-            { valor: 'Alta', texto: 'Alta' },
-            { valor: 'Média', texto: 'Média' },
-            { valor: 'Baixa', texto: 'Baixa' }
-        ]
-    );
-
-    container.appendChild(selectStatus);
-    container.appendChild(selectPrioridade);
-    titulo.insertAdjacentElement('afterend', container);
-}
-
-/**
- * Monta um <select> com as opções informadas e dispara o filtro da tabela ao mudar o valor.
- */
-function criarSelectFiltro(id, opcoes) {
-    const select = document.createElement('select');
-    select.id = id;
-    select.className = 'form-select-custom';
-    select.addEventListener('change', aplicarFiltrosTabela);
-
-    opcoes.forEach(function (opcao) {
-        const option = document.createElement('option');
-        option.value = opcao.valor;
-        option.textContent = opcao.texto;
-        select.appendChild(option);
-    });
-
-    return select;
-}
+// Atualiza a tabela ao digitar ou mudar um dos filtros.
+campoBusca.addEventListener('input', aplicarFiltrosTabela);
+filtroStatus.addEventListener('change', aplicarFiltrosTabela);
+filtroPrioridade.addEventListener('change', aplicarFiltrosTabela);
 
 /**
  * Percorre as linhas da tabela e aplica busca (título ou responsável) e filtros de status/prioridade.
  * Linhas que não correspondem recebem display: none. Sem resultados, exibe mensagem discreta.
  */
 function aplicarFiltrosTabela() {
-    const campoBusca = document.getElementById('campo-busca');
-    const termo = campoBusca ? campoBusca.value.trim().toLowerCase() : '';
-    const statusSelecionado = obterValorSelect('filtro-status');
-    const prioridadeSelecionada = obterValorSelect('filtro-prioridade');
+    const termo = campoBusca.value.trim().toLowerCase();
+    const statusSelecionado = filtroStatus.value;
+    const prioridadeSelecionada = filtroPrioridade.value;
 
     const linhas = document.querySelectorAll('#tabela-demandas tbody tr');
     let visiveis = 0;
@@ -106,14 +50,6 @@ function aplicarFiltrosTabela() {
     });
 
     atualizarMensagemVazio(visiveis === 0);
-}
-
-/**
- * Devolve o valor do select, ou string vazia se o filtro ainda não foi criado / está em "todos".
- */
-function obterValorSelect(id) {
-    const select = document.getElementById(id);
-    return select ? select.value : '';
 }
 
 /**

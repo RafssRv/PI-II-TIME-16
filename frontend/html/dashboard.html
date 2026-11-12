@@ -33,13 +33,6 @@
             <h1>Dashboard</h1>
             <p>Visão geral das demandas do projeto</p>
         </div>
-        <div class="header-actions">
-            <div class="busca-grupo">
-                <input type="text" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável..." oninput="pesquisarDemanda()">
-                <button type="button" class="btn-primary-custom" onclick="pesquisarDemanda()">+ Pesquisar demanda</button>
-            </div>
-            <button type="button" class="btn-primary-custom" onclick="adicionarFiltro()">+ Adicionar Filtro</button>
-        </div>
     </div>
 
     <p id="dashboard-erro" role="alert" hidden></p>
@@ -156,6 +149,34 @@
     <!-- Tabela de proximas do prazo -->
     <div class="content-card" id="card-demandas-prazo">
         <h5>Demandas próximas do prazo</h5>
+        <!-- Pesquisa e filtros ficam sempre disponíveis acima da tabela. -->
+        <form id="filtros-ativos" class="filtros-ativos">
+            <div class="campo-filtro filtro-busca">
+                <label for="campo-busca">Pesquisar demanda</label>
+                <input type="search" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável...">
+            </div>
+            <div class="campo-filtro">
+                <label for="filtro-status">Status</label>
+                <select id="filtro-status" class="form-select-custom">
+                    <option value="">Todos os status</option>
+                    <option value="Aberta">Aberta</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Em revisão">Em revisão</option>
+                    <option value="Concluída">Concluída</option>
+                    <option value="Cancelada">Cancelada</option>
+                </select>
+            </div>
+            <div class="campo-filtro">
+                <label for="filtro-prioridade">Prioridade</label>
+                <select id="filtro-prioridade" class="form-select-custom">
+                    <option value="">Todas as prioridades</option>
+                    <option value="Crítica">Crítica</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Média">Média</option>
+                    <option value="Baixa">Baixa</option>
+                </select>
+            </div>
+        </form>
         <table class="table-custom" id="tabela-demandas">
             <thead>
             <tr>
