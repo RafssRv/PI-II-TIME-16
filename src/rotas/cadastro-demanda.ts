@@ -317,10 +317,7 @@ export function registrarCadastroDemandaEProjetos(
       // Quando houver responsável informado, verifica se o usuário existe, está ativo e vinculado ao projeto.
       if (responsavelIdNumero !== null) {
         const membros = await conexao.query(
-          `SELECT u.id
-           FROM projeto_membros pm
-           JOIN usuarios u ON u.id = pm.usuario_id
-           WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1`,
+          'SELECT u.id FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1',
           { projeto_id: projetoIdNumero, usuario_id: responsavelIdNumero }
         );
         if (membros.length === 0) {

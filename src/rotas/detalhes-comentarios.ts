@@ -12,24 +12,23 @@ import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 import { isNationalHoliday } from '../holidays';
 
-const VALORES_ENUM: Record<string, string[]> = {
-  status: ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'],
-  prioridade: ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'],
-  tipo: ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO']
-};
+const STATUS_VALIDOS = ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'];
+const PRIORIDADES_VALIDAS = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'];
+const TIPOS_VALIDOS = ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO'];
 
-const TRANSICOES_STATUS: Record<string, string[]> = {
-  ABERTA: ['EM_ANDAMENTO', 'CANCELADA'],
-  EM_ANDAMENTO: ['EM_REVISAO', 'CANCELADA'],
-  EM_REVISAO: ['EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA'],
-  CONCLUIDA: [],
-  CANCELADA: ['ABERTA']
-};
+function obterTransicoesPermitidas(statusAtual: string, ehMembro: boolean): string[] {
+  if (ehMembro) {
+    if (statusAtual === 'ABERTA') return ['EM_ANDAMENTO'];
+    if (statusAtual === 'EM_ANDAMENTO') return ['EM_REVISAO'];
+    return [];
+  }
 
-const TRANSICOES_MEMBRO: Record<string, string[]> = {
-  ABERTA: ['EM_ANDAMENTO'],
-  EM_ANDAMENTO: ['EM_REVISAO']
-};
+  if (statusAtual === 'ABERTA') return ['EM_ANDAMENTO', 'CANCELADA'];
+  if (statusAtual === 'EM_ANDAMENTO') return ['EM_REVISAO', 'CANCELADA'];
+  if (statusAtual === 'EM_REVISAO') return ['EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA'];
+  if (statusAtual === 'CANCELADA') return ['ABERTA'];
+  return [];
+}
 
 function obterHojeCivil(dataReferencia: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
@@ -436,7 +435,7 @@ export function registrarDetalhesEComentarios(
       });
     }
 
-    const valoresValidados: Record<string, any> = {};
+    const valoresValidados: any = {};
     for (const campo of alteracoes) {
       const valor = corpo[campo];
 
@@ -450,9 +449,19 @@ export function registrarDetalhesEComentarios(
           return res.status(400).json({ error: 'Descrição deve ter entre 10 e 1000 caracteres.' });
         }
         valoresValidados[campo] = valor.trim();
-      } else if (VALORES_ENUM[campo]) {
-        if (!VALORES_ENUM[campo].includes(valor)) {
-          return res.status(400).json({ error: `Valor inválido: ${campo}.` });
+      } else if (campo === 'status') {
+        if (!STATUS_VALIDOS.includes(valor)) {
+          return res.status(400).json({ error: 'Valor inválido: status.' });
+        }
+        valoresValidados[campo] = valor;
+      } else if (campo === 'prioridade') {
+        if (!PRIORIDADES_VALIDAS.includes(valor)) {
+          return res.status(400).json({ error: 'Valor inválido: prioridade.' });
+        }
+        valoresValidados[campo] = valor;
+      } else if (campo === 'tipo') {
+        if (!TIPOS_VALIDOS.includes(valor)) {
+          return res.status(400).json({ error: 'Valor inválido: tipo.' });
         }
         valoresValidados[campo] = valor;
       } else if (campo === 'projeto_id') {
@@ -527,7 +536,11 @@ export function registrarDetalhesEComentarios(
         });
       }
 
-      if (ehMembro && (!valoresValidados.status || !TRANSICOES_MEMBRO[demandaAtual.status]?.includes(valoresValidados.status))) {
+      if (
+        ehMembro &&
+        (!valoresValidados.status ||
+          !obterTransicoesPermitidas(demandaAtual.status, true).includes(valoresValidados.status))
+      ) {
         await conexao.rollback();
         return res.status(403).json({
           error: 'Membros só podem avançar demandas atribuídas de Aberta para Em andamento e de Em andamento para Em revisão.'
@@ -537,7 +550,7 @@ export function registrarDetalhesEComentarios(
       if (
         valoresValidados.status &&
         valoresValidados.status !== demandaAtual.status &&
-        !TRANSICOES_STATUS[demandaAtual.status]?.includes(valoresValidados.status)
+        !obterTransicoesPermitidas(demandaAtual.status, false).includes(valoresValidados.status)
       ) {
         await conexao.rollback();
         return res.status(400).json({
@@ -570,10 +583,7 @@ export function registrarDetalhesEComentarios(
       const responsavelId = informouResponsavel ? valoresValidados.responsavel_id : demandaAtual.responsavel_id;
       if (responsavelId && (mudouProjeto || informouResponsavel)) {
         const membros = await conexao.query(
-          `SELECT u.id
-           FROM projeto_membros pm
-           JOIN usuarios u ON u.id = pm.usuario_id
-           WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1`,
+          'SELECT u.id FROM projeto_membros pm JOIN usuarios u ON u.id = pm.usuario_id WHERE pm.projeto_id = :projeto_id AND pm.usuario_id = :usuario_id AND u.ativo = 1',
           { projeto_id: projetoId, usuario_id: responsavelId }
         );
         if (membros.length === 0) {
@@ -593,7 +603,7 @@ export function registrarDetalhesEComentarios(
       );
 
       if (alteracoesReais.length > 0) {
-        const binds: Record<string, any> = {};
+        const binds: any = {};
         for (const campo of alteracoesReais) {
           binds[campo] = valoresValidados[campo];
         }
