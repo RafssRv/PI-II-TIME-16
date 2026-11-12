@@ -1,7 +1,7 @@
 // Autor: Priscila Amorim
 // Descrição: Consulta detalhes, comentários e histórico; permite editar e acompanhar o ciclo da demanda.
 
-const usuario = exigirUsuario();
+let usuario = null;
 const demandaId = Number(new URLSearchParams(window.location.search).get('id'));
 const dialogoEdicao = document.querySelector('#dialog-edicao');
 const formularioEdicao = document.querySelector('#form-edicao');
@@ -25,7 +25,10 @@ const opcoesStatus = {
   CANCELADA: ['ABERTA']
 };
 
-document.addEventListener('DOMContentLoaded', carregar);
+document.addEventListener('DOMContentLoaded', async function () {
+  usuario = await exigirUsuario();
+  if (usuario) await carregar();
+});
 document.querySelector('#btn-comentar').addEventListener('click', comentar);
 document.querySelector('#btn-editar').addEventListener('click', abrirEdicao);
 document.querySelector('#btn-atualizar-status').addEventListener('click', atualizarStatus);
@@ -34,7 +37,6 @@ document.querySelector('#fechar-edicao').addEventListener('click', fecharEdicao)
 document.querySelector('#cancelar-edicao').addEventListener('click', fecharEdicao);
 formularioEdicao.addEventListener('submit', salvarEdicao);
 document.querySelector('#edicao-projeto').addEventListener('change', trocarProjetoEdicao);
-if (usuario?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="cadastro.html"]').hidden = true;
 
 async function carregar() {
   if (!Number.isInteger(demandaId) || demandaId < 1) {

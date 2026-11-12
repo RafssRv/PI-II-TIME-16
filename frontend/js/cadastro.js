@@ -1,17 +1,12 @@
 // Autor: Rafael Roveri Pires - RA: 24007131
 // Descrição: Script de validação e criação de demandas, preenchimento dinâmico de projetos/membros e tratamento de feriados nacionais.
 
-const user = exigirUsuario();
+let user = null;
 const form = document.querySelector('#form-demanda');
 const alertaErro = document.querySelector('#cadastro-alerta-erro');
 const btnCancelar = document.querySelector('#btn-cancelar');
 const selectProjeto = document.querySelector('#projeto');
 const selectResponsavel = document.querySelector('#responsavel');
-
-if (user?.perfil === 'MEMBRO') {
-  window.location.replace('listagemDemandas.html');
-  if (form) form.hidden = true;
-}
 
 if (btnCancelar) {
   btnCancelar.addEventListener('click', () => {
@@ -20,7 +15,13 @@ if (btnCancelar) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (user?.perfil === 'MEMBRO') return;
+  user = await exigirUsuario();
+  if (!user) return;
+  if (user.perfil === 'MEMBRO') {
+    window.location.replace('listagemDemandas.html');
+    form.hidden = true;
+    return;
+  }
   try {
     const projetos = await api('/projetos');
     preencherSelect('projeto', projetos.filter((item) => item.ativo), 'Selecione um projeto...');
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (user?.perfil === 'MEMBRO') return;
+  if (!user || user.perfil === 'MEMBRO') return;
 
   limparErros();
   esconderAlertaGeral();

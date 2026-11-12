@@ -149,6 +149,7 @@ async function main() {
       throw new Error('O banco já possui usuários. O seed só roda em banco vazio; nada foi alterado.');
     }
     if (SENHA.length < 10) throw new Error('SEED_SENHA precisa ter pelo menos 10 caracteres.');
+    if (bcrypt.truncates(SENHA)) throw new Error('SEED_SENHA deve ter até 72 bytes em UTF-8.');
 
     // Todos os usuários de demonstração compartilham a mesma senha (e o mesmo hash).
     const senhaHash = await bcrypt.hash(SENHA, 12);

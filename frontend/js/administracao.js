@@ -3,11 +3,7 @@
 // Projetos desativados permanecem disponíveis para consulta, sem apagar suas demandas.
 // Todo texto vindo da API é inserido com textContent, nunca como HTML.
 
-const usuarioAdmin = exigirUsuario();
-
-if (usuarioAdmin && usuarioAdmin.perfil !== 'ADMIN') {
-  window.location.replace('dashboard.html');
-}
+let usuarioAdmin = null;
 
 // Nomes dos perfis como aparecem no documento do projeto.
 const rotulosPerfil = { ADMIN: 'Administrador', LIDER: 'Líder de Projeto', MEMBRO: 'Membro da Equipe' };
@@ -21,7 +17,13 @@ const projetosEmDesativacao = new Set();
 const dialogoProjeto = document.querySelector('#dialog-projeto');
 const formularioProjeto = document.querySelector('#form-projeto');
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  usuarioAdmin = await exigirUsuario();
+  if (!usuarioAdmin) return;
+  if (usuarioAdmin.perfil !== 'ADMIN') {
+    window.location.replace('dashboard.html');
+    return;
+  }
   if (usuarioAdmin?.perfil === 'ADMIN') {
     document.querySelector('#btn-novo-projeto').hidden = false;
     carregarAdministracao();

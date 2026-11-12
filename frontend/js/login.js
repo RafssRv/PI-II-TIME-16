@@ -8,7 +8,7 @@ Descrição: Validação do formulário e controle do acesso ao DemandasApp
 4. Conferir o preenchimento dos campos e o formato do e-mail, apresentando
    todos os erros encontrados junto aos respectivos campos
 5. Enviar os dados válidos ao servidor por meio da função api(), de api.js.
-6. Armazenar os dados do usuário e o token retornados após a autenticação
+6. Aguardar a criação da sessão no servidor, identificada por um cookie
 7. Abrir o dashboard quando o acesso for autorizado ou apresentar a mensagem
    de erro quando alguma etapa da solicitação falhar
 */
@@ -17,6 +17,7 @@ Descrição: Validação do formulário e controle do acesso ao DemandasApp
 const formulario = document.querySelector('#form-login');
 const campoEmail = document.querySelector('#email');
 const campoSenha = document.querySelector('#senha');
+const botaoEntrar = formulario.querySelector('[type="submit"]');
 
 // Seleciona os espaços das mensagens de erro
 const erroEmail = document.querySelector('#erro-email');
@@ -78,24 +79,31 @@ formulario.addEventListener('submit', async function (event) {
   // Interrompe o envio quando algum campo precisa ser corrigido
   if (!formularioValido) return;
 
+  botaoEntrar.disabled = true;
   try {
 
     // Envia o e-mail e a senha ao servidor e aguarda a resposta
-    const sessao = await api('/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, senha })
-    });
-
-    // Guarda os dados do usuário e o token na sessão da aba do navegador
-    sessionStorage.setItem('usuario', JSON.stringify(sessao.usuario));
-    sessionStorage.setItem('token', sessao.token);
+    await entrarApi(email, senha);
 
     // Abre o dashboard após o login ser autorizado
-    window.location.href = 'dashboard.html';
+    window.location.replace('dashboard.html');
 
   } catch (error) {
 
     // Mostra a mensagem de erro caso a solicitação falhe
     mostrarErro(campoSenha, erroSenha, error.message);
+    campoSenha.value = '';
+  } finally {
+    botaoEntrar.disabled = false;
+  }
+});
+
+// Uma sessão ainda válida permite voltar ao dashboard sem digitar a senha novamente.
+document.addEventListener('DOMContentLoaded', async function () {
+  try {
+    await buscarSessaoApi();
+    window.location.replace('dashboard.html');
+  } catch {
+    // Abrir o login sem uma sessão é uma situação normal.
   }
 });

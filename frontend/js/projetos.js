@@ -8,23 +8,17 @@ membros da equipe, além do controle de acesso conforme o perfil
 do usuário e do tratamento de carregamento, resultados vazios e erros.
 */
 
-const usuarioProjetos = exigirUsuario();
-
-if (usuarioProjetos?.perfil === 'ADMIN') {
-    window.location.replace('administracao.html');
-}
-
-if (usuarioProjetos?.perfil === 'MEMBRO') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const linkNovaDemanda = document.querySelector('#link-nova-demanda');
-        if (linkNovaDemanda) linkNovaDemanda.hidden = true;
-    });
-}
+let usuarioProjetos = null;
 
 let projetosCarregados = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!usuarioProjetos || usuarioProjetos.perfil === 'ADMIN') return;
+document.addEventListener('DOMContentLoaded', async () => {
+    usuarioProjetos = await exigirUsuario();
+    if (!usuarioProjetos) return;
+    if (usuarioProjetos.perfil === 'ADMIN') {
+        window.location.replace('administracao.html');
+        return;
+    }
 
     document.querySelector('#busca-projetos')
         .addEventListener('input', renderizarProjetos);

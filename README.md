@@ -45,7 +45,7 @@ A aplicação integra frontend, API e banco de dados relacional, com autenticaç
 | Frontend | HTML5, CSS3, JavaScript e Bootstrap |
 | Backend | Node.js, TypeScript e Express |
 | Banco de dados | MySQL, com o driver mysql2 |
-| Autenticação | Senhas protegidas com bcrypt e tokens de sessão |
+| Autenticação | Senhas protegidas com bcrypt e sessões no servidor com express-session |
 | API externa | BrasilAPI — feriados nacionais |
 | Versionamento | Git e GitHub |
 
@@ -152,7 +152,19 @@ A senha deve ser igual à definida ao criar o usuário no MySQL.
 
 O arquivo `.env` contém configurações locais e não deve ser enviado ao repositório.
 
-Opcionalmente, configure `SESSION_SECRET` com uma chave aleatória. Sem essa variável, o servidor gera uma chave temporária e as sessões deixam de valer quando ele é reiniciado. Os tokens possuem validade de oito horas.
+Configure obrigatoriamente `SESSION_SECRET` no `.env`, conforme a Aula 11 de autenticação. Gere uma chave aleatória no terminal e copie o resultado para essa variável:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+O servidor recusa chaves ausentes, com menos de 32 caracteres ou que ainda comecem com `SUBSTITUA_`. Não publique a chave.
+
+A autenticação usa `express-session`, com os dados do usuário na memória do servidor e o cookie `portal.sid` no navegador. O cookie é `HttpOnly`, `SameSite=Lax` e tem validade de 30 minutos. A configuração `secure: false` corresponde ao ambiente local HTTP da aula. Reiniciar o backend encerra as sessões; os usuários e demais dados continuam no MySQL.
+
+As rotas de autenticação são `POST /api/login`, `GET /api/sessao` e `POST /api/logout`. O navegador envia o cookie com `credentials: 'same-origin'`. O logout destrói a sessão no servidor e limpa o cookie. O frontend consulta a sessão antes de carregar cada tela e não armazena tokens em `sessionStorage`.
+
+Os perfis do projeto continuam sendo `ADMIN`, `LIDER` e `MEMBRO`, com suas permissões específicas. A conta ativa e seu perfil são conferidos no banco durante os acessos à API. As páginas internas também verificam a sessão antes de entregar o HTML. No ambiente de aula, o site e a API devem ser abertos pela mesma origem, usando o endereço do servidor Express.
 
 ### 4. Criar os dados de demonstração
 
@@ -350,5 +362,5 @@ PI-II-TIME-16/
 | Banco ou tabela inexistente | Confira a criação de `demandas_app` e a execução de `database/schema.sql`. |
 | O seed informa que já existem usuários | Utilize as contas existentes ou prepare outro banco vazio para demonstração. |
 | Não foi possível validar o prazo | Verifique a conexão com a internet e tente novamente. |
-| Sessão expirada após reiniciar o servidor | Faça login novamente ou configure um `SESSION_SECRET` persistente. |
+| Sessão encerrada após reiniciar o servidor | Faça login novamente. As sessões da aula ficam na memória do processo, mesmo com `SESSION_SECRET` configurado. |
 | Porta 3000 ocupada | Defina outra porta na variável `PORT` e utilize esse número no navegador. |

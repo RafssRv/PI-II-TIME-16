@@ -7,6 +7,7 @@
 */
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
+import { exigirAdmin } from '../autenticacao';
 
 const bcrypt = require('bcryptjs');
 
@@ -127,6 +128,10 @@ export function registrarUsuarios(app: Express, database?: Database) {
       return res.status(400).json({ error: 'A senha deve ter entre 10 e 200 caracteres.' });
     }
 
+    if (bcrypt.truncates(corpo.senha)) {
+      return res.status(400).json({ error: 'A senha deve ter até 72 bytes em UTF-8.' });
+    }
+
     if (!database) {
       const novoUsuario: UsuarioTeste = {
         id: usuariosTeste.length + 1,
@@ -186,11 +191,7 @@ export function registrarUsuarios(app: Express, database?: Database) {
   });
 
   // Rota 3: PATCH /api/usuarios/:id — Atualiza dados de um usuário (restrito a ADMIN).
-  app.patch('/api/usuarios/:id', async (req: Request, res: Response) => {
-    if (req.authUser?.perfil !== 'ADMIN') {
-      return res.status(403).json({ error: 'Somente um administrador pode alterar usuários.' });
-    }
-
+  app.patch('/api/usuarios/:id', exigirAdmin, async (req: Request, res: Response) => {
     const usuarioId = converterIdPositivo(req.params.id);
     if (usuarioId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
@@ -263,11 +264,7 @@ export function registrarUsuarios(app: Express, database?: Database) {
   });
 
   // Rota 4: DELETE /api/usuarios/:id — Desativa um usuário sem excluí-lo fisicamente (restrito a ADMIN).
-  app.delete('/api/usuarios/:id', async (req: Request, res: Response) => {
-    if (req.authUser?.perfil !== 'ADMIN') {
-      return res.status(403).json({ error: 'Somente um administrador pode desativar usuários.' });
-    }
-
+  app.delete('/api/usuarios/:id', exigirAdmin, async (req: Request, res: Response) => {
     const usuarioId = converterIdPositivo(req.params.id);
     if (usuarioId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });

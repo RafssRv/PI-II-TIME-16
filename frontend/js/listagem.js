@@ -5,10 +5,9 @@ Descrição: Integração da listagem e validação/ordenação dos filtros de b
 // Consulta a API; títulos e descrições recebidos são inseridos como texto.
 const grid = document.querySelector('#demandas-grid');
 let consultaAtual = 0;
-const usuarioListagem = exigirUsuario();
-if (usuarioListagem?.perfil === 'MEMBRO') document.querySelector('.sidebar-menu a[href="cadastro.html"]').hidden = true;
-
-if (usuarioListagem) document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const usuarioListagem = await exigirUsuario();
+  if (!usuarioListagem) return;
   document.querySelector('#filtros').addEventListener('submit', (event) => {
     event.preventDefault();
     carregarDemandas();

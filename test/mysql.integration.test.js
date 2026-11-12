@@ -14,14 +14,16 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}/api`;
   const created = {};
-  let token = null;
+  let cookie = '';
   async function call(path, method = 'GET', body, status = 200) {
     const headers = { 'content-type': 'application/json' };
-    if (token && path !== '/login') headers.authorization = `Bearer ${token}`;
+    if (cookie) headers.cookie = cookie;
     const response = await fetch(`${base}${path}`, {
       method, headers,
       body: body === undefined ? undefined : JSON.stringify(body)
     });
+    const cookies = response.headers.getSetCookie();
+    if (cookies.length) cookie = cookies[0].split(';')[0];
     const result = response.status === 204 ? null : await response.json();
     assert.equal(response.status, status, JSON.stringify(result));
     return result;
@@ -52,14 +54,13 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
         email: adminEmail,
         senha: adminPassword
       });
-      assert.equal(adminSession.usuario.perfil, 'ADMIN');
-      token = adminSession.token;
+      assert.equal(adminSession.perfil, 'ADMIN');
     }
     const email = `mysql-${Date.now()}@local.test`;
     created.usuario = (await call('/usuarios', 'POST', { nome: 'Teste MySQL', email, senha: 'SenhaTeste123!', perfil: 'ADMIN' }, 201)).id;
     const sessao = await call('/login', 'POST', { email, senha: 'SenhaTeste123!' });
-    assert.equal(sessao.usuario.id, created.usuario);
-    token = sessao.token;
+    assert.equal(sessao.id, created.usuario);
+    assert.equal((await call('/sessao')).id, created.usuario);
     created.projeto = (await call('/projetos', 'POST', { nome: 'Projeto teste MySQL' }, 201)).id;
     await call(`/projetos/${created.projeto}/membros`, 'POST', { usuario_id: created.usuario }, 204);
     created.demanda = (await call('/demandas', 'POST', {
@@ -94,6 +95,8 @@ test('MySQL real: cadastro, login, CRUD, comentários e histórico', {
     const dashboard = await call('/dashboard');
     assert.ok(dashboard.quantidadesPorStatus.CANCELADA >= 1);
     assert.ok(!dashboard.demandasCriticasEmAberto.some(d => d.id === created.demanda));
+    await call('/logout', 'POST');
+    await call('/sessao', 'GET', undefined, 401);
   } finally {
     const c = await database.connection();
     try {

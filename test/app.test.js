@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { createApp: buildApp } = require('../src/app');
 
 function createApp(database, options = {}) {
-  return buildApp(database, { skipAuthorization: true, ...options });
+  return buildApp(database, { sessionSecret: 'segredo-exclusivo-dos-testes-da-aplicacao', skipAuthorization: true, ...options });
 }
 
 function fakeDatabase({ queries = [], execute, query: queryResult } = {}) {
@@ -208,9 +208,10 @@ async function authenticatedRequest(database, path, method = 'GET', body) {
     body: JSON.stringify({ email: 'movimentacao@local.test', senha: senhaMovimentacao })
   });
   assert.equal(login.status, 200);
-  const { token } = await login.json();
+  const cookie = login.headers.getSetCookie()[0].split(';')[0];
+  await login.json();
   return request(app, path, {
-    method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+    method, headers: { 'content-type': 'application/json', cookie },
     body: body === undefined ? undefined : JSON.stringify(body)
   });
 }
