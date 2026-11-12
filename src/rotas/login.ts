@@ -1,22 +1,21 @@
 /*
   Autora: Sophia Franco de Godoy / RA: 24000833
   Descrição: Rota POST /api/login para autenticação de usuários
-  Contempla a validação de campos obrigatórios, a busca em memória (Reunião 4)
-  e a consulta no banco de dados com encerramento da conexão no bloco finally (Reunião 5).
+  Valida os campos obrigatórios e consulta o usuário no MySQL,
+  com encerramento da conexão no bloco finally (Reunião 5).
   Após conferir o hash, regenera e salva a sessão no servidor, conforme a Aula 11.
 */
 import { Express, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import type { Database, DbConnection } from '../app';
 import type { UsuarioSessao } from '../autenticacao';
-import { usuariosTeste } from './usuarios';
 
 interface UsuarioBanco extends UsuarioSessao {
   senha_hash: string;
 }
 
 // Registra a rota POST /api/login no aplicativo Express.
-export function registrarLogin(app: Express, database?: Database) {
+export function registrarLogin(app: Express, database: Database) {
   app.post('/api/login', async (req: Request, res: Response, next: NextFunction) => {
     const { email, senha } = req.body || {};
 
@@ -36,27 +35,7 @@ export function registrarLogin(app: Express, database?: Database) {
       return res.status(400).json({ error: 'A senha deve ter até 72 bytes em UTF-8.' });
     }
 
-    // Modo em memória (Reunião 4): utilizado quando nenhum banco de dados é informado.
-    if (!database) {
-      const usuario = usuariosTeste.find(
-        (item) => item.email === email.trim().toLowerCase() && item.senha === senha
-      );
-
-      if (!usuario) {
-        return res.status(401).json({ error: 'E-mail ou senha inválidos.' });
-      }
-
-      const dadosUsuario = {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        perfil: usuario.perfil
-      };
-
-      return res.status(200).json({ usuario: dadosUsuario });
-    }
-
-    // Modo com banco de dados (Reunião 5): obtém a conexão, consulta e fecha no finally.
+    // Obtém a conexão com o banco, consulta o usuário e fecha no finally.
     let conexao: DbConnection | undefined;
     let usuario: UsuarioBanco | undefined;
     try {

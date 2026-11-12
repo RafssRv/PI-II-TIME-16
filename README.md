@@ -162,6 +162,8 @@ O servidor recusa chaves ausentes, com menos de 32 caracteres ou que ainda comec
 
 A autenticação usa `express-session`, com os dados do usuário na memória do servidor e o cookie `portal.sid` no navegador. O cookie é `HttpOnly`, `SameSite=Lax` e tem validade de 30 minutos. A configuração `secure: false` corresponde ao ambiente local HTTP da aula. Reiniciar o backend encerra as sessões; os usuários e demais dados continuam no MySQL.
 
+As rotas de usuários, projetos, demandas, comentários e dashboard consultam o MySQL. A API exige uma conexão com o banco e não utiliza os antigos arrays de demonstração como alternativa. O comando `npm run seed` continua disponível para gravar os dados de demonstração em um banco vazio.
+
 As rotas de autenticação são `POST /api/login`, `GET /api/sessao` e `POST /api/logout`. O navegador envia o cookie com `credentials: 'same-origin'`. O logout destrói a sessão no servidor e limpa o cookie. O frontend consulta a sessão antes de carregar cada tela e não armazena tokens em `sessionStorage`.
 
 Os perfis do projeto continuam sendo `ADMIN`, `LIDER` e `MEMBRO`, com suas permissões específicas. A conta ativa e seu perfil são conferidos no banco durante os acessos à API. As páginas internas também verificam a sessão antes de entregar o HTML. No ambiente de aula, o site e a API devem ser abertos pela mesma origem, usando o endereço do servidor Express.
@@ -289,7 +291,7 @@ npm run build
 npm start
 ```
 
-A compilação gera os arquivos na pasta `dist`.
+A compilação gera os arquivos na pasta `lib`, como nos exemplos das aulas.
 
 O MySQL e o arquivo `.env` devem estar configurados também para essa forma de execução.
 

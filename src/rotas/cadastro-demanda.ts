@@ -4,64 +4,8 @@ import { isNationalHoliday } from '../holidays';
 
 type TipoDemanda = 'TAREFA' | 'DEFEITO' | 'MELHORIA' | 'DOCUMENTACAO';
 type PrioridadeDemanda = 'CRITICA' | 'ALTA' | 'MEDIA' | 'BAIXA';
-type StatusDemanda = 'ABERTA' | 'EM_ANDAMENTO' | 'EM_REVISAO' | 'CONCLUIDA' | 'CANCELADA';
-
-export interface ProjetoCadastro {
-  id: number;
-  nome: string;
-  descricao: string | null;
-  ativo: number;
-  criado_em: string;
-  atualizado_em: string;
-}
-
-export interface DemandaCadastrada {
-  id: number;
-  projeto_id: number;
-  criador_id: number;
-  responsavel_id: number | null;
-  titulo: string;
-  descricao: string;
-  tipo: TipoDemanda;
-  prioridade: PrioridadeDemanda;
-  status: StatusDemanda;
-  prazo: string | null;
-  criado_em: string;
-  atualizado_em: string;
-}
-
 const TIPOS_VALIDOS: TipoDemanda[] = ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO'];
 const PRIORIDADES_VALIDAS: PrioridadeDemanda[] = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'];
-
-// Projetos pré-cadastrados em memória para demonstração da Reunião 4.
-export const projetosTeste: ProjetoCadastro[] = [
-  {
-    id: 1,
-    nome: 'Portal Acadêmico',
-    descricao: 'Sistema de acompanhamento de demandas acadêmicas.',
-    ativo: 1,
-    criado_em: '2026-11-01T10:00:00.000Z',
-    atualizado_em: '2026-11-01T10:00:00.000Z'
-  },
-  {
-    id: 2,
-    nome: 'Aplicativo Mobile',
-    descricao: 'Aplicativo para consulta de prazos e entregas.',
-    ativo: 1,
-    criado_em: '2026-11-01T10:00:00.000Z',
-    atualizado_em: '2026-11-01T10:00:00.000Z'
-  }
-];
-
-// Usuários em memória para validação de responsável na Reunião 4.
-const usuariosResponsaveisTeste = [
-  { id: 1, nome: 'Administrador Inicial', ativo: 1 },
-  { id: 2, nome: 'Ana Souza', ativo: 1 },
-  { id: 3, nome: 'Carla Mendes', ativo: 1 }
-];
-
-// Lista de demandas criadas em memória (Reunião 4).
-export const demandasCadastradasTeste: DemandaCadastrada[] = [];
 
 // Valida e converte um identificador numérico positivo.
 function converterIdPositivo(valor: unknown): number | null {
@@ -103,7 +47,7 @@ function validarFormatoPrazo(valor: unknown): { valido: boolean; data: string | 
 // Registra as rotas GET /api/projetos e POST /api/demandas no aplicativo Express.
 export function registrarCadastroDemandaEProjetos(
   app: Express,
-  database?: Database,
+  database: Database,
   obterAgora: () => Date = () => new Date(),
   verificarFeriado: (dataIso: string) => Promise<boolean> = isNationalHoliday
 ) {
@@ -123,15 +67,6 @@ export function registrarCadastroDemandaEProjetos(
       return res.status(403).json({
         error: 'Somente um administrador pode consultar todos os projetos inativos.'
       });
-    }
-
-    // Modo em memória (Reunião 4).
-    if (!database) {
-      const lista =
-        incluir_inativos === '1'
-          ? projetosTeste
-          : projetosTeste.filter((projeto) => projeto.ativo === 1);
-      return res.status(200).json(lista);
     }
 
     // Modo com banco de dados (Reunião 5): abre a conexão no try e fecha no finally.
@@ -241,50 +176,7 @@ export function registrarCadastroDemandaEProjetos(
       }
     }
 
-    // 7. Define automaticamente no servidor o status Aberta e as datas de criação e atualização,
-    // ignorando qualquer valor de status ou datas que tenha sido enviado no corpo da requisição.
-    const statusInicial: StatusDemanda = 'ABERTA';
-    const dataAtualServidor = obterAgora().toISOString();
-
-    // Modo em memória (Reunião 4): verifica existência nos arrays e adiciona com push.
-    if (!database) {
-      const projetoExistente = projetosTeste.find(
-        (projeto) => projeto.id === projetoIdNumero && projeto.ativo === 1
-      );
-      if (!projetoExistente) {
-        return res.status(400).json({ error: 'O projeto precisa existir e estar ativo.' });
-      }
-
-      if (responsavelIdNumero !== null) {
-        const usuarioExistente = usuariosResponsaveisTeste.find(
-          (usuario) => usuario.id === responsavelIdNumero && usuario.ativo === 1
-        );
-        if (!usuarioExistente) {
-          return res.status(400).json({
-            error: 'O responsável deve ser um usuário ativo vinculado ao projeto.'
-          });
-        }
-      }
-
-      const novaDemanda: DemandaCadastrada = {
-        id: demandasCadastradasTeste.length + 1,
-        projeto_id: projetoIdNumero,
-        criador_id: req.authUser?.id ?? 1,
-        responsavel_id: responsavelIdNumero,
-        titulo: tituloLimpo,
-        descricao: descricaoLimpa,
-        tipo: corpo.tipo,
-        prioridade: corpo.prioridade,
-        status: statusInicial,
-        prazo: prazoValidado,
-        criado_em: dataAtualServidor,
-        atualizado_em: dataAtualServidor
-      };
-
-      demandasCadastradasTeste.push(novaDemanda);
-      return res.status(201).json(novaDemanda);
-    }
-
+    // O INSERT usa o status Aberta e as datas definidos automaticamente pelo MySQL.
     // Modo com banco de dados (Reunião 5): verifica existência no banco, insere e fecha no finally.
     let conexao: DbConnection | undefined;
     try {
@@ -397,19 +289,6 @@ export function registrarCadastroDemandaEProjetos(
       descricaoLimpa = corpo.descricao.trim();
     }
 
-    if (!database) {
-      const novoProjeto: ProjetoCadastro = {
-        id: projetosTeste.length + 1,
-        nome: nomeLimpo,
-        descricao: descricaoLimpa,
-        ativo: 1,
-        criado_em: obterAgora().toISOString(),
-        atualizado_em: obterAgora().toISOString()
-      };
-      projetosTeste.push(novoProjeto);
-      return res.status(201).json({ id: novoProjeto.id });
-    }
-
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -445,10 +324,6 @@ export function registrarCadastroDemandaEProjetos(
 
     if (alteracoes.length === 0) {
       return res.status(400).json({ error: 'Nenhum campo permitido informado.' });
-    }
-
-    if (!database) {
-      return res.status(204).end();
     }
 
     let conexao: DbConnection | undefined;
@@ -492,10 +367,6 @@ export function registrarCadastroDemandaEProjetos(
       return res.status(400).json({ error: 'Identificador inválido.' });
     }
 
-    if (!database) {
-      return res.status(204).end();
-    }
-
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -524,10 +395,6 @@ export function registrarCadastroDemandaEProjetos(
     const projetoId = converterIdPositivo(req.params.id);
     if (projetoId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    if (!database) {
-      return res.status(200).json(usuariosResponsaveisTeste);
     }
 
     let conexao: DbConnection | undefined;
@@ -580,10 +447,6 @@ export function registrarCadastroDemandaEProjetos(
       return res.status(400).json({ error: 'Identificador inválido.' });
     }
 
-    if (!database) {
-      return res.status(204).end();
-    }
-
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -628,10 +491,6 @@ export function registrarCadastroDemandaEProjetos(
     const usuarioId = converterIdPositivo(req.params.usuarioId);
     if (projetoId === null || usuarioId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    if (!database) {
-      return res.status(204).end();
     }
 
     let conexao: DbConnection | undefined;

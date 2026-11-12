@@ -2,7 +2,7 @@
   Autora: Sophia Franco de Godoy / RA: 24000833
   Descrição: Rotas de usuários (GET /api/usuarios, POST /api/usuarios, PATCH /api/usuarios/:id
   e DELETE /api/usuarios/:id) sem expor senhas
-  Contempla os dados de teste em memória (Reunião 4) e a consulta/manipulação no banco de dados
+  Consulta e manipula os usuários no banco de dados MySQL,
   com fechamento da conexão no bloco finally (Reunião 5)
 */
 import { Express, Request, Response } from 'express';
@@ -13,23 +13,9 @@ const bcrypt = require('bcryptjs');
 
 type PerfilUsuario = 'ADMIN' | 'LIDER' | 'MEMBRO';
 
-interface UsuarioTeste {
-  id: number;
-  nome: string;
-  email: string;
-  senha: string;
-  perfil: PerfilUsuario;
-}
-
 const PERFIS_VALIDOS: PerfilUsuario[] = ['ADMIN', 'LIDER', 'MEMBRO'];
 
-// Dados de teste em memória com os três perfis exigidos na Reunião 4.
-export const usuariosTeste: UsuarioTeste[] = [
-  { id: 1, nome: 'Administrador', email: 'admin@local.test', senha: 'demo-pi2-2026', perfil: 'ADMIN' },
-  { id: 2, nome: 'Ana Souza', email: 'ana.lider@local.test', senha: 'demo-pi2-2026', perfil: 'LIDER' },
-  { id: 3, nome: 'Carla Mendes', email: 'carla.membro@local.test', senha: 'demo-pi2-2026', perfil: 'MEMBRO' }
-];
-
+// Valida os identificadores recebidos nas rotas de edição e desativação.
 function converterIdPositivo(valor: unknown): number | null {
   const numero = Number(valor);
   if (!Number.isInteger(numero) || numero < 1) {
@@ -39,22 +25,10 @@ function converterIdPositivo(valor: unknown): number | null {
 }
 
 // Registra as rotas de usuários no aplicativo Express.
-export function registrarUsuarios(app: Express, database?: Database) {
+export function registrarUsuarios(app: Express, database: Database) {
   // Rota 1: GET /api/usuarios — Lista os usuários sem retornar a senha.
   app.get('/api/usuarios', async (req: Request, res: Response) => {
-    // Modo em memória (Reunião 4): retorna os usuários do array sem o campo senha.
-    if (!database) {
-      const usuarios = usuariosTeste.map((usuario) => ({
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        perfil: usuario.perfil
-      }));
-
-      return res.status(200).json(usuarios);
-    }
-
-    // Modo com banco de dados (Reunião 5): consulta apenas campos públicos e fecha a conexão no finally.
+    // Consulta apenas campos públicos do banco e fecha a conexão no finally.
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -130,18 +104,6 @@ export function registrarUsuarios(app: Express, database?: Database) {
 
     if (bcrypt.truncates(corpo.senha)) {
       return res.status(400).json({ error: 'A senha deve ter até 72 bytes em UTF-8.' });
-    }
-
-    if (!database) {
-      const novoUsuario: UsuarioTeste = {
-        id: usuariosTeste.length + 1,
-        nome: nomeLimpo,
-        email: emailLimpo,
-        senha: corpo.senha,
-        perfil: corpo.perfil
-      };
-      usuariosTeste.push(novoUsuario);
-      return res.status(201).json({ id: novoUsuario.id });
     }
 
     const senhaHash = await bcrypt.hash(corpo.senha, 12);
@@ -229,10 +191,6 @@ export function registrarUsuarios(app: Express, database?: Database) {
       }
     }
 
-    if (!database) {
-      return res.status(204).end();
-    }
-
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -268,10 +226,6 @@ export function registrarUsuarios(app: Express, database?: Database) {
     const usuarioId = converterIdPositivo(req.params.id);
     if (usuarioId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    if (!database) {
-      return res.status(204).end();
     }
 
     let conexao: DbConnection | undefined;

@@ -6,7 +6,7 @@
   - POST /api/demandas/:id/comentarios: registra um comentário vinculado obrigatoriamente à demanda
     e a um usuário, com data e horário definidos automaticamente pelo servidor, impedindo texto vazio
     e retornando 404 quando a demanda não existir.
-  Contempla os dados de teste em memória (Reunião 4) e o banco de dados com try/catch/finally (Reunião 5).
+  Consulta e atualiza o MySQL com try/catch/finally, conforme a Reunião 5.
 */
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
@@ -53,81 +53,6 @@ function validarDataPrazo(valor: unknown): { valido: boolean; data: string | nul
   return { valido: true, data: valor };
 }
 
-export interface ComentarioDemanda {
-  id: number;
-  demanda_id: number;
-  autor_id: number;
-  autor_nome?: string;
-  texto: string;
-  criado_em: string;
-  atualizado_em?: string;
-}
-
-export interface DetalheDemanda {
-  id: number;
-  projeto_id: number;
-  projeto_nome: string;
-  criador_id: number;
-  responsavel_id: number | null;
-  responsavel_nome: string | null;
-  titulo: string;
-  descricao: string;
-  tipo: string;
-  prioridade: string;
-  status: string;
-  prazo: string | null;
-  criado_em: string;
-  atualizado_em: string;
-}
-
-// Dados em memória para demonstração da Reunião 4 quando o banco de dados não é informado.
-export const demandasDetalhesTeste: DetalheDemanda[] = [
-  {
-    id: 1,
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    criador_id: 1,
-    responsavel_id: 3,
-    responsavel_nome: 'Carla Mendes',
-    titulo: 'Corrigir falha no login',
-    descricao: 'Usuários não conseguem autenticar quando digitam e-mail com letras maiúsculas.',
-    tipo: 'DEFEITO',
-    prioridade: 'CRITICA',
-    status: 'ABERTA',
-    prazo: '2026-11-12',
-    criado_em: '2026-11-01T10:00:00.000Z',
-    atualizado_em: '2026-11-01T10:00:00.000Z'
-  },
-  {
-    id: 2,
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    criador_id: 2,
-    responsavel_id: 2,
-    responsavel_nome: 'Ana Souza',
-    titulo: 'Criar tela de dashboard',
-    descricao: 'Exibir cards com o resumo de demandas por status, prioridade e tipo.',
-    tipo: 'TAREFA',
-    prioridade: 'ALTA',
-    status: 'EM_ANDAMENTO',
-    prazo: '2026-11-15',
-    criado_em: '2026-11-02T14:30:00.000Z',
-    atualizado_em: '2026-11-03T09:15:00.000Z'
-  }
-];
-
-export const comentariosTeste: ComentarioDemanda[] = [
-  {
-    id: 1,
-    demanda_id: 1,
-    autor_id: 2,
-    autor_nome: 'Ana Souza',
-    texto: 'Consegui reproduzir o erro no ambiente de homologação.',
-    criado_em: '2026-11-01T11:20:00.000Z',
-    atualizado_em: '2026-11-01T11:20:00.000Z'
-  }
-];
-
 // Valida e converte o identificador recebido por parâmetro de rota (req.params.id).
 function converterIdPositivo(valor: unknown): number | null {
   const numero = Number(valor);
@@ -156,7 +81,7 @@ async function usuarioPodeAcessarDemanda(
 // Registra as rotas de detalhes, edição de demanda e comentários.
 export function registrarDetalhesEComentarios(
   app: Express,
-  database?: Database,
+  database: Database,
   obterAgora: () => Date = () => new Date(),
   verificarFeriado: (dataIso: string) => Promise<boolean> = isNationalHoliday
 ) {
@@ -167,24 +92,6 @@ export function registrarDetalhesEComentarios(
 
     if (demandaId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    // Modo em memória (Reunião 4): busca a demanda pelo ID com find.
-    if (!database) {
-      const demandaEncontrada = demandasDetalhesTeste.find((item) => item.id === demandaId);
-      if (!demandaEncontrada) {
-        return res.status(404).json({ error: 'Demanda não encontrado(a).' });
-      }
-
-      const comentariosDaDemanda = comentariosTeste.filter(
-        (comentario) => comentario.demanda_id === demandaId
-      );
-
-      return res.status(200).json({
-        ...demandaEncontrada,
-        comentarios: comentariosDaDemanda,
-        historico: []
-      });
     }
 
     // Modo com banco de dados (Reunião 5): consulta a demanda, comentários e histórico e fecha no finally.
@@ -256,19 +163,6 @@ export function registrarDetalhesEComentarios(
       return res.status(400).json({ error: 'Identificador inválido.' });
     }
 
-    // Modo em memória (Reunião 4).
-    if (!database) {
-      const demandaEncontrada = demandasDetalhesTeste.find((item) => item.id === demandaId);
-      if (!demandaEncontrada) {
-        return res.status(404).json({ error: 'Demanda não encontrado(a).' });
-      }
-
-      const comentariosDaDemanda = comentariosTeste.filter(
-        (comentario) => comentario.demanda_id === demandaId
-      );
-      return res.status(200).json(comentariosDaDemanda);
-    }
-
     // Modo com banco de dados (Reunião 5).
     let conexao: DbConnection | undefined;
     try {
@@ -313,7 +207,7 @@ export function registrarDetalhesEComentarios(
   // Rota 3: POST /api/demandas/:id/comentarios — Registra um novo comentário vinculado à demanda e ao usuário.
   app.post('/api/demandas/:id/comentarios', async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { texto, autor_id } = req.body || {};
+    const { texto } = req.body || {};
 
     // 1. Valida o identificador da demanda na URL (req.params.id).
     const demandaId = converterIdPositivo(id);
@@ -335,36 +229,13 @@ export function registrarDetalhesEComentarios(
       return res.status(400).json({ error: 'Comentário deve ter entre 3 e 500 caracteres.' });
     }
 
-    // 3. Vincula obrigatoriamente o comentário a um usuário (prioriza o usuário autenticado na sessão).
-    const usuarioId = req.authUser?.id ?? converterIdPositivo(autor_id);
+    // 3. Vincula o comentário ao usuário autenticado na sessão.
+    const usuarioId = req.authUser.id;
     if (!usuarioId) {
       return res.status(400).json({ error: 'O comentário deve estar vinculado a um usuário válido.' });
     }
 
-    // 4. Define a data e o horário automaticamente no servidor.
-    const dataHoraServidor = new Date().toISOString();
-
-    // Modo em memória (Reunião 4).
-    if (!database) {
-      const demandaEncontrada = demandasDetalhesTeste.find((item) => item.id === demandaId);
-      if (!demandaEncontrada) {
-        return res.status(404).json({ error: 'Demanda não encontrado(a).' });
-      }
-
-      const novoComentario: ComentarioDemanda = {
-        id: comentariosTeste.length + 1,
-        demanda_id: demandaId,
-        autor_id: usuarioId,
-        autor_nome: req.authUser?.nome || 'Usuário',
-        texto: textoLimpo,
-        criado_em: dataHoraServidor,
-        atualizado_em: dataHoraServidor
-      };
-
-      comentariosTeste.push(novoComentario);
-      return res.status(201).json(novoComentario);
-    }
-
+    // O MySQL registra a data e o horário automaticamente ao inserir o comentário.
     // Modo com banco de dados (Reunião 5): verifica existência da demanda, insere o comentário e fecha no finally.
     let conexao: DbConnection | undefined;
     try {
@@ -500,10 +371,6 @@ export function registrarDetalhesEComentarios(
     const demandaId = converterIdPositivo(req.params.id);
     if (demandaId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    if (!database) {
-      return res.status(204).end();
     }
 
     let conexao: DbConnection | undefined;
@@ -665,10 +532,6 @@ export function registrarDetalhesEComentarios(
       return res.status(400).json({ error: 'Identificador inválido.' });
     }
 
-    if (!database) {
-      return res.status(204).end();
-    }
-
     let conexao: DbConnection | undefined;
     try {
       conexao = await database.connection();
@@ -713,10 +576,6 @@ export function registrarDetalhesEComentarios(
     const comentarioId = converterIdPositivo(req.params.id);
     if (comentarioId === null) {
       return res.status(400).json({ error: 'Identificador inválido.' });
-    }
-
-    if (!database) {
-      return res.status(204).end();
     }
 
     let conexao: DbConnection | undefined;

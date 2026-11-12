@@ -16,60 +16,6 @@ export interface DemandaDashboard {
   responsavel_nome?: string | null;
 }
 
-// Dados em memória para demonstração da Reunião 4 quando o banco não é utilizado.
-export const demandasDashboardTeste: DemandaDashboard[] = [
-  {
-    id: 1,
-    titulo: 'Corrigir falha no login',
-    status: 'ABERTA',
-    prioridade: 'CRITICA',
-    tipo: 'DEFEITO',
-    prazo: '2026-11-12',
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_nome: 'Carla Mendes'
-  },
-  {
-    id: 2,
-    titulo: 'Criar tela de dashboard',
-    status: 'EM_ANDAMENTO',
-    prioridade: 'ALTA',
-    tipo: 'TAREFA',
-    prazo: '2026-11-15',
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_nome: 'Ana Souza'
-  },
-  {
-    id: 3,
-    titulo: 'Revisar documentação da API',
-    status: 'EM_REVISAO',
-    prioridade: 'MEDIA',
-    tipo: 'DOCUMENTACAO',
-    prazo: '2026-11-25',
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_nome: 'Carla Mendes'
-  },
-  {
-    id: 4,
-    titulo: 'Padronizar layout com Bootstrap',
-    status: 'CONCLUIDA',
-    prioridade: 'BAIXA',
-    tipo: 'MELHORIA',
-    prazo: '2026-11-10',
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_nome: 'Ana Souza'
-  },
-  {
-    id: 5,
-    titulo: 'Integrar módulo antigo descontinuado',
-    status: 'CANCELADA',
-    prioridade: 'CRITICA',
-    tipo: 'TAREFA',
-    prazo: null,
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_nome: null
-  }
-];
-
 // Formata a data atual no padrão AAAA-MM-DD considerando o fuso de São Paulo.
 function obterDataHoje(agora: Date): string {
   const partes = new Intl.DateTimeFormat('en-US', {
@@ -145,16 +91,10 @@ export function montarResumoDashboard(demandas: DemandaDashboard[], agora: Date 
 // Registra a rota GET /api/dashboard no aplicativo Express.
 export function registrarDashboard(
   app: Express,
-  database?: Database,
+  database: Database,
   obterAgora: () => Date = () => new Date()
 ) {
   app.get('/api/dashboard', async (req: Request, res: Response) => {
-    // Modo em memória (Reunião 4): usa o array demandasDashboardTeste.
-    if (!database) {
-      const resumo = montarResumoDashboard(demandasDashboardTeste, obterAgora());
-      return res.status(200).json(resumo);
-    }
-
     // Modo com banco de dados (Reunião 5): consulta o banco e fecha a conexão no finally.
     let conexao: DbConnection | undefined;
     try {

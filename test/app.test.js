@@ -3,8 +3,29 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApp: buildApp } = require('../src/app');
 
+// Dados exclusivos dos testes; o login passa pela mesma rota usada com MySQL.
+const usuarioDosTestes = { id: 1, nome: 'Usuário de teste', email: 'teste@local.test', perfil: 'ADMIN' };
+const senhaDosTestes = 'SenhaTeste123!';
+const hashDosTestes = require('bcryptjs').hashSync(senhaDosTestes, 4);
+
 function createApp(database, options = {}) {
-  return buildApp(database, { sessionSecret: 'segredo-exclusivo-dos-testes-da-aplicacao', skipAuthorization: true, ...options });
+  const bancoDosTestes = {
+    ...database,
+    async connection() {
+      const conexao = await database.connection();
+      return {
+        ...conexao,
+        async query(sql, binds) {
+          if (sql.includes('FROM usuarios WHERE LOWER(email)')) return [{ ...usuarioDosTestes, senha_hash: hashDosTestes }];
+          if (sql.includes('SELECT id, nome, email, perfil FROM usuarios WHERE id = :id AND ativo = 1')) return [usuarioDosTestes];
+          return conexao.query(sql, binds);
+        }
+      };
+    }
+  };
+  const app = buildApp(bancoDosTestes, { sessionSecret: 'segredo-exclusivo-dos-testes-da-aplicacao', ...options });
+  app.locals.autenticarNosTestes = true;
+  return app;
 }
 
 function fakeDatabase({ queries = [], execute, query: queryResult } = {}) {
@@ -40,7 +61,17 @@ async function request(app, path, options) {
   await new Promise((resolve) => server.once('listening', resolve));
   try {
     const address = server.address();
-    return await fetch(`http://127.0.0.1:${address.port}${path}`, options);
+    const base = `http://127.0.0.1:${address.port}`;
+    const headers = { ...options?.headers };
+    if (app.locals.autenticarNosTestes && path !== '/api/health') {
+      const login = await fetch(`${base}/api/login`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email: usuarioDosTestes.email, senha: senhaDosTestes })
+      });
+      assert.equal(login.status, 200);
+      headers.Cookie = login.headers.getSetCookie()[0].split(';')[0];
+    }
+    return await fetch(`${base}${path}`, { ...options, headers });
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
@@ -52,12 +83,52 @@ test('health confirma a conexão', async () => {
   assert.deepEqual(await response.json(), { database: 'online' });
 });
 
+test('API exige uma conexão com o banco e não inicia no modo sem persistência', () => {
+  for (const database of [undefined, null, {}]) {
+    assert.throws(() => buildApp(database, { sessionSecret: 'segredo-exclusivo-dos-testes-da-aplicacao' }), /banco de dados/);
+  }
+});
+
+test('tabelas sem registros retornam listas vazias e indicadores zerados, sem dados de demonstração', async () => {
+  for (const path of ['/api/demandas', '/api/projetos', '/api/usuarios', '/api/projetos/1/membros']) {
+    const response = await request(createApp(fakeDatabase()), path);
+    assert.equal(response.status, 200, path);
+    assert.deepEqual(await response.json(), [], path);
+  }
+  const response = await request(createApp(fakeDatabase()), '/api/dashboard');
+  assert.equal(response.status, 200);
+  const resumo = await response.json();
+  assert.equal(resumo.totalDemandas, 0);
+  for (const contagens of [resumo.quantidadesPorStatus, resumo.quantidadesPorPrioridade, resumo.quantidadesPorTipo]) {
+    assert.ok(Object.values(contagens).every(valor => valor === 0));
+  }
+  assert.deepEqual(resumo.demandasCriticasEmAberto, []);
+  assert.deepEqual(resumo.demandasProximasDoPrazo, []);
+});
+
 test('criação de demanda exige todos os campos', async () => {
   const response = await request(createApp(fakeDatabase()), '/api/demandas', {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ titulo: 'Teste' })
   });
   assert.equal(response.status, 400);
   assert.match((await response.json()).error, /projeto_id/);
+});
+
+test('ADMIN edita e desativa usuários no banco, rejeitando identificadores inválidos', async () => {
+  for (const method of ['PATCH', 'DELETE']) {
+    const options = method === 'PATCH'
+      ? { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nome: 'Pessoa atualizada' }) }
+      : { method };
+    const invalid = fakeDatabase();
+    assert.equal((await request(createApp(invalid), '/api/usuarios/invalido', options)).status, 400);
+    assert.equal(invalid.state.executed.length, 0);
+    const database = fakeDatabase();
+    assert.equal((await request(createApp(database), '/api/usuarios/2', options)).status, 204);
+    assert.equal(database.state.executed.length, 1);
+    assert.match(database.state.executed[0].sql, /^UPDATE usuarios SET/);
+    assert.equal(database.state.executed[0].binds.id, 2);
+    assert.equal(database.state.committed, 1);
+  }
 });
 
 test('criação de demanda e histórico usam uma transação', async () => {

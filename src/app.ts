@@ -29,7 +29,6 @@ type AppOptions = {
   isHoliday?: (date: string) => Promise<boolean>;
   now?: () => Date;
   sessionSecret?: string;
-  skipAuthorization?: boolean;
 };
 
 declare global {
@@ -46,10 +45,12 @@ function createApp(
   {
     isHoliday = isNationalHoliday,
     now = () => new Date(),
-    sessionSecret = process.env.SESSION_SECRET,
-    skipAuthorization = false
+    sessionSecret = process.env.SESSION_SECRET
   }: AppOptions = {}
 ) {
+  if (!database || typeof database.connection !== 'function') {
+    throw new Error('Configure a conexão com o banco de dados para iniciar a API.');
+  }
   const app = express();
 
   if (!sessionSecret || sessionSecret.length < 32 || sessionSecret.startsWith('SUBSTITUA_')) {
@@ -148,12 +149,6 @@ function createApp(
 
   // Middleware de autenticação para proteger as demais rotas de /api.
   app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
-    if (skipAuthorization) {
-      req.authUser = { id: 1, nome: 'Usuário de teste', email: 'teste@local.test', perfil: 'ADMIN' };
-      req.session.usuario = req.authUser;
-      return next();
-    }
-
     const cadastroInicial = req.path === '/usuarios' && req.method === 'POST';
     if (!req.session.usuario && !cadastroInicial) {
       return exigirLogin(req, res, next);

@@ -3,11 +3,8 @@
 require('tsx/cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const express = require('express');
 const bcrypt = require('bcryptjs');
 const { createApp: buildApp } = require('../src/app');
-const { registrarLogin } = require('../src/rotas/login.ts');
-const { registrarUsuarios } = require('../src/rotas/usuarios.ts');
 
 const senha = 'SenhaTeste123!';
 const hash = bcrypt.hashSync(senha, 4);
@@ -29,6 +26,9 @@ function bancoTeste({ perfil = 'ADMIN', falharConsulta = false } = {}) {
         async query(sql, binds = {}) {
           estado.consultas.push(sql);
           if (falharConsulta || estado.falharConsulta) throw new Error('Falha simulada na consulta');
+          if (estado.falharListagem && (sql.includes('FROM usuarios ORDER BY nome') || sql.includes('FROM usuarios u'))) {
+            throw new Error('Falha simulada na listagem');
+          }
           if (sql.includes('WHERE LOWER(email)')) {
             return binds.email === pessoa.email && pessoa.ativo !== 0 ? [{ ...pessoa, senha_hash: hash, campo_privado: 'interno' }] : [];
           }
@@ -40,14 +40,6 @@ function bancoTeste({ perfil = 'ADMIN', falharConsulta = false } = {}) {
       };
     }
   };
-}
-
-function appMemoria() {
-  const app = express();
-  app.use(express.json());
-  registrarLogin(app);
-  registrarUsuarios(app);
-  return app;
 }
 
 async function cliente(t, app) {
@@ -85,67 +77,34 @@ async function cliente(t, app) {
   };
 }
 
-test('Reunião 4: GET /usuarios retorna os três perfis sem senhas', async t => {
-  const api = await cliente(t, appMemoria());
-  const resposta = await api.listar();
-  assert.equal(resposta.status, 200);
-  const usuarios = await resposta.json();
-  assert.equal(usuarios.length, 3);
-  assert.deepEqual(usuarios.map(pessoa => pessoa.perfil), ['ADMIN', 'LIDER', 'MEMBRO']);
-  for (const pessoa of usuarios) {
-    assert.deepEqual(Object.keys(pessoa).sort(), ['email', 'id', 'nome', 'perfil']);
+test('Login com banco: campos ausentes, vazios ou de tipos inválidos retornam 400', async t => {
+  const banco = bancoTeste();
+  const api = await cliente(t, createApp(banco));
+  const entradas = [
+    {}, { email: usuario.email }, { senha }, { email: null, senha },
+    { email: '', senha }, { email: '   ', senha }, { email: usuario.email, senha: '   ' },
+    { email: 123, senha }, { email: {}, senha }, { email: [usuario.email], senha },
+    { email: usuario.email, senha: 123 }, { email: usuario.email, senha: {} }
+  ];
+  for (const dados of entradas) {
+    const resposta = await api.login(dados);
+    assert.equal(resposta.status, 400, JSON.stringify(dados));
+    assert.equal(typeof (await resposta.json()).error, 'string');
   }
+  assert.equal(banco.estado.abertas, 0, 'rejeita dados inválidos antes de consultar o banco');
 });
 
-test('Reunião 4: POST /login confere o array e retorna usuário e perfil sem senha', async t => {
-  const api = await cliente(t, appMemoria());
-  for (const [email, perfil] of [
-    ['admin@local.test', 'ADMIN'], ['ana.lider@local.test', 'LIDER'], ['carla.membro@local.test', 'MEMBRO']
-  ]) {
-    const resposta = await api.login({ email: '  ' + email.toUpperCase() + '  ', senha: 'demo-pi2-2026' });
-    assert.equal(resposta.status, 200);
-    const sessao = await resposta.json();
-    assert.equal(sessao.usuario.email, email);
-    assert.equal(sessao.usuario.perfil, perfil);
-    assert.deepEqual(Object.keys(sessao.usuario).sort(), ['email', 'id', 'nome', 'perfil']);
-    assert.equal('token' in sessao, false, 'a etapa em memória não implementa uma sessão de banco');
+test('Login com banco: credenciais incorretas retornam 401 sem dados do usuário', async t => {
+  const banco = bancoTeste();
+  const api = await cliente(t, createApp(banco));
+  const email = usuario.email;
+  for (const dados of [{ email, senha: 'incorreta' }, { email: 'desconhecido@local.test', senha }]) {
+    const resposta = await api.login(dados);
+    assert.equal(resposta.status, 401);
+    assert.deepEqual(await resposta.json(), { error: 'E-mail ou senha inválidos.' });
   }
+  assert.equal(banco.estado.abertas, banco.estado.fechadas);
 });
-
-for (const etapa of ['memória', 'banco']) {
-  function criarApp(banco) {
-    return etapa === 'memória' ? appMemoria() : createApp(banco);
-  }
-
-  test(`Login com ${etapa}: campos ausentes, vazios ou de tipos inválidos retornam 400`, async t => {
-    const banco = bancoTeste();
-    const api = await cliente(t, criarApp(banco));
-    const entradas = [
-      {}, { email: usuario.email }, { senha }, { email: null, senha },
-      { email: '', senha }, { email: '   ', senha }, { email: usuario.email, senha: '   ' },
-      { email: 123, senha }, { email: {}, senha }, { email: [usuario.email], senha },
-      { email: usuario.email, senha: 123 }, { email: usuario.email, senha: {} }
-    ];
-    for (const dados of entradas) {
-      const resposta = await api.login(dados);
-      assert.equal(resposta.status, 400, JSON.stringify(dados));
-      assert.equal(typeof (await resposta.json()).error, 'string');
-    }
-    assert.equal(banco.estado.abertas, 0, 'rejeita dados inválidos antes de consultar o banco');
-  });
-
-  test(`Login com ${etapa}: credenciais incorretas retornam 401 sem dados do usuário`, async t => {
-    const banco = bancoTeste();
-    const api = await cliente(t, criarApp(banco));
-    const email = etapa === 'memória' ? 'admin@local.test' : usuario.email;
-    for (const dados of [{ email, senha: 'incorreta' }, { email: 'desconhecido@local.test', senha }]) {
-      const resposta = await api.login(dados);
-      assert.equal(resposta.status, 401);
-      assert.deepEqual(await resposta.json(), { error: 'E-mail ou senha inválidos.' });
-    }
-    assert.equal(banco.estado.abertas, banco.estado.fechadas);
-  });
-}
 
 test('Aula 11: login cria cookie HttpOnly e GET /usuarios continua protegido', async t => {
   const banco = bancoTeste();
@@ -197,8 +156,10 @@ test('Erro de consulta no login devolve a conexão e retorna mensagem sem dados 
 
 test('Erro de consulta na listagem devolve a conexão e retorna JSON 500', async t => {
   t.mock.method(console, 'error', () => {});
-  const banco = bancoTeste({ falharConsulta: true });
-  const api = await cliente(t, createApp(banco, { skipAuthorization: true }));
+  const banco = bancoTeste();
+  const api = await cliente(t, createApp(banco));
+  assert.equal((await api.login({ email: usuario.email, senha })).status, 200);
+  banco.estado.falharListagem = true;
   const resposta = await api.listar();
   assert.equal(resposta.status, 500);
   assert.deepEqual(await resposta.json(), { error: 'Erro ao listar usuários.' });

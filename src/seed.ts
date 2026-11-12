@@ -47,14 +47,37 @@ const PROJETOS = [
 
 type Status = 'ABERTA' | 'EM_ANDAMENTO' | 'EM_REVISAO' | 'CONCLUIDA' | 'CANCELADA';
 
+// Declara cada campo do objeto com interface, como nos exemplos da Aula 11.
+interface CaminhosStatus {
+  ABERTA: Status[];
+  EM_ANDAMENTO: Status[];
+  EM_REVISAO: Status[];
+  CONCLUIDA: Status[];
+  CANCELADA: Status[];
+}
+
 // Caminho percorrido por cada status a partir de ABERTA, respeitando o ciclo de vida.
-const CAMINHO: Record<Status, Status[]> = {
+const CAMINHO: CaminhosStatus = {
   ABERTA: [],
   EM_ANDAMENTO: ['EM_ANDAMENTO'],
   EM_REVISAO: ['EM_ANDAMENTO', 'EM_REVISAO'],
   CONCLUIDA: ['EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA'],
   CANCELADA: ['EM_ANDAMENTO', 'CANCELADA']
 };
+
+// Guarda a chave do dado de demonstração junto ao identificador gerado pelo banco.
+interface IdentificadorCadastrado {
+  chave: string;
+  id: number;
+}
+
+function buscarId(cadastrados: IdentificadorCadastrado[], chave: string): number {
+  const registro = cadastrados.find((item) => item.chave === chave);
+  if (!registro) {
+    throw new Error(`Identificador não encontrado para a chave: ${chave}.`);
+  }
+  return registro.id;
+}
 
 // "dias" é relativo a hoje (null = sem prazo), para o dashboard sempre ter
 // demandas "próximas do prazo" mesmo que o seed seja executado em outra data.
@@ -154,41 +177,41 @@ async function main() {
     // Todos os usuários de demonstração compartilham a mesma senha (e o mesmo hash).
     const senhaHash = await bcrypt.hash(SENHA, 12);
 
-    const idUsuario: Record<string, number> = {};
+    const usuariosCadastrados: IdentificadorCadastrado[] = [];
     for (const u of USUARIOS) {
       const r = await c.execute(
         'INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil)',
         { nome: u.nome, email: u.email, senha_hash: senhaHash, perfil: u.perfil }
       );
-      idUsuario[u.chave] = r.insertId;
+      usuariosCadastrados.push({ chave: u.chave, id: r.insertId });
     }
 
-    const idProjeto: Record<string, number> = {};
+    const projetosCadastrados: IdentificadorCadastrado[] = [];
     for (const p of PROJETOS) {
       const r = await c.execute(
         'INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao)',
         { nome: p.nome, descricao: p.descricao }
       );
-      idProjeto[p.chave] = r.insertId;
+      projetosCadastrados.push({ chave: p.chave, id: r.insertId });
       for (const membro of p.membros) {
         await c.execute(
           'INSERT INTO projeto_membros (projeto_id, usuario_id) VALUES (:projeto_id, :usuario_id)',
-          { projeto_id: r.insertId, usuario_id: idUsuario[membro] }
+          { projeto_id: r.insertId, usuario_id: buscarId(usuariosCadastrados, membro) }
         );
       }
     }
 
     for (const d of DEMANDAS) {
       const projeto = PROJETOS.find((p) => p.chave === d.projeto)!;
-      const criador = idUsuario[projeto.lider];
-      const responsavel = d.responsavel ? idUsuario[d.responsavel] : null;
+      const criador = buscarId(usuariosCadastrados, projeto.lider);
+      const responsavel = d.responsavel ? buscarId(usuariosCadastrados, d.responsavel) : null;
       // A demanda nasce ABERTA (regra do documento) e o status final é aplicado pelo
       // caminho abaixo, gerando o histórico como a API faria.
       const r = await c.execute(
         `INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo)
          VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo)`,
         {
-          projeto_id: idProjeto[d.projeto], criador_id: criador, responsavel_id: responsavel,
+          projeto_id: buscarId(projetosCadastrados, d.projeto), criador_id: criador, responsavel_id: responsavel,
           titulo: d.titulo, descricao: d.descricao, tipo: d.tipo, prioridade: d.prioridade,
           prazo: prazoRelativo(d.dias)
         }
@@ -219,7 +242,7 @@ async function main() {
       for (const [quem, texto] of d.comentarios || []) {
         await c.execute(
           'INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto)',
-          { demanda_id: demandaId, autor_id: idUsuario[quem], texto }
+          { demanda_id: demandaId, autor_id: buscarId(usuariosCadastrados, quem), texto }
         );
       }
     }

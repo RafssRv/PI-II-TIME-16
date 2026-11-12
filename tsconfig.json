@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "commonjs",
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "lib",
     "strict": true,
     "useUnknownInCatchVariables": false,
     "allowJs": false,

@@ -1,88 +1,9 @@
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 
-type StatusDemanda = 'ABERTA' | 'EM_ANDAMENTO' | 'EM_REVISAO' | 'CONCLUIDA' | 'CANCELADA';
-type PrioridadeDemanda = 'CRITICA' | 'ALTA' | 'MEDIA' | 'BAIXA';
-type TipoDemanda = 'TAREFA' | 'DEFEITO' | 'MELHORIA' | 'DOCUMENTACAO';
-
-export interface DemandaListagem {
-  id: number;
-  titulo: string;
-  descricao: string;
-  tipo: TipoDemanda;
-  prioridade: PrioridadeDemanda;
-  status: StatusDemanda;
-  projeto_id: number;
-  projeto_nome: string;
-  responsavel_id: number | null;
-  responsavel_nome: string | null;
-  criado_em: string;
-  prazo: string | null;
-}
-
 const STATUS_VALIDOS = ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'];
 const PRIORIDADES_VALIDAS = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'];
 const TIPOS_VALIDOS = ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO'];
-
-// Dados em memória para demonstração da Reunião 4 quando o banco não é utilizado.
-export const demandasListagemTeste: DemandaListagem[] = [
-  {
-    id: 1,
-    titulo: 'Corrigir falha no login',
-    descricao: 'Usuários não conseguem autenticar quando digitam e-mail com letras maiúsculas.',
-    tipo: 'DEFEITO',
-    prioridade: 'CRITICA',
-    status: 'ABERTA',
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_id: 3,
-    responsavel_nome: 'Carla Mendes',
-    criado_em: '2026-11-01',
-    prazo: '2026-11-12'
-  },
-  {
-    id: 2,
-    titulo: 'Criar tela de dashboard',
-    descricao: 'Exibir cards com o resumo de demandas por status, prioridade e tipo.',
-    tipo: 'TAREFA',
-    prioridade: 'ALTA',
-    status: 'EM_ANDAMENTO',
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_id: 2,
-    responsavel_nome: 'Ana Souza',
-    criado_em: '2026-11-02',
-    prazo: '2026-11-15'
-  },
-  {
-    id: 3,
-    titulo: 'Revisar documentação da API',
-    descricao: 'Documentar no README os endpoints GET e POST desenvolvidos pelo grupo.',
-    tipo: 'DOCUMENTACAO',
-    prioridade: 'MEDIA',
-    status: 'EM_REVISAO',
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_id: 3,
-    responsavel_nome: 'Carla Mendes',
-    criado_em: '2026-11-03',
-    prazo: '2026-11-25'
-  },
-  {
-    id: 4,
-    titulo: 'Padronizar layout com Bootstrap',
-    descricao: 'Ajustar espaçamentos e cores dos cartões da listagem.',
-    tipo: 'MELHORIA',
-    prioridade: 'BAIXA',
-    status: 'CONCLUIDA',
-    projeto_id: 1,
-    projeto_nome: 'Portal Acadêmico',
-    responsavel_id: 2,
-    responsavel_nome: 'Ana Souza',
-    criado_em: '2026-11-04',
-    prazo: '2026-11-10'
-  }
-];
 
 // Converte e valida um identificador numérico positivo informado na query string.
 function converterIdPositivo(valor: string): number | null {
@@ -94,7 +15,7 @@ function converterIdPositivo(valor: string): number | null {
 }
 
 // Registra a rota GET /api/demandas no aplicativo Express.
-export function registrarListagemDemandas(app: Express, database?: Database) {
+export function registrarListagemDemandas(app: Express, database: Database) {
   app.get('/api/demandas', async (req: Request, res: Response) => {
     const {
       status,
@@ -159,42 +80,6 @@ export function registrarListagemDemandas(app: Express, database?: Database) {
       sqlOrdenacao = "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'), d.id DESC";
     } else {
       return res.status(400).json({ error: 'Ordenação inválida.' });
-    }
-
-    // Modo em memória (Reunião 4): filtra o array usando filter, como nos slides da aula.
-    if (!database) {
-      let resultado = [...demandasListagemTeste];
-
-      if (typeof status === 'string' && status !== '') {
-        resultado = resultado.filter((item) => item.status === status);
-      }
-
-      if (typeof prioridade === 'string' && prioridade !== '') {
-        resultado = resultado.filter((item) => item.prioridade === prioridade);
-      }
-
-      if (typeof tipo === 'string' && tipo !== '') {
-        resultado = resultado.filter((item) => item.tipo === tipo);
-      }
-
-      if (projetoIdNumero !== null) {
-        resultado = resultado.filter((item) => item.projeto_id === projetoIdNumero);
-      }
-
-      if (responsavelIdNumero !== null) {
-        resultado = resultado.filter((item) => item.responsavel_id === responsavelIdNumero);
-      }
-
-      if (typeof busca === 'string' && busca !== '') {
-        const termo = busca.toLowerCase();
-        resultado = resultado.filter(
-          (item) =>
-            item.titulo.toLowerCase().includes(termo) ||
-            item.descricao.toLowerCase().includes(termo)
-        );
-      }
-
-      return res.status(200).json(resultado);
     }
 
     // Modo com banco de dados (Reunião 5): monta os filtros SQL com binds e fecha a conexão no finally.
