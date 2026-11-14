@@ -47,7 +47,7 @@ const PROJETOS = [
 
 type Status = 'ABERTA' | 'EM_ANDAMENTO' | 'EM_REVISAO' | 'CONCLUIDA' | 'CANCELADA';
 
-// Declara cada campo do objeto com interface, como nos exemplos da Aula 11.
+// Declara cada campo do objeto com interface
 interface CaminhosStatus {
   ABERTA: Status[];
   EM_ANDAMENTO: Status[];

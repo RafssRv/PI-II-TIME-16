@@ -2,7 +2,7 @@
 // Descrição: Cadastro e desativação de projetos, consulta de equipes, demandas e usuários.
 // Projetos desativados permanecem disponíveis para consulta, sem apagar suas demandas.
 // Todo texto vindo da API é inserido com textContent, nunca como HTML.
-// O cadastro usa o fluxo de validação da Aula 05, com mensagens junto aos campos.
+// O cadastro usa o fluxo de validação com mensagens junto aos campos.
 
 let usuarioAdmin = null;
 
@@ -148,7 +148,7 @@ function mostrarErroProjeto(mensagem) {
   erro.hidden = false;
 }
 
-// Os espaços das mensagens ficam no HTML, como no Exemplo 03 da Aula 05.
+// Os espaços das mensagens ficam no HTML.
 function mostrarErroCampoProjeto(campo, elementoErro, mensagem) {
   campo.classList.add('is-invalid');
   elementoErro.innerText = mensagem;

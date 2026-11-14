@@ -60,7 +60,7 @@ function createApp(
   // Permite que o Express leia dados enviados em formato JSON no corpo da requisição (req.body).
   app.use(express.json());
 
-  // Configuração usada na Aula 11: sessão em memória e cookie com validade de 30 minutos.
+  // Configuração usada: sessão em memória e cookie com validade de 30 minutos.
   app.use(session({
     name: 'portal.sid',
     secret: sessionSecret,
@@ -200,19 +200,19 @@ function createApp(
     return res.json(req.session.usuario);
   });
 
-  // Aluna 1 (Sophia): Rotas de Usuários (GET, POST, PATCH e DELETE /api/usuarios).
+  // Sophia: Rotas de Usuários (GET, POST, PATCH e DELETE /api/usuarios).
   registrarUsuarios(app, database);
 
-  // Aluno 2 (Vinícius): Rota de Dashboard (GET /api/dashboard).
+  // Vinícius: Rota de Dashboard (GET /api/dashboard).
   registrarDashboard(app, database, now);
 
-  // Aluna 3 (Heloisa): Rota de Listagem de Demandas com filtros, busca e ordenação (GET /api/demandas).
+  // Heloisa: Rota de Listagem de Demandas com filtros, busca e ordenação (GET /api/demandas).
   registrarListagemDemandas(app, database);
 
-  // Aluno 4 (Rafael): Rotas de Cadastro de Demanda e Projetos (POST /api/demandas e /api/projetos).
+  // Rafael: Rotas de Cadastro de Demanda e Projetos (POST /api/demandas e /api/projetos).
   registrarCadastroDemandaEProjetos(app, database, now, isHoliday);
 
-  // Aluna 5 (Priscila): Rotas de Detalhes da Demanda, Edição e Comentários (/api/demandas/:id e comentários).
+  // Priscila: Rotas de Detalhes da Demanda, Edição e Comentários (/api/demandas/:id e comentários).
   registrarDetalhesEComentarios(app, database, now, isHoliday);
 
   // Redirecionamentos para manter compatibilidade com chamadas sem o prefixo /api.

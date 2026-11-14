@@ -6,43 +6,64 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <!-- Faz a página se ajustar à largura da tela (celular, tablet e computador) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonte Inter, usada em todas as telas do sistema -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Estilos específicos desta tela -->
     <link rel="stylesheet" href="../css/administracao.css">
+
+    <!-- Scripts com "defer": só executam depois que o HTML terminou de carregar.
+         A ordem importa, pois um depende do anterior. -->
+    <!-- api.js: cliente compartilhado da API (envia o token e trata erros) -->
     <script src="../js/api.js" defer></script>
+    <!-- sessao.js: controle da sessão (saudação ao usuário e botão Sair) -->
     <script src="../js/sessao.js" defer></script>
+    <!-- administracao.js: carrega projetos e usuários, aplica filtros e controla o cadastro de projeto -->
     <script src="../js/administracao.js" defer></script>
     <title>Projetos e Usuários</title>
 </head>
 <body>
+    <!-- Menu lateral, igual ao das demais telas -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h4>DemandasApp</h4>
+        <!-- Saudação e perfil do usuário logado, preenchidos pelo JavaScript.
+             O texto "Carregando..." aparece só até a sessão ser lida. -->
         <p id="saudacaoUsuario">Carregando...</p>
         <span id="perfilUsuario"></span>
         </div>
         <nav class="sidebar-menu">
+            <!-- Atalho para criar uma nova demanda -->
             <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
             <a href="dashboard.html">Dashboard</a>
             <a href="listagemDemandas.html">Demandas</a>
+            <!-- Item da tela atual, destacado pela classe "active" -->
             <a href="administracao.html" class="active">Projetos e usuários</a>
+            <!-- Encerra a sessão (o comportamento do clique fica no JavaScript) -->
             <button type="button" class="btn-sair" id="btn-sair">Sair</button>
         </nav>
     </aside>
 
+    <!-- Conteúdo principal da tela -->
     <main>
         <div class="container">
+            <!-- Título da página e botão que abre o formulário de novo projeto.
+                 O botão começa oculto e o JavaScript o exibe após carregar os dados. -->
             <div class="page-header">
                 <h1 class="page-title">Projetos e Usuários</h1>
                 <button type="button" class="btn-primary-custom" id="btn-novo-projeto" hidden>+ Novo projeto</button>
             </div>
 
             <!-- Mensagens de carregamento e erro (preenchidas pelo JavaScript) -->
+            <!-- Erro ao buscar ou salvar dados; role="alert" faz leitores de tela anunciarem o aviso -->
             <p id="admin-erro" class="mensagem-erro" role="alert" hidden></p>
+            <!-- Confirmação de uma ação bem-sucedida (por exemplo, projeto criado) -->
             <p id="admin-sucesso" class="mensagem-sucesso" role="status" hidden></p>
+            <!-- Visível enquanto os dados ainda estão sendo buscados -->
             <p id="admin-carregando" class="mensagem-info" role="status">Carregando projetos e usuários...</p>
 
-            <!-- Resumo geral -->
+            <!-- Resumo geral: totais exibidos em cartões no topo da página -->
             <section class="resumo" id="resumo" aria-label="Resumo" hidden>
                 <div class="resumo-item"><span class="resumo-valor" id="resumo-projetos">0</span><span class="resumo-rotulo">Projetos ativos</span></div>
                 <div class="resumo-item"><span class="resumo-valor" id="resumo-usuarios">0</span><span class="resumo-rotulo">Usuários ativos</span></div>
@@ -54,6 +75,7 @@
             <section class="content-card" id="card-projetos" hidden>
                 <div class="card-topo">
                     <h2>Projetos</h2>
+                    <!-- Filtros da tabela: por situação (ativo/inativo) e busca por texto -->
                     <div class="filtros-projetos">
                         <select id="filtro-situacao-projeto" class="form-select-custom" aria-label="Filtrar projetos por situação">
                             <option value="todos">Todos os projetos</option>
@@ -63,21 +85,25 @@
                         <input type="search" id="busca-projetos" class="form-control-custom" placeholder="Buscar projeto ou membro..." aria-label="Buscar projeto ou membro">
                     </div>
                 </div>
+                <!-- A rolagem horizontal evita que a tabela estoure em telas estreitas -->
                 <div class="tabela-rolagem">
                     <table class="table-custom" id="tabela-projetos">
                         <thead>
+                            <!-- "Ações" reúne os botões de cada projeto (por exemplo, desativar) -->
                             <tr><th>Projeto</th><th>Descrição</th><th>Equipe</th><th>Demandas</th><th>Situação</th><th>Ações</th></tr>
                         </thead>
+                        <!-- Linhas inseridas pelo JavaScript, uma por projeto -->
                         <tbody></tbody>
                     </table>
                 </div>
                 <p class="mensagem-info" id="sem-projetos" hidden>Nenhum projeto encontrado.</p>
             </section>
 
-            <!-- Usuários -->
+            <!-- Usuários (somente consulta) -->
             <section class="content-card" id="card-usuarios" hidden>
                 <div class="card-topo">
                     <h2>Usuários</h2>
+                    <!-- Filtros da tabela: por perfil e busca por nome ou e-mail -->
                     <div class="filtros-usuarios">
                         <select id="filtro-perfil" class="form-select-custom" aria-label="Filtrar por perfil">
                             <option value="">Todos os perfis</option>
@@ -93,32 +119,42 @@
                         <thead>
                             <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Situação</th><th>Projetos</th></tr>
                         </thead>
+                        <!-- Linhas inseridas pelo JavaScript, uma por usuário -->
                         <tbody></tbody>
                     </table>
                 </div>
+                <!-- Exibida quando nenhum usuário corresponde ao filtro ou à busca -->
                 <p class="mensagem-info" id="sem-usuarios" hidden>Nenhum usuário encontrado.</p>
             </section>
         </div>
     </main>
 
+    <!-- Janela (modal) de cadastro de projeto, aberta pelo botão "+ Novo projeto".
+         O elemento <dialog> é nativo do HTML e dispensa biblioteca externa. -->
     <!-- O cadastro cria um projeto ativo; a desativação preserva os registros associados. -->
     <dialog class="project-dialog" id="dialog-projeto" aria-labelledby="titulo-dialog-projeto">
-        <!-- O JavaScript mostra os erros junto aos campos, como na Aula 05. -->
+        <!-- O JavaScript mostra os erros junto aos campos -->
+        <!-- "novalidate" desliga as mensagens padrão do navegador, pois a validação é feita no JavaScript -->
         <form id="form-projeto" method="dialog" novalidate>
             <div class="dialog-header">
                 <h2 id="titulo-dialog-projeto">Novo projeto</h2>
+                <!-- Fecha a janela sem salvar -->
                 <button type="button" class="dialog-close" id="fechar-projeto" aria-label="Fechar">×</button>
             </div>
+            <!-- Nome do projeto (obrigatório, de 2 a 100 caracteres) -->
             <div class="form-group">
                 <label for="projeto-nome">Nome do projeto</label>
                 <input type="text" class="form-control-custom" id="projeto-nome" minlength="2" maxlength="100" required aria-describedby="erro-projeto-nome">
+                <!-- Mensagem de erro deste campo, preenchida pelo JavaScript -->
                 <div id="erro-projeto-nome" class="erro-campo"></div>
             </div>
+            <!-- Descrição do projeto (opcional, até 1000 caracteres) -->
             <div class="form-group">
                 <label for="projeto-descricao">Descrição (opcional)</label>
                 <textarea class="form-control-custom" id="projeto-descricao" rows="4" maxlength="1000" aria-describedby="erro-projeto-descricao"></textarea>
                 <div id="erro-projeto-descricao" class="erro-campo"></div>
             </div>
+            <!-- Erro geral do formulário (por exemplo, falha da API ao salvar) -->
             <p class="mensagem-erro" id="projeto-erro" role="alert" hidden></p>
             <div class="dialog-actions">
                 <button type="button" class="btn-secondary-custom" id="cancelar-projeto">Cancelar</button>

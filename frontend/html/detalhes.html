@@ -10,11 +10,14 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Faz a página se ajustar à largura da tela (celular, tablet e computador) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Detalhes da Demanda - Sistema de Demandas</title>
 
+    <!-- Fonte Inter, usada em todas as telas do sistema -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Estilos específicos desta tela -->
     <link rel="stylesheet" href="../css/detalhes.css">
 </head>
 
@@ -23,14 +26,19 @@
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h4>DemandasApp</h4>
+        <!-- Saudação e perfil do usuário logado, preenchidos pelo JavaScript.
+             O texto "Carregando..." aparece só até a sessão ser lida. -->
         <p id="saudacaoUsuario">Carregando...</p>
         <span id="perfilUsuario"></span>
         </div>
         <nav class="sidebar-menu">
+            <!-- Atalho para criar uma nova demanda -->
             <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
             <a href="dashboard.html">Dashboard</a>
+            <!-- Esta tela faz parte do fluxo de Demandas, por isso esse item fica destacado ("active") -->
             <a href="listagemDemandas.html" class="active">Demandas</a>
             <a href="projetos.html">Projetos</a>
+            <!-- Encerra a sessão (o comportamento do clique fica no JavaScript) -->
             <button type="button" class="btn-sair" id="btn-sair">Sair</button>
         </nav>
     </aside>
@@ -39,6 +47,7 @@
     <!-- Conteúdo principal -->
     <main class="main-content">
 
+        <!-- Título da página e link para voltar à listagem -->
         <div class="page-header">
 
             <div>
@@ -52,6 +61,8 @@
 
         </div>
 
+        <!-- Mensagem de erro geral da tela (por exemplo, demanda não encontrada).
+             Começa oculta; role="alert" faz leitores de tela anunciarem o aviso. -->
         <p class="page-error" id="mensagem-erro" role="alert" hidden></p>
 
 
@@ -62,14 +73,18 @@
 
                 <div class="demand-title-area">
 
+                    <!-- Identificação da demanda (preenchida pelo JavaScript após carregar) -->
                     <div class="demand-id">
                     Carregando...
                     </div>
 
+                    <!-- Título da demanda (preenchido pelo JavaScript) -->
                     <h2 class="demand-title">
                         Carregando demanda...
                     </h2>
 
+                    <!-- Etiquetas coloridas da demanda (tipo, prioridade e status).
+                         O JavaScript escreve o texto e define a cor de cada uma. -->
                     <div class="badges">
 
                         <span class="badge-custom badge-tipo"></span>
@@ -80,16 +95,23 @@
 
                 </div>
 
+                <!-- Ações sobre a demanda. Quais botões aparecem e quais opções de status
+                     são oferecidas dependem do perfil e do status atual, e são decididas
+                     pelo JavaScript conforme as regras do ciclo de vida. -->
                 <div class="demand-actions">
 
+                    <!-- Abre a janela de edição (mais abaixo nesta página) -->
                     <button class="btn-secondary-custom" id="btn-editar" type="button">
                         Editar
                     </button>
 
+                    <!-- Lista de transições de status permitidas; as opções são montadas pelo JavaScript -->
                     <select class="form-select-custom" id="novo-status" aria-label="Novo status"></select>
                     <button class="btn-primary-custom" id="btn-atualizar-status" type="button">
                         Salvar status
                     </button>
+                    <!-- Cancela a demanda (nunca apaga o registro). Começa oculto e só é
+                         exibido para quem tem permissão de cancelar. -->
                     <button class="btn-secondary-custom" id="btn-cancelar-demanda" type="button" hidden>Cancelar demanda</button>
 
                 </div>
@@ -108,6 +130,7 @@
                     Descrição
                 </h3>
 
+                <!-- Texto da descrição (preenchido pelo JavaScript) -->
                 <p class="description" id="descricao-demanda">Carregando descrição...</p>
 
             </section>
@@ -120,6 +143,7 @@
                     Informações
                 </h3>
 
+                <!-- Cada valor "Carregando..." é substituído pelo JavaScript, na ordem em que aparecem aqui -->
                 <div class="info-list">
 
                     <div class="info-item">
@@ -132,6 +156,7 @@
                         <span class="info-value">Carregando...</span>
                     </div>
 
+                    <!-- Datas registradas automaticamente pelo sistema -->
                     <div class="info-item">
                         <span class="info-label">Criada em</span>
                         <span class="info-value">Carregando...</span>
@@ -142,6 +167,7 @@
                         <span class="info-value">Carregando...</span>
                     </div>
 
+                    <!-- Prazo previsto; não pode cair em feriado nacional (validado pela API) -->
                     <div class="info-item">
                         <span class="info-label">Prazo de finalização</span>
                         <span class="info-value">Carregando...</span>
@@ -161,10 +187,12 @@
                 Comentários
             </h3>
 
-            <!-- Campo para novo comentário -->
+            <!-- Campo para novo comentário (a lista de comentários existentes é
+                 inserida nesta seção pelo JavaScript) -->
             <div class="comment-form">
             
                 <div style="flex: 1;">
+                    <!-- Limite de 500 caracteres, o mesmo aplicado pela API -->
                     <input
                         type="text"
                         class="form-control-custom"
@@ -172,6 +200,7 @@
                         maxlength="500"
                         placeholder="Escreva um comentário..."
                     >
+                    <!-- Mensagem de validação do comentário; fica oculta até o JavaScript exibi-la -->
                     <span
                         id="comentario-erro"
                         style="display: none; color: var(--erro); font-size: 12px; margin-top: 4px;"
@@ -194,29 +223,39 @@
                 Histórico de alterações
             </h3>
 
+            <!-- Registros inseridos pelo JavaScript (quem alterou, o quê e quando).
+                 aria-live="polite" avisa leitores de tela quando o histórico é atualizado. -->
             <div class="history" aria-live="polite"></div>
 
         </section>
 
     </main>
 
+    <!-- Janela (modal) de edição da demanda, aberta pelo botão "Editar".
+         O elemento <dialog> é nativo do HTML e dispensa biblioteca externa. -->
     <dialog class="edit-dialog" id="dialog-edicao" aria-labelledby="titulo-edicao">
-        <!-- As mensagens de validação são preenchidas pelo JavaScript da Aula 05. -->
+        <!-- As mensagens de validação são preenchidas pelo JavaScript . -->
+        <!-- "novalidate" desliga as mensagens padrão do navegador, pois a validação é feita no JavaScript -->
         <form id="form-edicao" method="dialog" novalidate>
             <div class="dialog-header">
                 <h2 id="titulo-edicao">Editar demanda</h2>
+                <!-- Fecha a janela sem salvar -->
                 <button class="dialog-close" id="fechar-edicao" type="button" aria-label="Fechar">×</button>
             </div>
+            <!-- Título (obrigatório, de 3 a 100 caracteres) -->
             <div class="form-group">
                 <label for="edicao-titulo">Título</label>
                 <input class="form-control-custom" id="edicao-titulo" minlength="3" maxlength="100" required aria-describedby="erro-edicao-titulo">
+                <!-- Mensagem de erro deste campo, preenchida pelo JavaScript -->
                 <div id="erro-edicao-titulo" class="erro-campo"></div>
             </div>
+            <!-- Descrição (obrigatória, de 10 a 1000 caracteres) -->
             <div class="form-group">
                 <label for="edicao-descricao">Descrição</label>
                 <textarea class="form-control-custom" id="edicao-descricao" rows="4" minlength="10" maxlength="1000" required aria-describedby="erro-edicao-descricao"></textarea>
                 <div id="erro-edicao-descricao" class="erro-campo"></div>
             </div>
+            <!-- Tipo e prioridade lado a lado, com os valores previstos no escopo -->
             <div class="edit-form-grid">
                 <div class="form-group">
                     <label for="edicao-tipo">Tipo</label>
@@ -239,11 +278,13 @@
                     <div id="erro-edicao-prioridade" class="erro-campo"></div>
                 </div>
             </div>
+            <!-- Projeto (opções montadas pelo JavaScript com os projetos que o usuário pode acessar) -->
             <div class="form-group">
                 <label for="edicao-projeto">Projeto</label>
                 <select class="form-select-custom" id="edicao-projeto" required aria-describedby="erro-edicao-projeto"></select>
                 <div id="erro-edicao-projeto" class="erro-campo"></div>
             </div>
+            <!-- Responsável (opcional; opções montadas pelo JavaScript) e prazo -->
             <div class="edit-form-grid">
                 <div class="form-group">
                     <label for="edicao-responsavel">Responsável</label>
@@ -252,12 +293,15 @@
                 </div>
                 <div class="form-group">
                     <label for="edicao-prazo">Prazo de finalização</label>
+                    <!-- max="9999-12-31" impede anos com mais de 4 dígitos -->
                     <input class="form-control-custom" id="edicao-prazo" type="date" max="9999-12-31" aria-describedby="erro-edicao-prazo">
                     <div id="erro-edicao-prazo" class="erro-campo"></div>
                 </div>
             </div>
+            <!-- Aviso dinâmico sobre o projeto selecionado; começa oculto -->
             <p class="form-hint" id="edicao-projeto-aviso" role="status" hidden></p>
             <p class="form-hint">O responsável deve pertencer ao projeto. Feriados nacionais não podem ser usados como prazo.</p>
+            <!-- Erro geral do formulário (por exemplo, recusa da API ao salvar) -->
             <p class="form-error" id="edicao-erro" role="alert" hidden></p>
             <div class="dialog-actions">
                 <button class="btn-secondary-custom" id="cancelar-edicao" type="button">Voltar</button>
@@ -266,8 +310,13 @@
         </form>
     </dialog>
 
+    <!-- Scripts no fim do corpo, para carregarem depois de todo o HTML.
+         A ordem importa, pois um depende do anterior. -->
+    <!-- api.js: cliente compartilhado da API (envia o token e trata erros) -->
     <script src="../js/api.js"></script>
+    <!-- sessao.js: controle da sessão (saudação ao usuário e botão Sair) -->
 <script src="../js/sessao.js"></script>
+    <!-- detalhes.js: carrega a demanda e controla edição, status, cancelamento e comentários -->
     <script src="../js/detalhes.js"></script>
 </body>
 

@@ -11,30 +11,47 @@ das equipes, além dos elementos de navegação e mensagens ao usuário.
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <!-- Faz a página se ajustar à largura da tela (celular, tablet e computador) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projetos</title>
+
+    <!-- Fonte Inter, usada em todas as telas do sistema -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/projetos.css">
+
+    <!-- Scripts com "defer": só executam depois que o HTML terminou de carregar.
+         A ordem importa, pois um depende do anterior. -->
+    <!-- api.js: cliente compartilhado da API (envia o token e trata erros) -->
     <script src="../js/api.js" defer></script>
+    <!-- sessao.js: controle da sessão (saudação ao usuário e botão Sair) -->
     <script src="../js/sessao.js" defer></script>
+    <!-- projetos.js: busca os projetos na API e desenha os cartões desta tela -->
     <script src="../js/projetos.js" defer></script>
 </head>
 <body>
+    <!-- Menu lateral, igual ao das demais telas -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h4>DemandasApp</h4>
+        <!-- Saudação e perfil do usuário logado, preenchidos pelo JavaScript.
+             O texto "Carregando..." aparece só até a sessão ser lida. -->
         <p id="saudacaoUsuario">Carregando...</p>
         <span id="perfilUsuario"></span>
         </div>
         <nav class="sidebar-menu">
+            <!-- Atalho para criar demanda. O JavaScript o esconde para o Membro,
+                 que não tem permissão de criar demandas. -->
             <a href="cadastro.html" id="link-nova-demanda" class="link-nova">+ Nova Demanda</a>
             <a href="dashboard.html">Dashboard</a>
             <a href="listagemDemandas.html">Demandas</a>
+            <!-- Item da tela atual, destacado pela classe "active" -->
             <a href="projetos.html" class="active">Projetos</a>
+            <!-- Encerra a sessão (o comportamento do clique fica no JavaScript) -->
             <button type="button" class="btn-sair" id="btn-sair">Sair</button>
         </nav>
     </aside>
 
+    <!-- Conteúdo principal da tela -->
     <main>
         <div class="container">
             <header class="page-header">
@@ -42,6 +59,8 @@ das equipes, além dos elementos de navegação e mensagens ao usuário.
                 <p>Projetos dos quais você participa e suas respectivas equipes.</p>
             </header>
 
+            <!-- Campo de busca: o JavaScript filtra os cartões enquanto a pessoa digita
+                 (por nome ou descrição do projeto). O label garante acessibilidade. -->
             <label class="busca-label" for="busca-projetos">Buscar projeto</label>
             <input
                 type="search"
@@ -50,9 +69,14 @@ das equipes, além dos elementos de navegação e mensagens ao usuário.
                 placeholder="Digite o nome ou a descrição do projeto..."
             >
 
+            <!-- Mensagens de estado. Só uma aparece por vez; o JavaScript mostra
+                 ou esconde cada uma (atributo "hidden") conforme a situação. -->
+            <!-- Visível enquanto os dados ainda estão sendo buscados -->
             <p id="projetos-carregando" class="mensagem-info" role="status">
                 Carregando projetos...
             </p>
+            <!-- Erro ao buscar os dados (texto preenchido pelo JavaScript);
+                 role="alert" faz leitores de tela anunciarem o aviso -->
             <p id="projetos-erro" class="mensagem-erro" role="alert" hidden></p>
             <p id="projetos-vazio" class="mensagem-info" hidden>
                 Você não está vinculado a nenhum projeto.
@@ -61,6 +85,8 @@ das equipes, além dos elementos de navegação e mensagens ao usuário.
                 Nenhum projeto corresponde à busca.
             </p>
 
+            <!-- Área onde o JavaScript insere um cartão por projeto,
+                 com nome, descrição e a equipe (integrantes e perfis) -->
             <section id="lista-projetos" class="projetos-grid" aria-label="Projetos vinculados"></section>
         </div>
     </main>

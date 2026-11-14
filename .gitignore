@@ -3,6 +3,7 @@ node_modules/
 lib/
 coverage/
 *.log
+dist/
 
 # Configuração local e credenciais
 .env
