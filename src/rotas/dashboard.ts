@@ -1,4 +1,5 @@
 /*Autor: Vinícius Panutti - 25007329*/
+// Calcula o resumo das demandas e disponibiliza os dados do dashboard pela API.
 
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
