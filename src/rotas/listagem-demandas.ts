@@ -1,3 +1,5 @@
+/*Autor: Heloisa L Marinho*/
+
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 

@@ -1,3 +1,5 @@
+/* Autor: Rafael Roveri Pires / RA: 24007131 */
+
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 import { isNationalHoliday } from '../holidays';

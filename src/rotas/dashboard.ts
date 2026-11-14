@@ -1,3 +1,5 @@
+/*Autor: Vinícius Panutti - 25007329*/
+
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 
