@@ -3,8 +3,8 @@ Autor: Heloisa L Marinho - RA: 25893868
 Tela: Listagem de Demandas
  
 Descrição: 
-Página de consulta das demandas cadastradas. Contém a busca por título ou descrição, os filtros e as opções
-de ordenação dos resultados. As demandas aparecem em cartões, com acesso à página de detalhes de cada uma
+Página de consulta das demandas cadastradas, com busca por título ou descrição, filtros e opções de ordenação
+Os resultados aparecem em cartões com acesso à página de detalhes de cada demanda
 --> 
 
 <!DOCTYPE html>
@@ -14,40 +14,63 @@ de ordenação dos resultados. As demandas aparecem em cartões, com acesso à p
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/listagem.css">
+
+    <!-- Carrega os recursos para comunicação com a API, sessão e listagem -->
     <script src="../js/api.js" defer></script>
     <script src="../js/sessao.js" defer></script>
     <script src="../js/listagem.js" defer></script>
     <title>Listagem de Demandas</title>
 </head>
 <body>
-    <!-- Sidebar -->
+    <!-- Menu lateral com a identificação do usuário e os atalhos do sistema -->
     <aside class="sidebar">
+
+    <!-- Mostra o nome do sistema, a saudação e o perfil do usuário -->
     <div class="sidebar-logo">
         <h4>DemandasApp</h4>
         <p id="saudacaoUsuario">Carregando...</p>
         <span id="perfilUsuario"></span>
     </div>
+
+    <!-- Reúne os links para as principais telas e a opção de sair -->
     <nav class="sidebar-menu">
+
+        <!-- Abre a página para cadastrar uma nova demanda -->
         <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+        
+        <!-- Link para o painel com o resumo das informações -->
         <a href="dashboard.html">Dashboard</a>
+        
+        <!-- Indica que a página de demandas está aberta -->
         <a href="listagemDemandas.html" class="active">Demandas</a>
+        
+        <!-- Link para consultar projetos -->
         <a href="projetos.html">Projetos</a>
+        
+        <!-- Botão usado para encerrar a sessão -->
         <button type="button" class="btn-sair" id="btn-sair">Sair</button>
     </nav>
     </aside>
 
+    <!-- Área principal que contém o título, os filtros e os resultados -->
     <main>
         <div class="container">
+            <!-- Título da página -->
             <h1 class="page-title">Visualizar Demandas</h1>
 
+            <!-- Cartão que agrupa os campos de busca, filtros e ordenação -->
             <div class="content-card">
+                
+                <!-- Formulário usado para buscar, filtrar e ordenar as demandas -->
                 <form class="toolbar-filters" id="filtros">
                     
+                    <!-- Campo para procurar palavras no título ou na descrição -->
                     <div class="form-group filter-group busca">
                         <label for="filtro-busca">Buscar por título ou descrição</label>
                         <input type="text" id="filtro-busca" class="form-control-custom" placeholder="Digite aqui...">
                     </div>
                     
+                    <!-- Filtro para mostrar demandas de um status escolhido -->
                     <div class="form-group filter-group">
                         <label for="filtro-status">Filtrar por Status</label>
                         <select id="filtro-status" class="form-select-custom">
@@ -61,6 +84,7 @@ de ordenação dos resultados. As demandas aparecem em cartões, com acesso à p
                         </select>
                     </div>
 
+                    <!-- Filtro para mostrar demandas de uma prioridade escolhida -->
                     <div class="form-group filter-group">
                         <label for="filtro-prioridade">Filtrar por Prioridade</label>
                         <select id="filtro-prioridade" class="form-select-custom">
@@ -73,6 +97,7 @@ de ordenação dos resultados. As demandas aparecem em cartões, com acesso à p
                         </select>
                     </div>
 
+                    <!-- Filtro para escolher o tipo de demanda -->
                     <div class="form-group filter-group">
                         <label for="filtro-tipo">Tipo</label>
                         <select id="filtro-tipo" class="form-select-custom">
@@ -83,14 +108,20 @@ de ordenação dos resultados. As demandas aparecem em cartões, com acesso à p
                             <option value="DOCUMENTACAO">Documentação</option>
                         </select>
                     </div>
+
+                    <!-- Filtro para escolher um projeto -->
                     <div class="form-group filter-group">
                         <label for="filtro-projeto">Projeto</label>
                         <select id="filtro-projeto" class="form-select-custom"><option value="">Todos</option></select>
                     </div>
+
+                    <!-- Filtro para escolher a pessoa responsável -->
                     <div class="form-group filter-group">
                         <label for="filtro-responsavel">Responsável</label>
                         <select id="filtro-responsavel" class="form-select-custom"><option value="">Todos</option></select>
                     </div>
+
+                    <!-- Escolhe a ordem em que as demandas serão exibidas -->
                     <div class="form-group filter-group">
                         <label for="filtro-ordenacao">Ordenar por</label>
                         <select id="filtro-ordenacao" class="form-select-custom">
@@ -102,12 +133,14 @@ de ordenação dos resultados. As demandas aparecem em cartões, com acesso à p
                         </select>
                     </div>
 
+                    <!-- Botão que aplica os filtros e a busca preenchidos -->
                     <div>
                         <button type="submit" id="btn-filtrar" class="btn-primary-custom btn-filtrar">Filtrar / Buscar</button>
                     </div>
                 </form>
             </div>
 
+            <!-- Área onde o JavaScript apresenta as demandas encontradas -->
             <div class="demandas-grid" id="demandas-grid" aria-live="polite">Carregando demandas...</div>
         </div>
     </main>
