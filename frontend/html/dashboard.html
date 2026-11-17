@@ -1,205 +1,205 @@
-<!--Autor: Vinícius Panutti - 25007329-->
+<!-- Autor majoritário: Vinicius Panutti Salgado — R.A. 25007329. -->
 <!--DASHBOARD == HOME-->
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/dashboard.css">
+<!-- Seleciona o modo de interpretação HTML5 do documento. --><!DOCTYPE html>
+<!-- Inicia o documento e identifica o conteúdo como português do Brasil para navegação e acessibilidade. --><html lang="pt-BR">
+<!-- Reúne metadados e folhas de estilo carregados antes da apresentação do conteúdo. --><head>
+    <!-- Declara UTF-8 para apresentar corretamente acentos e caracteres do conteúdo. --><meta charset="UTF-8">
+    <!-- Faz a largura da área de apresentação acompanhar o dispositivo e define a escala inicial. --><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Define Dashboard como o título da aba do navegador. --><title>Dashboard</title>
+    <!-- Carrega a grade e os estilos utilitários do Bootstrap usados pelas classes row e col-md. --><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Carrega os pesos da fonte Inter usados na tipografia da página. --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Aplica os estilos específicos de cartões, filtros, menu e tabela do dashboard. --><link rel="stylesheet" href="../css/dashboard.css">
 </head>
-<body>
+<!-- Inicia o conteúdo apresentado ao usuário, incluindo o menu e a área principal. --><body>
 
     <!-- Sidebar -->
-    <aside class="sidebar">
-    <div class="sidebar-logo">
-        <h4>DemandasApp</h4>
-        <p id="saudacaoUsuario">Carregando...</p>
-        <span id="perfilUsuario"></span>
+    <!-- Agrupa o menu lateral e a identificação do usuário autenticado. --><aside class="sidebar">
+    <!-- Agrupa a identificação visual do aplicativo e os dados da sessão. --><div class="sidebar-logo">
+        <!-- Apresenta o nome do aplicativo na identificação do menu lateral. --><h4>DemandasApp</h4>
+        <!-- Reserva o texto de saudação preenchido pelo script de sessão depois da autenticação. --><p id="saudacaoUsuario">Carregando...</p>
+        <!-- Reserva a identificação do perfil do usuário, preenchida pelo script de sessão. --><span id="perfilUsuario"></span>
     </div>
-    <nav class="sidebar-menu">
-        <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="listagemDemandas.html">Demandas</a>
-        <a href="projetos.html">Projetos</a>
-        <button type="button" class="btn-sair" id="btn-sair">Sair</button>
+    <!-- Reúne os destinos de navegação e o controle de saída da sessão. --><nav class="sidebar-menu">
+        <!-- Oferece navegação para cadastro.html; o destino usa um endereço relativo às páginas desta pasta. --><a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+        <!-- Oferece navegação para dashboard.html; a classe active identifica visualmente a página atual. --><a href="dashboard.html" class="active">Dashboard</a>
+        <!-- Oferece navegação para listagemDemandas.html; o destino usa um endereço relativo às páginas desta pasta. --><a href="listagemDemandas.html">Demandas</a>
+        <!-- Oferece navegação para projetos.html; o destino usa um endereço relativo às páginas desta pasta. --><a href="projetos.html">Projetos</a>
+        <!-- Aciona o fluxo de logout conectado pelo script de sessão; type=button evita envio de formulário. --><button type="button" class="btn-sair" id="btn-sair">Sair</button>
     </nav>
     </aside>
 
 <!-- Conteudo principal -->
-<main class="main-content">
-    <div class="page-header">
-        <div>
-            <h1>Dashboard</h1>
-            <p>Visão geral das demandas do projeto</p>
+<!-- Delimita o conteúdo principal com os indicadores e as listas do dashboard. --><main class="main-content">
+    <!-- Agrupa o título e a explicação da finalidade desta página. --><div class="page-header">
+        <!-- Agrupa os elementos filhos deste trecho para organizar a composição do cabeçalho. --><div>
+            <!-- Apresenta o título principal da página na hierarquia de cabeçalhos. --><h1>Dashboard</h1>
+            <!-- Explica que o painel apresenta uma visão geral das demandas do projeto. --><p>Visão geral das demandas do projeto</p>
         </div>
     </div>
 
-    <p id="dashboard-erro" role="alert" hidden></p>
-    <p id="dashboard-carregando" role="status">Carregando indicadores...</p>
+    <!-- Reserva o alerta de falha da API; começa oculto e será revelado pelo JavaScript em caso de erro. --><p id="dashboard-erro" role="alert" hidden></p>
+    <!-- Anuncia o carregamento dos indicadores e é ocultado ao terminar a consulta. --><p id="dashboard-carregando" role="status">Carregando indicadores...</p>
     <!-- Cards de metrica -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Total de demandas</div>
-                <div class="value">—</div>
-                <div class="trend"></div>
+    <!-- Inicia uma linha da grade Bootstrap, com espaçamento entre colunas e margem inferior. --><div class="row g-3 mb-4">
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-3">
+            <!-- Agrupa o rótulo e o valor de um indicador preenchido pelo JavaScript. --><div class="metric-card">
+                <!-- Identifica o indicador Total de demandas exibido neste cartão. --><div class="label">Total de demandas</div>
+                <!-- Reserva o valor do indicador Total de demandas; inicialmente usa um travessão até a consulta terminar. --><div class="value">—</div>
+                <!-- Mantém um espaço vazio de tendência na estrutura do cartão; o script atual não preenche esse elemento. --><div class="trend"></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Em andamento</div>
-                <div class="value destaque">—</div>
-                <div class="trend"></div>
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-3">
+            <!-- Agrupa o rótulo e o valor de um indicador preenchido pelo JavaScript. --><div class="metric-card">
+                <!-- Identifica o indicador Em andamento exibido neste cartão. --><div class="label">Em andamento</div>
+                <!-- Reserva o valor do indicador Em andamento; inicialmente usa um travessão até a consulta terminar. --><div class="value destaque">—</div>
+                <!-- Mantém um espaço vazio de tendência na estrutura do cartão; o script atual não preenche esse elemento. --><div class="trend"></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Concluídas</div>
-                <div class="value">—</div>
-                <div class="trend"></div>
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-3">
+            <!-- Agrupa o rótulo e o valor de um indicador preenchido pelo JavaScript. --><div class="metric-card">
+                <!-- Identifica o indicador Concluídas exibido neste cartão. --><div class="label">Concluídas</div>
+                <!-- Reserva o valor do indicador Concluídas; inicialmente usa um travessão até a consulta terminar. --><div class="value">—</div>
+                <!-- Mantém um espaço vazio de tendência na estrutura do cartão; o script atual não preenche esse elemento. --><div class="trend"></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Críticas em aberto</div>
-                <div class="value alerta">—</div>
-                <div class="trend"></div>
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-3">
+            <!-- Agrupa o rótulo e o valor de um indicador preenchido pelo JavaScript. --><div class="metric-card">
+                <!-- Identifica o indicador Críticas em aberto exibido neste cartão. --><div class="label">Críticas em aberto</div>
+                <!-- Reserva o valor do indicador Críticas em aberto; inicialmente usa um travessão até a consulta terminar. --><div class="value alerta">—</div>
+                <!-- Mantém um espaço vazio de tendência na estrutura do cartão; o script atual não preenche esse elemento. --><div class="trend"></div>
             </div>
         </div>
     </div>
 
     <!-- Segunda linha: distribuicao + proximas do prazo -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por status</h5>
-                <div class="tipo-item">
-                    <span class="nome">Aberta</span>
-                    <span class="count">—</span>
+    <!-- Inicia uma linha da grade Bootstrap, com espaçamento entre colunas e margem inferior. --><div class="row g-3 mb-4">
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-4">
+            <!-- Agrupa uma seção de distribuição ou uma lista de demandas. --><div class="content-card">
+                <!-- Identifica a seção Por status, cujos dados serão preenchidos pela resposta do dashboard. --><h5>Por status</h5>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Aberta. --><span class="nome">Aberta</span>
+                    <!-- Reserva a contagem de Aberta na seção Por status; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Em andamento</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Em andamento. --><span class="nome">Em andamento</span>
+                    <!-- Reserva a contagem de Em andamento na seção Por status; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Em revisão</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Em revisão. --><span class="nome">Em revisão</span>
+                    <!-- Reserva a contagem de Em revisão na seção Por status; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Concluída</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Concluída. --><span class="nome">Concluída</span>
+                    <!-- Reserva a contagem de Concluída na seção Por status; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Cancelada</span>
-                    <span class="count">—</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por prioridade</h5>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Cancelada. --><span class="nome">Cancelada</span>
+                    <!-- Reserva a contagem de Cancelada na seção Por status; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por tipo</h5>
-                <div class="tipo-item">
-                    <span class="nome">Tarefa</span>
-                    <span class="count">—</span>
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-4">
+            <!-- Agrupa uma seção de distribuição ou uma lista de demandas. --><div class="content-card">
+                <!-- Identifica a seção Por prioridade, cujos dados serão preenchidos pela resposta do dashboard. --><h5>Por prioridade</h5>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Crítica com sua etiqueta de prioridade. --><span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
+                    <!-- Reserva a contagem de Crítica na seção Por prioridade; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Defeito</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Alta com sua etiqueta de prioridade. --><span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
+                    <!-- Reserva a contagem de Alta na seção Por prioridade; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Melhoria</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Média com sua etiqueta de prioridade. --><span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
+                    <!-- Reserva a contagem de Média na seção Por prioridade; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Documentação</span>
-                    <span class="count">—</span>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Baixa com sua etiqueta de prioridade. --><span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
+                    <!-- Reserva a contagem de Baixa na seção Por prioridade; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Define a largura desta coluna na grade Bootstrap a partir do tamanho médio de tela. --><div class="col-md-4">
+            <!-- Agrupa uma seção de distribuição ou uma lista de demandas. --><div class="content-card">
+                <!-- Identifica a seção Por tipo, cujos dados serão preenchidos pela resposta do dashboard. --><h5>Por tipo</h5>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Tarefa. --><span class="nome">Tarefa</span>
+                    <!-- Reserva a contagem de Tarefa na seção Por tipo; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
+                </div>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Defeito. --><span class="nome">Defeito</span>
+                    <!-- Reserva a contagem de Defeito na seção Por tipo; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
+                </div>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Melhoria. --><span class="nome">Melhoria</span>
+                    <!-- Reserva a contagem de Melhoria na seção Por tipo; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
+                </div>
+                <!-- Mantém o nome de uma categoria alinhado à sua contagem. --><div class="tipo-item">
+                    <!-- Apresenta o nome da categoria Documentação. --><span class="nome">Documentação</span>
+                    <!-- Reserva a contagem de Documentação na seção Por tipo; o travessão será substituído pelo valor recebido. --><span class="count">—</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="content-card mb-4">
-        <h5>Demandas críticas em aberto</h5>
-        <ul id="demandas-criticas"><li>Carregando...</li></ul>
+    <!-- Agrupa uma seção de distribuição ou uma lista de demandas. --><div class="content-card mb-4">
+        <!-- Identifica a seção Demandas críticas em aberto, cujos dados serão preenchidos pela resposta do dashboard. --><h5>Demandas críticas em aberto</h5>
+        <!-- Reserva a lista substituída pelos links das demandas críticas; inicialmente mostra o carregamento. --><ul id="demandas-criticas"><li>Carregando...</li></ul>
     </div>
     <!-- Tabela de proximas do prazo -->
-    <div class="content-card" id="card-demandas-prazo">
-        <h5>Demandas próximas do prazo</h5>
+    <!-- Agrupa os filtros e a tabela das demandas próximas do prazo. --><div class="content-card" id="card-demandas-prazo">
+        <!-- Identifica a seção Demandas próximas do prazo, cujos dados serão preenchidos pela resposta do dashboard. --><h5>Demandas próximas do prazo</h5>
         <!-- Pesquisa e filtros ficam sempre disponíveis acima da tabela. -->
-        <form id="filtros-ativos" class="filtros-ativos">
-            <div class="campo-filtro filtro-busca">
-                <label for="campo-busca">Pesquisar demanda</label>
-                <input type="search" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável...">
+        <!-- Reúne busca e seletores locais; seu envio é interceptado para filtrar sem recarregar a página. --><form id="filtros-ativos" class="filtros-ativos">
+            <!-- Agrupa um rótulo e o campo correspondente do formulário de filtros. --><div class="campo-filtro filtro-busca">
+                <!-- Identifica o campo Pesquisar demanda e o associa ao controle pelo atributo for. --><label for="campo-busca">Pesquisar demanda</label>
+                <!-- Recebe pesquisa por título ou responsável; o JavaScript lê o campo a cada alteração. --><input type="search" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável...">
             </div>
-            <div class="campo-filtro">
-                <label for="filtro-status">Status</label>
-                <select id="filtro-status" class="form-select-custom">
-                    <option value="">Todos os status</option>
-                    <option value="Aberta">Aberta</option>
-                    <option value="Em andamento">Em andamento</option>
-                    <option value="Em revisão">Em revisão</option>
-                    <option value="Concluída">Concluída</option>
-                    <option value="Cancelada">Cancelada</option>
+            <!-- Agrupa um rótulo e o campo correspondente do formulário de filtros. --><div class="campo-filtro">
+                <!-- Identifica o campo Status e o associa ao controle pelo atributo for. --><label for="filtro-status">Status</label>
+                <!-- Oferece os rótulos de status comparados com o texto da quinta célula de cada linha. --><select id="filtro-status" class="form-select-custom">
+                    <!-- Representa a seleção sem restrição: valor vazio faz o filtro aceitar todas as categorias. --><option value="">Todos os status</option>
+                    <!-- Permite filtrar pelo rótulo Aberta, enviando esse texto ao filtro local. --><option value="Aberta">Aberta</option>
+                    <!-- Permite filtrar pelo rótulo Em andamento, enviando esse texto ao filtro local. --><option value="Em andamento">Em andamento</option>
+                    <!-- Permite filtrar pelo rótulo Em revisão, enviando esse texto ao filtro local. --><option value="Em revisão">Em revisão</option>
+                    <!-- Permite filtrar pelo rótulo Concluída, enviando esse texto ao filtro local. --><option value="Concluída">Concluída</option>
+                    <!-- Permite filtrar pelo rótulo Cancelada, enviando esse texto ao filtro local. --><option value="Cancelada">Cancelada</option>
                 </select>
             </div>
-            <div class="campo-filtro">
-                <label for="filtro-prioridade">Prioridade</label>
-                <select id="filtro-prioridade" class="form-select-custom">
-                    <option value="">Todas as prioridades</option>
-                    <option value="Crítica">Crítica</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Média">Média</option>
-                    <option value="Baixa">Baixa</option>
+            <!-- Agrupa um rótulo e o campo correspondente do formulário de filtros. --><div class="campo-filtro">
+                <!-- Identifica o campo Prioridade e o associa ao controle pelo atributo for. --><label for="filtro-prioridade">Prioridade</label>
+                <!-- Oferece os rótulos de prioridade comparados com o texto da quarta célula de cada linha. --><select id="filtro-prioridade" class="form-select-custom">
+                    <!-- Representa a seleção sem restrição: valor vazio faz o filtro aceitar todas as categorias. --><option value="">Todas as prioridades</option>
+                    <!-- Permite filtrar pelo rótulo Crítica, enviando esse texto ao filtro local. --><option value="Crítica">Crítica</option>
+                    <!-- Permite filtrar pelo rótulo Alta, enviando esse texto ao filtro local. --><option value="Alta">Alta</option>
+                    <!-- Permite filtrar pelo rótulo Média, enviando esse texto ao filtro local. --><option value="Média">Média</option>
+                    <!-- Permite filtrar pelo rótulo Baixa, enviando esse texto ao filtro local. --><option value="Baixa">Baixa</option>
                 </select>
             </div>
         </form>
-        <table class="table-custom" id="tabela-demandas">
-            <thead>
-            <tr>
-                <th>Título</th>
-                <th>Projeto</th>
-                <th>Responsável</th>
-                <th>Prioridade</th>
-                <th>Status</th>
-                <th>Prazo</th>
+        <!-- Define a tabela cujo corpo será reconstruído com as demandas retornadas pela API. --><table class="table-custom" id="tabela-demandas">
+            <!-- Agrupa os títulos das colunas, sem incluí-los na filtragem das linhas de dados. --><thead>
+            <!-- Agrupa as seis células do cabeçalho na mesma ordem usada pelo JavaScript. --><tr>
+                <!-- Identifica a coluna Título, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Título</th>
+                <!-- Identifica a coluna Projeto, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Projeto</th>
+                <!-- Identifica a coluna Responsável, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Responsável</th>
+                <!-- Identifica a coluna Prioridade, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Prioridade</th>
+                <!-- Identifica a coluna Status, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Status</th>
+                <!-- Identifica a coluna Prazo, cuja posição é preservada ao montar as linhas no JavaScript. --><th>Prazo</th>
             </tr>
             </thead>
-            <tbody>
+            <!-- Reserva o corpo inicialmente vazio que o JavaScript preencherá com dados da API. --><tbody>
             </tbody>
         </table>
-        <p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
+        <!-- Exibe a ausência de linhas visíveis após os filtros; começa escondida pelo atributo hidden. --><p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
     </div>
 
 </main>
 
-<script src="../js/api.js"></script>
-<script src="../js/sessao.js"></script>
-<script src="../js/dashboard.js"></script>
+<!-- Carrega primeiro o cliente HTTP, os rótulos e os helpers usados pelos scripts seguintes. --><script src="../js/api.js"></script>
+<!-- Carrega os controles de autenticação, identificação do usuário e saída da sessão. --><script src="../js/sessao.js"></script>
+<!-- Carrega por último a consulta dos indicadores e os filtros da tabela, usando os helpers já definidos. --><script src="../js/dashboard.js"></script>
 </body>
 </html>
