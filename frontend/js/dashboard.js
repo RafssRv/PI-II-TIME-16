@@ -1,5 +1,11 @@
-// Autor: Vinícius Panutti - 25007329
-// Descrição: Pesquisa e filtros fixos da tabela "Demandas próximas do prazo" no dashboard.
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Dashboard
+
+Descrição: 
+Busca os dados do painel e preenche os indicadores, os resumos e as listas de demandas críticas e próximas do prazo.
+Na tabela, permite pesquisar por título ou responsável e combinar os filtros de status e prioridade
+*/
 
 // Seleciona o formulário e os campos que já estão no HTML.
 const formularioFiltros = document.querySelector('#filtros-ativos');

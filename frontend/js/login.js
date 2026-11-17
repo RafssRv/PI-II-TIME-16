@@ -1,16 +1,10 @@
 /*
-Autora: Sophia Franco de Godoy / RA: 24000833
-Descrição: Validação do formulário e controle do acesso ao DemandasApp
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Login
 
-1. Identificar o formulário, os campos e os espaços de mensagens no HTML
-2. Limpar as mensagens e os destaques de erro da tentativa anterior
-3. Ler os dados informados e padronizar a escrita do e-mail
-4. Conferir o preenchimento dos campos e o formato do e-mail, apresentando
-   todos os erros encontrados junto aos respectivos campos
-5. Enviar os dados válidos ao servidor por meio da função api(), de api.js.
-6. Aguardar a criação da sessão no servidor, identificada por um cookie
-7. Abrir o dashboard quando o acesso for autorizado ou apresentar a mensagem
-   de erro quando alguma etapa da solicitação falhar
+Descrição: 
+Faz a conferência do e-mail e da senha antes de solicitar o acesso ao sistema. Mostra as mensagens de erro
+no formulário e encaminha o usuário ao dashboard quando o login é autorizado ou já existe uma sessão válida
 */
 
 // Seleciona o formulário e os campos da tela

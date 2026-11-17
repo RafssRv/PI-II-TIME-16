@@ -1,4 +1,11 @@
-// Autor: Vinicius Panutti Salgado — R.A. 25007329
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Cadastro e edição de demandas (testes de feriados)
+
+Descrição: 
+Simula respostas da BrasilAPI para testar a identificação de feriados e a reutilização das consultas por ano. Confere também
+o tratamento de respostas inválidas e verifica se uma consulta que falhou pode ser tentada novamente
+*/
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { isNationalHoliday } = require('../src/holidays');

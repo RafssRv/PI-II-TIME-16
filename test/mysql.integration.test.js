@@ -1,4 +1,12 @@
-// Autor: Vinicius Panutti Salgado — R.A. 25007329
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Uso geral do sistema (integração com MySQL real)
+
+Descrição: 
+Verifica o funcionamento conjunto da API e do MySQL, passando pelo cadastro, login e operações de demandas,
+comentários e histórico. Utiliza um banco exclusivo de testes, com nome terminado em _test, e só executa quando a variável
+MYSQL_INTEGRATION está definida como 1
+*/
 require('dotenv').config({ quiet: true });
 const test = require('node:test');
 const assert = require('node:assert/strict');

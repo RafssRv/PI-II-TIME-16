@@ -1,11 +1,10 @@
 /*
-Autor: Priscila Amorim
+Autora: Priscila Amorim - RA: 24787350
 Tela: Projetos
-Descrição: Responsável por consultar e exibir os projetos vinculados
-ao usuário autenticado, incluindo os integrantes e seus respectivos
-perfis. Implementa a pesquisa de projetos por nome, descrição ou
-membros da equipe, além do controle de acesso conforme o perfil
-do usuário e do tratamento de carregamento, resultados vazios e erros.
+
+Descrição: 
+Exibe os projetos vinculados ao usuário e os integrantes de cada equipe. A pesquisa considera o nome,
+a descrição do projeto e os nomes dos membros. Também apresenta os avisos de carregamento, busca vazia e falha
 */
 
 // Usuário logado nesta tela.

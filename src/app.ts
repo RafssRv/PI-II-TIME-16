@@ -1,7 +1,10 @@
 /*
-  Autora: Priscila Amorim dos Santos / RA: 24787350
-  Descrição: Configuração principal do aplicativo Express (middlewares, autenticação de sessão
-  e registro das rotas dos 5 integrantes do grupo na pasta src/rotas/).
+Autora: Priscila Amorim dos Santos - RA: 24787350
+Tela: Uso geral do sistema (configuração do backend)
+
+Descrição: 
+Organiza a aplicação Express, configura as sessões e registra as rotas do sistema. Controla o acesso às páginas
+internas e à API, disponibiliza os arquivos do frontend e centraliza as respostas para rotas inexistentes e erros
 */
 import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';

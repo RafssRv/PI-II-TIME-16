@@ -1,8 +1,11 @@
-// Autor: Priscila Amorim 
-// Descrição: Consulta e mantém em cache os feriados nacionais da BrasilAPI por ano.
+/*
+Autora: Priscila Amorim dos Santos - RA: 24787350
+Tela: Cadastro e edição de demandas (validação do prazo)
 
-// Cache em memória: guarda, para cada ano, a consulta feita (e não só o resultado).
-// Assim, várias requisições simultâneas para o mesmo ano compartilham uma única chamada à API.
+Descrição: 
+Consulta os feriados nacionais na BrasilAPI e mantém as consultas em memória por ano para reutilizá-las. Informa
+se uma data é feriado e trata falhas de comunicação, demora na resposta e dados inválidos recebidos do serviço
+*/
 const feriadosPorAno = new Map();
 
 // Devolve o conjunto de datas (AAAA-MM-DD) que são feriados nacionais no ano informado.

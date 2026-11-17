@@ -1,5 +1,11 @@
-/*Autor: Vinícius Panutti - 25007329*/
-// Calcula o resumo das demandas e disponibiliza os dados do dashboard pela API.
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Dashboard (backend)
+
+Descrição: 
+Consulta as demandas disponíveis para o usuário e calcula os totais por status, prioridade e tipo. Separa as demandas
+críticas em aberto e as próximas do prazo, considerando as datas no fuso de São Paulo, e envia o resumo para o painel
+*/
 
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';

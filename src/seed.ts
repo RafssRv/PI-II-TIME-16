@@ -1,13 +1,10 @@
 /*
-  Autor: Priscila Amorim
-  Descrição: Popula um banco VAZIO com dados de demonstração: um usuário de cada
-  perfil (ADMIN, LIDER, MEMBRO), dois projetos com equipes e demandas em todos os
-  status, com histórico e comentários. Uso: `npm run seed`.
+Autora: Priscila Amorim dos Santos - RA: 24787350
+Tela: Uso geral do sistema (dados de demonstração)
 
-  Segurança: o script se recusa a rodar se já existir qualquer usuário, para nunca
-  misturar dados de demonstração com dados reais. A senha é só para demonstração
-  local; troque-a com a variável SEED_SENHA se quiser (mínimo de 10 caracteres,
-  a mesma regra da API).
+Descrição: 
+Preenche o banco com usuários de diferentes perfis, projetos, equipes e demandas para demonstração. Também cria
+comentários e históricos de alterações. A execução é interrompida caso já existam usuários cadastrados no banco
 */
 
 import 'dotenv/config';

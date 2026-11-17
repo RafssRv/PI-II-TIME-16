@@ -1,11 +1,10 @@
 /*
-Autor: Priscila Amorim
+Autor: Priscila Amorim - RA: 24787350
 Tela: Projetos
-Descrição: Define os estilos da tela de visualização de projetos,
-incluindo menu lateral, cabeçalho, campo de pesquisa, cartões de projetos
-e identificação dos integrantes das equipes. Também estabelece a
-identidade visual da aplicação e adapta o layout para diferentes
-tamanhos de tela.
+
+Descrição: 
+Apresentação dos projetos em cartões com nome, descrição e integrantes da equipe. O arquivo também estiliza
+o campo de busca e a navegação lateral, reorganizando esses elementos para a consulta em celulares e computadores
 */
 
 :root {

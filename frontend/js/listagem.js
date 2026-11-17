@@ -1,7 +1,12 @@
-/* Autor: Heloisa L Marinho
-Descrição: Integração da listagem e validação/ordenação dos filtros de busca */
+/*
+Autora: Heloisa L Marinho - RA: 25893868
+Tela: Listagem de Demandas
 
-// Integração: Vinicius Panutti Salgado — R.A. 25007329.
+Descrição: 
+Monta a consulta de demandas a partir da pesquisa, dos filtros e da ordenação escolhidos. Envia os critérios à API,
+exibe os resultados em cartões e oferece acesso aos detalhes de cada registro
+*/
+
 // Consulta a API; títulos e descrições recebidos são inseridos como texto.
 const grid = document.querySelector('#demandas-grid');
 let consultaAtual = 0;

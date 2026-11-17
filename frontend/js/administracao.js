@@ -1,8 +1,11 @@
-// Autor: Priscila Amorim
-// Descrição: Cadastro e desativação de projetos, consulta de equipes, demandas e usuários.
-// Projetos desativados permanecem disponíveis para consulta, sem apagar suas demandas.
-// Todo texto vindo da API é inserido com textContent, nunca como HTML.
-// O cadastro usa o fluxo de validação com mensagens junto aos campos.
+/*
+Autora: Priscila Amorim - RA: 24787350
+Tela: Projetos e Usuários (Administrador)
+
+Descrição: 
+Carrega os projetos, as equipes e os usuários para consulta na área administrativa. Controla as pesquisas, os filtros
+e o formulário de criação de projetos, além de permitir sua desativação sem apagar as demandas associadas
+*/
 
 let usuarioAdmin = null;
 

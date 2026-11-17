@@ -1,4 +1,11 @@
-/*Autor: Heloisa L Marinho*/
+/*
+Autora: Heloisa L Marinho - RA: 25893868
+Tela: Listagem de Demandas (backend)
+
+Descrição: 
+Busca as demandas no banco conforme o texto pesquisado, os filtros e a ordenação recebidos. Confere os parâmetros da
+consulta e limita os resultados de líderes e membros aos projetos dos quais participam, retornando os dados para a listagem
+*/
 
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';

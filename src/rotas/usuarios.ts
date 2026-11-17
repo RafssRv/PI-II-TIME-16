@@ -1,10 +1,13 @@
 /*
-  Autora: Sophia Franco de Godoy / RA: 24000833
-  Descrição: Rotas de usuários (GET /api/usuarios, POST /api/usuarios, PATCH /api/usuarios/:id
-  e DELETE /api/usuarios/:id) sem expor senhas
-  Consulta e manipula os usuários no banco de dados MySQL,
-  com fechamento da conexão no bloco finally (Reunião 5)
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Projetos e Usuários e consultas compartilhadas (backend)
+
+Descrição: 
+Disponibiliza as operações de listagem, cadastro, edição e desativação de usuários. Valida os dados e as permissões,
+gera o hash das senhas no cadastro e retorna apenas informações públicas das contas. Também trata a criação do primeiro
+administrador do sistema
 */
+
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 import { exigirAdmin } from '../autenticacao';

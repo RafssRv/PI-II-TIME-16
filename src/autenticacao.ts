@@ -1,7 +1,10 @@
 /*
-  Autora: Sophia Franco de Godoy / RA: 24000833
-  Descrição: Tipos e verificações de sessão conforme a Aula 11 de autenticação.
-  A sessão fica no servidor. O navegador recebe apenas o cookie portal.sid.
+Autora: Sophia Franco de Godoy -RA: 24000833
+Tela: Telas e operações que exigem autenticação
+
+Descrição:
+Define quais informações do usuário podem ser guardadas na sessão. Reúne as verificações que exigem login
+e restringem determinadas ações aos administradores, retornando uma mensagem quando o acesso não é permitido
 */
 import { Request, Response, NextFunction } from 'express';
 

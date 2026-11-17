@@ -1,4 +1,11 @@
-// Autor: Vinicius Panutti Salgado — R.A. 25007329
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Uso geral do sistema (testes de conexão com o banco)
+
+Descrição: 
+Confere a configuração das conexões e a execução de consultas com parâmetros nomeados. Verifica se as transações
+são encerradas antes de liberar a conexão, inclusive quando ocorre uma falha ao iniciar a transação
+*/
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createMysqlDatabase } = require('../src/database');

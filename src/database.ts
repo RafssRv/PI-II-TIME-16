@@ -1,4 +1,11 @@
-// Autor: Vinicius Panutti Salgado — R.A. 25007329
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Uso geral do sistema (persistência dos dados)
+
+Descrição: 
+Configura e gerencia as conexões com o MySQL usando as variáveis de ambiente. Oferece funções de consulta e gravação,
+com controle de transações por commit e rollback, além de liberar as conexões para reutilização após o uso
+*/
 const mysql = require('mysql2/promise');
 
 function createMysqlDatabase({ driver = mysql, env = process.env } = {}) {

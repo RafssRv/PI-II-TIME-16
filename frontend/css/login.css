@@ -1,17 +1,10 @@
 /*
-Autora: Sophia Franco de Godoy / RA: 24000833
-Descrição: Personalização visual da tela de login do DemandasApp.
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Login 
 
-1. Estabelecer os estilos gerais de fonte, fundo e margem da página
-2. Centralizar o cartão de login na horizontal e na vertical com Flexbox,
-   utilizando a altura da janela do navegador como referência
-3. Configurar o fundo branco, a largura, a borda, os cantos arredondados
-   e o espaçamento interno do cartão que contém o formulário
-4. Definir as cores, os tamanhos e os espaçamentos do nome do sistema
-   e do título da área de acesso
-5. Aplicar a cor principal da aplicação e o texto em negrito ao botão Entrar
-6. Alterar a cor do botão quando o usuário passa o mouse sobre ele,
-   oferecendo uma indicação visual de interação
+Descrição: 
+Centraliza o cartão de acesso e ajusta seu tamanho, as bordas e os espaçamentos. Personaliza os títulos e o botão
+Entrar, que muda de cor quando o usuário passa o mouse sobre ele
 */
 
 /* Define a fonte, o fundo e a margem da página */
@@ -38,7 +31,6 @@ body {
     padding: 30px;
     text-align: center;
 }
-
 
 /* Destaca o nome do sistema com a cor principal da aplicação */
 .logo {

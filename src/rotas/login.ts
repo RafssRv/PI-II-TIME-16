@@ -1,10 +1,13 @@
 /*
-  Autora: Sophia Franco de Godoy / RA: 24000833
-  Descrição: Rota POST /api/login para autenticação de usuários
-  Valida os campos obrigatórios e consulta o usuário no MySQL,
-  com encerramento da conexão no bloco finally (Reunião 5).
-  Após conferir o hash, regenera e salva a sessão no servidor, conforme a Aula 11.
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Login (backend)
+
+Descrição: 
+Faz a autenticação a partir do e-mail e da senha informados. Consulta os usuários ativos e compara a senha com
+o hash salvo no banco. Quando os dados estão corretos, regenera o identificador da sessão e salva as informações do 
+usuário para permitir o acesso ao sistema
 */
+
 import { Express, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import type { Database, DbConnection } from '../app';

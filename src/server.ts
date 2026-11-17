@@ -1,7 +1,10 @@
 /*
-  Autor: Vinícius Panutti Salgado — R.A. 25007329
-  Descrição: Ponto de entrada do servidor Express (TypeScript) com persistência MySQL: lê a porta
-  do ambiente, abre a conexão com o banco, cria o app e encerra o pool ao receber SIGINT/SIGTERM.
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Uso geral do sistema (inicialização do servidor)
+
+Descrição: 
+Carrega as configurações de ambiente, prepara o acesso ao banco e inicia a aplicação na porta definida.
+Exibe o endereço do servidor no terminal e organiza seu encerramento, fechando também as conexões com o MySQL
 */
 
 import 'dotenv/config';

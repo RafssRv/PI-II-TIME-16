@@ -1,6 +1,11 @@
-// Autor: Vinícius Panutti Salgado — R.A. 25007329
-// Descrição: Cliente compartilhado da API: envia o cookie de sessão, trata erros
-// e reúne as chamadas de login, consulta da sessão e logout da Aula 11.
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Compartilhado entre as telas (comunicação com a API)
+
+Descrição: 
+Centraliza as requisições ao servidor e o tratamento das respostas e dos erros. Reúne as chamadas de login, consulta
+da sessão e logout, utilizando o cookie de sessão nas solicitações
+*/
  
 const API_BASE = '/api';
 

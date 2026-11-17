@@ -1,5 +1,11 @@
-// Autora: Sophia Franco de Godoy / RA: 24000833
-// Verifica login, cookie, consulta de sessão, logout e permissões da Aula 11.
+/*
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Login e telas internas (testes de sessão e permissões)
+
+Descrição: 
+Testa o preenchimento do login, a autenticação e o funcionamento da sessão, incluindo o cookie e o logout.
+Verifica as restrições de acesso por perfil, o bloqueio de contas desativadas e o tratamento de falhas nas consultas
+*/
 require('tsx/cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');

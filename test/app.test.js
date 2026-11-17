@@ -1,4 +1,11 @@
-// Autor: Vinicius Panutti Salgado — R.A. 25007329
+/*
+Autor: Vinícius Panutti Salgado - RA: 25007329
+Tela: Uso geral do sistema (testes da API)
+
+Descrição: 
+Reúne testes das rotas utilizando um banco simulado. Verifica as validações, os filtros, as permissões e as operações
+de demandas, projetos e usuários. Também confere o registro do histórico e a reversão das alterações quando ocorre uma falha
+*/
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApp: buildApp } = require('../src/app');

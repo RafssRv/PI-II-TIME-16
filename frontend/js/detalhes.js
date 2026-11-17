@@ -1,6 +1,11 @@
-// Autor: Priscila Amorim
-// Descrição: Consulta detalhes, comentários e histórico; permite editar e acompanhar o ciclo da demanda.
-// As validações da edição seguem: ler, validar, mostrar os erros e só então enviar.
+/*
+Autora: Priscila Amorim - RA: 24787350
+Tela: Detalhes da Demanda
+
+Descrição: 
+Consulta uma demanda e apresenta suas informações, seus comentários e o histórico de alterações. Conforme o perfil
+do usuário, disponibiliza edição, mudança de status, cancelamento e reabertura. Também valida e envia os novos comentários
+*/
 
 // Estado da tela: usuário logado, demanda carregada e dados usados na janela de edição.
 let usuario = null;

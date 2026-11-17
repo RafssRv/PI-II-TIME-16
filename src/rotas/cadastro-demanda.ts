@@ -1,4 +1,11 @@
-/* Autor: Rafael Roveri Pires / RA: 24007131 */
+/*
+Autor: Rafael Roveri Pires - RA: 24007131
+Tela: Cadastro de Demandas, Projetos e Administração (backend)
+
+Descrição: 
+Recebe os dados de uma nova demanda, confere os campos, o prazo e as permissões do usuário antes de salvar o registro
+e seu histórico. Também reúne as rotas de consulta, cadastro, edição e desativação de projetos e de gerenciamento das equipes
+*/
 
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';

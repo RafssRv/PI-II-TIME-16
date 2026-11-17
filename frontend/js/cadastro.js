@@ -1,6 +1,11 @@
-// Autor: Rafael Roveri Pires - RA: 24007131
-// Descrição: Valida todos os campos antes de criar uma demanda, seguindo o fluxo da Aula 05.
-// Carrega projetos e responsáveis pela API e apresenta também os erros enviados pelo servidor.
+/*
+Autor: Rafael Roveri Pires - RA: 24007131
+Tela: Cadastro de Demandas
+
+Descrição: 
+Prepara o formulário de nova demanda, buscando os projetos disponíveis e os responsáveis de cada equipe. 
+Confere os dados preenchidos, apresenta os erros junto aos campos e envia o cadastro ao servidor, abrindo os detalhes após a criação
+*/
 
 let user = null;
 const form = document.querySelector('#form-demanda');

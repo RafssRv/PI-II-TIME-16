@@ -1,7 +1,10 @@
 /*
-  Autora: Sophia Franco de Godoy / RA: 24000833
-  Descrição: Consulta a sessão no servidor antes de carregar as telas internas,
-  apresenta o usuário e seu perfil e encerra a sessão pelo logout, conforme a Aula 11.
+Autora: Sophia Franco de Godoy - RA: 24000833
+Tela: Compartilhado entre as telas internas (sessão do usuário)
+
+Descrição: 
+Consulta a sessão no servidor e apresenta o nome e o perfil do usuário no menu lateral. Ajusta os atalhos conforme
+o perfil e controla o botão Sair, encerrando a sessão e retornando à página de login
 */
 let usuarioAtual = null;
 

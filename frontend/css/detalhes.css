@@ -1,7 +1,10 @@
 /*
-Autor: Priscila Amorim
+Autor: Priscila Amorim - RA: 24787350
 Tela: Detalhes da Demanda
-Descrição: Estilos específicos para a tela de visualização detalhada de uma demanda.
+
+Descrição: 
+Cuida da apresentação das informações de uma demanda, separando a descrição, os dados gerais, os comentários e o histórico
+de alterações. Inclui a formatação da janela de edição e ajustes na disposição dos elementos em telas menores
 */
 
 :root {

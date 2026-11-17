@@ -1,13 +1,13 @@
 /*
-  Autora: Priscila Amorim dos Santos / RA: 24787350
-  Descrição: Rotas da Aluna 5 — Detalhes da demanda e comentários:
-  - GET /api/demandas/:id: retorna todos os campos de uma demanda específica ou 404 quando não existir;
-  - GET /api/demandas/:id/comentarios: lista os comentários vinculados à demanda;
-  - POST /api/demandas/:id/comentarios: registra um comentário vinculado obrigatoriamente à demanda
-    e a um usuário, com data e horário definidos automaticamente pelo servidor, impedindo texto vazio
-    e retornando 404 quando a demanda não existir.
-  Consulta e atualiza o MySQL com try/catch/finally, conforme a Reunião 5.
+Autora: Priscila Amorim dos Santos - RA: 24787350
+Tela: Detalhes da Demanda (backend)
+
+Descrição: 
+Reúne as consultas de uma demanda, de seus comentários e do histórico de alterações. Valida as edições e mudanças de
+status conforme as permissões do usuário, registrando o histórico. Inclui a criação, edição e exclusão de comentários 
+e bloqueia a exclusão física das demandas
 */
+
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 import { isNationalHoliday } from '../holidays';

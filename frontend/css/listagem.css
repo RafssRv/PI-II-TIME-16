@@ -1,7 +1,10 @@
 /* 
-Autor: Heloisa L Marinho 
+Autor: Heloisa L Marinho - RA: 25893868
 Tela: Listagem de Demandas
-Descrição: Estilos padrão do projeto e específicos para a tela de listagem de Demandas 
+
+Descrição: 
+Organiza visualmente a consulta de demandas, reservando espaço para a pesquisa, os filtros e os cartões de resultados.
+Usa cores para diferenciar status e prioridades e ajusta o menu e o conteúdo conforme a largura da tela
 */
 
 :root {
