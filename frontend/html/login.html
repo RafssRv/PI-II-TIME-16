@@ -19,51 +19,46 @@ de preenchimento e espaços para apresentar mensagens de erro caso os dados este
 
 <body class="bg-light">
 
-    <!-- Área usada pelo CSS para centralizar o cartão de login -->
     <div class="pagina-login">
 
-        <!-- Cartão do formulário com uma sombra leve do Bootstrap -->
         <div class="card-login shadow-sm">
 
-            <!-- Exibe o nome do sistema -->
             <h1 class="logo"> DemandasApp </h1>
 
-            <!-- Apresenta o título da área de acesso -->
             <h2> Acesse sua conta </h2>
 
-            <!-- Orienta o usuário antes do preenchimento -->
             <p class="text-secondary"> Preencha os campos abaixo para entrar no sistema. </p>
 
-            <!-- novalidate deixa a validação do envio sob o controle de login.js -->
+            <!-- Formulário de login; login.js verifica os dados ao enviá-lo. -->
             <form id="form-login" novalidate>
 
-                <!-- Grupo do campo de e-mail -->
+                <!-- Agrupa o campo de e-mail e sua mensagem de erro. -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Associa o nome do campo ao input de e-mail -->
+                    <!-- Identifica o campo de e-mail como obrigatório. -->
                     <label for="email" class="form-label"><strong>E-mail *</strong></label>
 
-                    <!-- Campo obrigatório com um exemplo de e-mail -->
+                    <!-- Campo para digitar o e-mail, com um exemplo de preenchimento. -->
                     <input type="email" id="email" class="form-control" placeholder="seu.email@empresa.com" required>
 
-                    <!-- Recebe a mensagem de erro do e-mail -->
+                    <!-- Espaço para mostrar erros no e-mail. -->
                     <div id="erro-email" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Grupo do campo de senha -->
+                <!-- Agrupa o campo de senha e sua mensagem de erro. -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Associa o nome do campo ao input de senha -->
+                    <!-- Identifica o campo de senha como obrigatório. -->
                     <label for="senha" class="form-label"><strong>Senha *</strong></label>
 
-                    <!-- Campo obrigatório que oculta os caracteres da senha -->
+                    <!-- Campo para digitar a senha, com os caracteres ocultos. -->
                     <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
 
-                    <!-- Recebe erros de preenchimento da senha ou da solicitação de acesso -->
+                    <!-- Espaço para mostrar erros de senha ou de login. -->
                     <div id="erro-senha" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Envia o formulário e ocupa toda a largura disponível -->
+                <!-- Botão que envia o formulário. -->
                 <button type="submit" class="btn btn-primary w-100 mt-3 botao-entrar">Entrar</button>
             </form>
 
@@ -71,10 +66,10 @@ de preenchimento e espaços para apresentar mensagens de erro caso os dados este
 
     </div>
 
-    <!-- Carrega a função de comunicação com o servidor -->
+    <!-- Carrega as funções de comunicação com o servidor. -->
     <script src="../js/api.js"></script>
 
-    <!-- Carrega a validação e o controle do login -->
+    <!-- Carrega as verificações e o controle de login da tela. -->
     <script src="../js/login.js"></script>
 </body>
 </html>
