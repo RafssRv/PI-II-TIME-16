@@ -77,13 +77,13 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
 
                         <!-- Lista com os status disponíveis -->
                         <select id="filtro-status" class="form-select-custom">
-                            <option value="selecione" selected disabled>Selecione...</option>
-                            <option value="todos">Todos</option>
-                            <option value="aberta">Aberta</option>
-                            <option value="andamento">Em andamento</option>
-                            <option value="revisao">Em revisão</option>
-                            <option value="concluida">Concluída</option>
-                            <option value="cancelada">Cancelada</option>
+                            <option value="" selected disabled>Selecione...</option>
+                            <option value="">Todas</option>
+                            <option value="ABERTA">Aberta</option>
+                            <option value="EM_ANDAMENTO">Em andamento</option>
+                            <option value="EM_REVISAO">Em revisão</option>
+                            <option value="CONCLUIDA">Concluída</option>
+                            <option value="CANCELADA">Cancelada</option>
                         </select>
                     </div>
 
@@ -93,12 +93,12 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
 
                         <!-- Lista com as prioridades disponíveis -->
                         <select id="filtro-prioridade" class="form-select-custom">
-                            <option value="selecione" selected disabled>Selecione...</option>
-                            <option value="todos">Todas</option>
-                            <option value="critica">Crítica</option>
-                            <option value="alta">Alta</option>
-                            <option value="media">Média</option>
-                            <option value="baixa">Baixa</option>
+                            <option value="" selected disabled>Selecione...</option>
+                            <option value="">Todas</option>
+                            <option value="CRITICA">Crítica</option>
+                            <option value="ALTA">Alta</option>
+                            <option value="MEDIA">Média</option>
+                            <option value="BAIXA">Baixa</option>
                         </select>
                     </div>
 
@@ -108,7 +108,7 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
 
                         <!-- Lista com os tipos de demanda disponíveis -->
                         <select id="filtro-tipo" class="form-select-custom">
-                            <option value="">Todos</option>
+                            <option value="">Todas</option>
                             <option value="TAREFA">Tarefa</option>
                             <option value="DEFEITO">Defeito</option>
                             <option value="MELHORIA">Melhoria</option>
@@ -121,7 +121,7 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
                         <label for="filtro-projeto">Projeto</label>
 
                         <!-- Lista de projetos preenchida pelo JavaScript -->
-                        <select id="filtro-projeto" class="form-select-custom"><option value="">Todos</option></select>
+                        <select id="filtro-projeto" class="form-select-custom"><option value="">Todas</option></select>
                     </div>
 
                     <!-- Filtro para escolher a pessoa responsável -->
@@ -129,7 +129,7 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
                         <label for="filtro-responsavel">Responsável</label>
 
                         <!-- Lista de responsáveis preenchida pelo JavaScript -->
-                        <select id="filtro-responsavel" class="form-select-custom"><option value="">Todos</option></select>
+                        <select id="filtro-responsavel" class="form-select-custom"><option value="">Todas</option></select>
                     </div>
 
                     <!-- Escolhe a ordem em que as demandas serão exibidas -->
@@ -138,7 +138,7 @@ Os resultados aparecem em cartões com acesso à página de detalhes de cada dem
                         
                         <!-- Lista com as opções de ordenação -->
                         <select id="filtro-ordenacao" class="form-select-custom">
-                            <option value="selecione" selected disabled>Selecione...</option>
+                            <option value="" selected disabled>Selecione...</option>
                             <option value="criacao_desc">Data de criação</option> 
                             <option value="prazo_asc">Prazo de finalização</option> 
                             <option value="prioridade_desc">Prioridade</option> 

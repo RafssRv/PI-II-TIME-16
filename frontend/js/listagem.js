@@ -7,89 +7,206 @@ Monta a consulta de demandas a partir da pesquisa, dos filtros e da ordenação 
 exibe os resultados em cartões e oferece acesso aos detalhes de cada registro
 */
 
-// Consulta a API; títulos e descrições recebidos são inseridos como texto.
+// Pega a área da tela onde os cartões vão aparecer
 const grid = document.querySelector('#demandas-grid');
-let consultaAtual = 0;
+
+// Converte o status da API para a parte final da classe CSS do selo
+// Exemplo: "EM_ANDAMENTO" vira "andamento" (classe: badge-status-andamento)
+const classesStatus = {
+  ABERTA: 'aberta',
+  EM_ANDAMENTO: 'andamento',
+  EM_REVISAO: 'revisao',
+  CONCLUIDA: 'concluida',
+  CANCELADA: 'cancelada'
+};
+
+// Quando a página terminar de carregar
 document.addEventListener('DOMContentLoaded', async () => {
-  const usuarioListagem = await exigirUsuario();
-  if (!usuarioListagem) return;
+  // Verifica se existe usuário logado; se não existir, para aqui
+  const usuario = await exigirUsuario();
+  if (!usuario) {
+    return;
+  }
+
+  // Quando o formulário de filtros for enviado, busca as demandas de novo
   document.querySelector('#filtros').addEventListener('submit', (event) => {
-    event.preventDefault();
+    event.preventDefault(); // evita recarregar a página
     carregarDemandas();
   });
+
+  // Mostra a lista inicial
   await carregarDemandas();
-  try {
-    const [projetos, usuarios] = await Promise.all([api('/projetos'), api('/usuarios')]);
-    for (const [id, items] of [['filtro-projeto', projetos], ['filtro-responsavel', usuarios]]) {
-      const select = document.getElementById(id);
-      items.forEach((item) => select.add(new Option(item.nome, item.id)));
-    }
-  } catch (error) {
-    const aviso = document.createElement('p'); aviso.role = 'alert';
-    aviso.textContent = `Não foi possível carregar as opções dos filtros: ${error.message}`;
-    document.querySelector('#filtros').after(aviso);
-  }
+
+  // Preenche os selects de projeto e responsável
+  await carregarOpcoesFiltros();
 });
 
-async function carregarDemandas() {
-  const consulta = ++consultaAtual;
-  const params = new URLSearchParams();
-  const filtros = [
-    ['filtro-busca', 'busca', (valor) => valor],
-    ['filtro-status', 'status', normalizar],
-    ['filtro-prioridade', 'prioridade', normalizar],
-    ['filtro-tipo', 'tipo', normalizar],
-    ['filtro-projeto', 'projeto_id', (valor) => valor],
-    ['filtro-responsavel', 'responsavel_id', (valor) => valor],
-    ['filtro-ordenacao', 'ordenacao', (valor) => valor],
-  ];
-  for (const [id, parametro, transformar] of filtros) {
-    const valor = document.getElementById(id).value.trim();
-    if (valor && !['todos', 'selecione'].includes(valor.toLowerCase())) {
-      params.set(parametro, transformar(valor));
-    }
-  }
-  grid.textContent = 'Carregando demandas...';
-  grid.setAttribute('aria-busy', 'true');
+// Busca projetos e usuários na API e coloca nos selects dos filtros
+async function carregarOpcoesFiltros() {
   try {
-    const demandas = await api(`/demandas?${params}`);
-    if (consulta !== consultaAtual) return;
-    grid.replaceChildren(...demandas.map(criarCard));
-    if (!demandas.length) grid.textContent = 'Nenhuma demanda encontrada.';
+    const projetos = await api('/projetos');
+    const usuarios = await api('/usuarios');
+
+    preencherSelect('filtro-projeto', projetos);
+    preencherSelect('filtro-responsavel', usuarios);
   } catch (error) {
-    if (consulta === consultaAtual) grid.textContent = error.message;
-  } finally {
-    if (consulta === consultaAtual) grid.setAttribute('aria-busy', 'false');
+    // Se der erro, mostra um aviso embaixo do formulário
+    const aviso = document.createElement('p');
+    aviso.setAttribute('role', 'alert');
+    aviso.textContent = 'Não foi possível carregar as opções dos filtros: ' + error.message;
+    document.querySelector('#filtros').after(aviso);
   }
 }
 
-function normalizar(value) {
-  return ({ aberta: 'ABERTA', andamento: 'EM_ANDAMENTO', revisao: 'EM_REVISAO', concluida: 'CONCLUIDA', cancelada: 'CANCELADA', critica: 'CRITICA', alta: 'ALTA', media: 'MEDIA', baixa: 'BAIXA' })[value] || value;
-}
-function criarCard(demanda) {
-  const card = document.createElement('article'); card.className = 'content-card card-demanda';
-  const header = document.createElement('div'); header.className = 'card-header';
-  const title = document.createElement('h3'); title.className = 'card-title'; title.textContent = demanda.titulo;
-  const badges = document.createElement('div'); badges.className = 'card-badges';
-  for (const [campo, classe] of [['status', ({ ABERTA: 'aberta', EM_ANDAMENTO: 'andamento', EM_REVISAO: 'revisao', CONCLUIDA: 'concluida', CANCELADA: 'cancelada' })[demanda.status]], ['prioridade', demanda.prioridade.toLowerCase()]]) {
-    const badge = document.createElement('span'); badge.className = `badge-custom badge-${campo}-${classe}`; badge.textContent = rotulos[demanda[campo]];
-    badges.append(badge);
+// Adiciona uma <option> no select para cada item da lista
+function preencherSelect(idSelect, lista) {
+  const select = document.getElementById(idSelect);
+
+  for (const item of lista) {
+    const opcao = new Option(item.nome, item.id); // texto, valor
+    select.add(opcao);
   }
-  header.append(title, badges);
-  const info = document.createElement('div'); info.className = 'card-body';
-  info.append(paragrafo('Tipo', rotulos[demanda.tipo]), paragrafo('Projeto', demanda.projeto_nome), paragrafo('Responsável', demanda.responsavel_nome || 'Não definido'));
-  const footer = document.createElement('div'); footer.className = 'card-footer';
-  footer.append(paragrafo('Criado', dataListagem(demanda.criado_em)), paragrafo('Prazo', dataListagem(demanda.prazo)));
-  const button = document.createElement('button'); button.className = 'btn-secondary-custom btn-detalhes'; button.textContent = 'Ver detalhes';
-  button.onclick = () => { window.location.href = `detalhes.html?id=${demanda.id}`; };
-  card.append(header, info, footer, button); return card;
 }
-function paragrafo(label, value) {
-  const p = document.createElement('p'); const strong = document.createElement('strong');
-  strong.textContent = `${label}: `; p.append(strong, value || '—'); return p;
+
+// Lê o valor de um filtro (vazio significa "sem filtro")
+function pegarValor(idCampo) {
+  return document.getElementById(idCampo).value.trim();
 }
-function dataListagem(value) {
-  if (!value) return 'Não definido';
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value.split('-').reverse().join('/');
-  return new Date(value).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+// Adiciona o filtro na consulta somente se ele foi preenchido
+function adicionarFiltro(params, idCampo, nomeParametro) {
+  const valor = pegarValor(idCampo);
+
+  if (valor !== '') {
+    params.set(nomeParametro, valor);
+  }
+}
+
+// Monta a consulta, chama a API e mostra os cartões
+async function carregarDemandas() {
+  // Guarda os filtros que serão enviados (?busca=...&status=...)
+  const params = new URLSearchParams();
+
+  adicionarFiltro(params, 'filtro-busca', 'busca');
+  adicionarFiltro(params, 'filtro-status', 'status');
+  adicionarFiltro(params, 'filtro-prioridade', 'prioridade');
+  adicionarFiltro(params, 'filtro-tipo', 'tipo');
+  adicionarFiltro(params, 'filtro-projeto', 'projeto_id');
+  adicionarFiltro(params, 'filtro-responsavel', 'responsavel_id');
+  adicionarFiltro(params, 'filtro-ordenacao', 'ordenacao');
+
+  // Mensagem enquanto carrega (aria-busy avisa leitores de tela)
+  grid.textContent = 'Carregando demandas...';
+  grid.setAttribute('aria-busy', 'true');
+
+  try {
+    // Pede as demandas para a API usando os filtros
+    const demandas = await api('/demandas?' + params);
+
+    // Limpa a área e cria um cartão para cada demanda
+    grid.innerHTML = '';
+    for (const demanda of demandas) {
+      grid.append(criarCard(demanda));
+    }
+
+    // Se não veio nenhuma demanda, avisa o usuário
+    if (demandas.length === 0) {
+      grid.textContent = 'Nenhuma demanda encontrada.';
+    }
+  } catch (error) {
+    // Mostra a mensagem de erro na tela
+    grid.textContent = error.message;
+  }
+
+  // Terminou de carregar
+  grid.setAttribute('aria-busy', 'false');
+}
+
+// Cria o cartão de uma demanda
+// Usa textContent para inserir os textos, assim o conteúdo vindo da API não é interpretado como HTML
+function criarCard(demanda) {
+  const card = document.createElement('article');
+  card.className = 'content-card card-demanda';
+
+  // Cabeçalho: título e selos
+  const header = document.createElement('div');
+  header.className = 'card-header';
+
+  const titulo = document.createElement('h3');
+  titulo.className = 'card-title';
+  titulo.textContent = demanda.titulo;
+
+  const badges = document.createElement('div');
+  badges.className = 'card-badges';
+
+  // Selo de status
+  const badgeStatus = document.createElement('span');
+  badgeStatus.className = 'badge-custom badge-status-' + classesStatus[demanda.status];
+  badgeStatus.textContent = rotulos[demanda.status];
+
+  // Selo de prioridade
+  const badgePrioridade = document.createElement('span');
+  badgePrioridade.className = 'badge-custom badge-prioridade-' + demanda.prioridade.toLowerCase();
+  badgePrioridade.textContent = rotulos[demanda.prioridade];
+
+  badges.append(badgeStatus, badgePrioridade);
+  header.append(titulo, badges);
+
+  // Corpo: tipo, projeto e responsável
+  const corpo = document.createElement('div');
+  corpo.className = 'card-body';
+  corpo.append(
+    criarParagrafo('Tipo', rotulos[demanda.tipo]),
+    criarParagrafo('Projeto', demanda.projeto_nome),
+    criarParagrafo('Responsável', demanda.responsavel_nome || 'Não definido')
+  );
+
+  // Rodapé: datas
+  const rodape = document.createElement('div');
+  rodape.className = 'card-footer';
+  rodape.append(
+    criarParagrafo('Criado', formatarData(demanda.criado_em)),
+    criarParagrafo('Prazo', formatarData(demanda.prazo))
+  );
+
+  // Botão que abre a tela de detalhes da demanda
+  const botao = document.createElement('button');
+  botao.className = 'btn-secondary-custom btn-detalhes';
+  botao.textContent = 'Ver detalhes';
+  botao.addEventListener('click', () => {
+    window.location.href = 'detalhes.html?id=' + demanda.id;
+  });
+
+  // Junta tudo no cartão
+  card.append(header, corpo, rodape, botao);
+
+  return card;
+}
+
+// Cria um parágrafo no formato "Rótulo: valor" (rótulo em negrito)
+function criarParagrafo(rotulo, valor) {
+  const p = document.createElement('p');
+
+  const negrito = document.createElement('strong');
+  negrito.textContent = rotulo + ': ';
+
+  p.append(negrito, valor || '—');
+
+  return p;
+}
+
+// Formata a data para dd/mm/aaaa
+function formatarData(valor) {
+  // Sem data
+  if (!valor) {
+    return 'Não definido';
+  }
+
+  // Formato "aaaa-mm-dd": só inverte as partes
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    return valor.split('-').reverse().join('/');
+  }
+
+  // Data com horário: converte para o horário de São Paulo
+  return new Date(valor).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 }
