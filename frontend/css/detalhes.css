@@ -236,18 +236,59 @@ body {
   font-weight: 500;
 }
 
-/* Define as cores das etiquetas de cada status */
-.badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
-.badge-status-andamento { background: #FEF3C7; color: #92400E; }
-.badge-status-revisao { background: #E0E7FF; color: #4338CA; }
-.badge-status-concluida { background: #D1FAE5; color: #065F46; }
-.badge-status-cancelada { background: #E5E7EB; color: #374151; }
+/* Usa tons de azul para indicar uma demanda aberta */
+.badge-status-aberta { 
+  background: #DBEAFE; 
+  color: #1E40AF; 
+}
 
-/* Define as cores das etiquetas de cada prioridade */
-.badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
-.badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
-.badge-prioridade-media { background: #FEF3C7; color: #92400E; }
-.badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
+/* Usa tons de amarelo para indicar uma demanda em andamento */
+.badge-status-andamento { 
+  background: #FEF3C7; 
+  color: #92400E; 
+}
+
+/* Usa tons de roxo para indicar uma demanda em revisão */
+.badge-status-revisao { 
+  background: #E0E7FF; 
+  color: #4338CA; 
+}
+
+/* Usa tons de verde para indicar uma demanda concluída */
+.badge-status-concluida { 
+  background: #D1FAE5;
+  color: #065F46; 
+}
+
+/* Usa tons de cinza para indicar uma demanda cancelada */
+.badge-status-cancelada { 
+  background: #E5E7EB; 
+  color: #374151; 
+}
+
+/* Usa tons de vermelho para indicar prioridade crítica */
+.badge-prioridade-critica { 
+  background: #FEE2E2; 
+  color: #991B1B; 
+}
+
+/* Usa tons de laranja para indicar prioridade alta */
+.badge-prioridade-alta { 
+  background: #FED7AA; 
+  color: #9A3412; 
+}
+
+/* Usa tons de amarelo para indicar prioridade média */
+.badge-prioridade-media { 
+  background: #FEF3C7; 
+  color: #92400E; 
+}
+
+/* Usa tons de cinza para indicar prioridade baixa */
+.badge-prioridade-baixa { 
+  background: #E5E7EB; 
+  color: #374151; 
+}
 
 /* Organiza o título da página e o link para voltar */
 .page-header {
@@ -610,20 +651,58 @@ body {
 
 /* Ajusta a disposição da página para telas de até 900 pixels */
 @media (max-width: 900px) {
-  .sidebar { position: static; width: 100%; min-height: auto; }
-  .main-content { margin-left: 0; padding: 20px; }
+
+  /* Coloca o menu acima do conteúdo e ajusta sua largura e altura */
+  .sidebar { 
+    position: static; 
+    width: 100%; 
+    min-height: auto; 
+  }
+
+  /* Remove o espaço lateral do menu e ajusta o espaço interno do conteúdo */
+  .main-content { 
+    margin-left: 0; 
+    padding: 20px; 
+  }
 }
 
 /* Ajusta as ações, os campos e os comentários para telas de até 640 pixels */
 @media (max-width: 640px) {
+
+  /* Coloca os elementos dos cabeçalhos um abaixo do outro */
   .page-header,
-  .demand-header { flex-direction: column; }
-  .demand-actions { width: 100%; flex-wrap: wrap; }
-  .demand-actions .form-select-custom { flex: 1; }
+  .demand-header { 
+    flex-direction: column; 
+  }
+
+  /* Faz as ações ocuparem a largura disponível e permite que mudem de linha */
+  .demand-actions { 
+    width: 100%; 
+    flex-wrap: wrap; 
+  }
+
+  /* Faz a lista de status ocupar o espaço disponível entre as ações */
+  .demand-actions .form-select-custom { 
+    flex: 1; 
+  }
+
+  /* Exibe os detalhes e os campos de edição em uma única coluna */
   .details-grid,
-  .edit-form-grid { grid-template-columns: 1fr; }
-  .comment-form { flex-direction: column; }
-  .comment-header { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .edit-form-grid { 
+    grid-template-columns: 1fr;
+   }
+
+  /* Coloca o campo e o botão de comentário um abaixo do outro */
+  .comment-form { 
+    flex-direction: column; 
+  }
+
+  /* Coloca o nome e a data do comentário em coluna */
+  .comment-header { 
+    align-items: flex-start; 
+    flex-direction: column; 
+    gap: 4px; 
+  }
 }
 
 /* Ajusta a disposição da página para telas de até 900 pixels */
