@@ -17,196 +17,236 @@ Apresenta as demandas críticas e próximas do prazo, além do menu lateral e do
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
+
 <body>
 
-    <!-- Sidebar -->
+    <!-- Menu lateral com os dados do usuário e os atalhos do sistema -->
     <aside class="sidebar">
-    <div class="sidebar-logo">
-        <h4>DemandasApp</h4>
-        <p id="saudacaoUsuario">Carregando...</p>
-        <span id="perfilUsuario"></span>
-    </div>
-    <nav class="sidebar-menu">
-        <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="listagemDemandas.html">Demandas</a>
-        <a href="projetos.html">Projetos</a>
-        <button type="button" class="btn-sair" id="btn-sair">Sair</button>
-    </nav>
+        <div class="sidebar-logo">
+            <h4>DemandasApp</h4>
+
+            <!-- Saudação e perfil preenchidos com os dados da sessão -->
+            <p id="saudacaoUsuario">Carregando...</p>
+            <span id="perfilUsuario"></span>
+        </div>
+
+        <!-- Links para navegar entre as telas e botão para sair da conta -->
+        <nav class="sidebar-menu">
+            <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="listagemDemandas.html">Demandas</a>
+            <a href="projetos.html">Projetos</a>
+            <button type="button" class="btn-sair" id="btn-sair">Sair</button>
+        </nav>
     </aside>
 
-<!-- Conteudo principal -->
-<main class="main-content">
-    <div class="page-header">
-        <div>
-            <h1>Dashboard</h1>
-            <p>Visão geral das demandas do projeto</p>
-        </div>
-    </div>
+    <!-- Área principal com os indicadores e as demandas do painel -->
+    <main class="main-content">
 
-    <p id="dashboard-erro" role="alert" hidden></p>
-    <p id="dashboard-carregando" role="status">Carregando indicadores...</p>
-    <!-- Cards de metrica -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Total de demandas</div>
-                <div class="value">—</div>
-                <div class="trend"></div>
+        <!-- Título e descrição do painel -->
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Visão geral das demandas do projeto</p>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Em andamento</div>
-                <div class="value destaque">—</div>
-                <div class="trend"></div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Concluídas</div>
-                <div class="value">—</div>
-                <div class="trend"></div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="metric-card">
-                <div class="label">Críticas em aberto</div>
-                <div class="value alerta">—</div>
-                <div class="trend"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Segunda linha: distribuicao + proximas do prazo -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por status</h5>
-                <div class="tipo-item">
-                    <span class="nome">Aberta</span>
-                    <span class="count">—</span>
+        <!-- Espaços para mostrar erros e informar o carregamento dos indicadores -->
+        <p id="dashboard-erro" role="alert" hidden></p>
+        <p id="dashboard-carregando" role="status">Carregando indicadores...</p>
+
+        <!-- Indicadores gerais preenchidos pelo dashboard.js -->
+        <div class="row g-3 mb-4">
+
+            <!-- Quantidade total de demandas -->
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="label">Total de demandas</div>
+                    <div class="value">—</div>
+                    <div class="trend"></div>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Em andamento</span>
-                    <span class="count">—</span>
+            </div>
+
+            <!-- Quantidade de demandas em andamento -->
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="label">Em andamento</div>
+                    <div class="value destaque">—</div>
+                    <div class="trend"></div>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Em revisão</span>
-                    <span class="count">—</span>
+            </div>
+
+            <!-- Quantidade de demandas concluídas -->
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="label">Concluídas</div>
+                    <div class="value">—</div>
+                    <div class="trend"></div>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome">Concluída</span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome">Cancelada</span>
-                    <span class="count">—</span>
+            </div>
+
+            <!-- Quantidade de demandas críticas em aberto -->
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="label">Críticas em aberto</div>
+                    <div class="value alerta">—</div>
+                    <div class="trend"></div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por prioridade</h5>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
-                    <span class="count">—</span>
+        <!-- Resumos com as quantidades de demandas por status, prioridade e tipo -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="content-card">
+
+                    <!-- Quantidade de demandas em cada status -->
+                    <h5>Por status</h5>
+                    <div class="tipo-item">
+                        <span class="nome">Aberta</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Em andamento</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Em revisão</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Concluída</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Cancelada</span>
+                        <span class="count">—</span>
+                    </div>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
-                    <span class="count">—</span>
+            </div>
+
+            <div class="col-md-4">
+                <div class="content-card">
+
+                    <!-- Quantidade de demandas em cada prioridade -->
+                    <h5>Por prioridade</h5>
+                    <div class="tipo-item">
+                        <span class="nome"><span class="badge-custom badge-prioridade-critica">Crítica</span></span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome"><span class="badge-custom badge-prioridade-alta">Alta</span></span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
+                        <span class="count">—</span>
+                    </div>
                 </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-media">Média</span></span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome"><span class="badge-custom badge-prioridade-baixa">Baixa</span></span>
-                    <span class="count">—</span>
+            </div>
+
+            <div class="col-md-4">
+                <div class="content-card">
+
+                    <!-- Quantidade de demandas de cada tipo -->
+                    <h5>Por tipo</h5>
+                    <div class="tipo-item">
+                        <span class="nome">Tarefa</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Defeito</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Melhoria</span>
+                        <span class="count">—</span>
+                    </div>
+                    <div class="tipo-item">
+                        <span class="nome">Documentação</span>
+                        <span class="count">—</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="content-card">
-                <h5>Por tipo</h5>
-                <div class="tipo-item">
-                    <span class="nome">Tarefa</span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome">Defeito</span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome">Melhoria</span>
-                    <span class="count">—</span>
-                </div>
-                <div class="tipo-item">
-                    <span class="nome">Documentação</span>
-                    <span class="count">—</span>
-                </div>
-            </div>
+        <!-- Lista preenchida com links para as demandas críticas em aberto -->
+        <div class="content-card mb-4">
+            <h5>Demandas críticas em aberto</h5>
+            <ul id="demandas-criticas"><li>Carregando...</li></ul>
         </div>
-    </div>
 
-    <div class="content-card mb-4">
-        <h5>Demandas críticas em aberto</h5>
-        <ul id="demandas-criticas"><li>Carregando...</li></ul>
-    </div>
-    <!-- Tabela de proximas do prazo -->
-    <div class="content-card" id="card-demandas-prazo">
-        <h5>Demandas próximas do prazo</h5>
-        <!-- Pesquisa e filtros ficam sempre disponíveis acima da tabela. -->
-        <form id="filtros-ativos" class="filtros-ativos">
-            <div class="campo-filtro filtro-busca">
-                <label for="campo-busca">Pesquisar demanda</label>
-                <input type="search" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável...">
-            </div>
-            <div class="campo-filtro">
-                <label for="filtro-status">Status</label>
-                <select id="filtro-status" class="form-select-custom">
-                    <option value="">Todos os status</option>
-                    <option value="Aberta">Aberta</option>
-                    <option value="Em andamento">Em andamento</option>
-                    <option value="Em revisão">Em revisão</option>
-                    <option value="Concluída">Concluída</option>
-                    <option value="Cancelada">Cancelada</option>
-                </select>
-            </div>
-            <div class="campo-filtro">
-                <label for="filtro-prioridade">Prioridade</label>
-                <select id="filtro-prioridade" class="form-select-custom">
-                    <option value="">Todas as prioridades</option>
-                    <option value="Crítica">Crítica</option>
-                    <option value="Alta">Alta</option>
-                    <option value="Média">Média</option>
-                    <option value="Baixa">Baixa</option>
-                </select>
-            </div>
-        </form>
-        <table class="table-custom" id="tabela-demandas">
-            <thead>
-            <tr>
-                <th>Título</th>
-                <th>Projeto</th>
-                <th>Responsável</th>
-                <th>Prioridade</th>
-                <th>Status</th>
-                <th>Prazo</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
-    </div>
+        <!-- Pesquisa, filtros e tabela de demandas próximas do prazo -->
+        <div class="content-card" id="card-demandas-prazo">
+            <h5>Demandas próximas do prazo</h5>
 
-</main>
+            <!-- Formulário para pesquisar e filtrar as demandas da tabela -->
+            <form id="filtros-ativos" class="filtros-ativos">
+                <div class="campo-filtro filtro-busca">
 
-<script src="../js/api.js"></script>
-<script src="../js/sessao.js"></script>
-<script src="../js/dashboard.js"></script>
+                    <!-- Pesquisa pelo título ou pelo responsável -->
+                    <label for="campo-busca">Pesquisar demanda</label>
+                    <input type="search" id="campo-busca" class="form-control-custom" placeholder="Título ou responsável...">
+                </div>
+                <div class="campo-filtro">
+
+                    <!-- Filtra a tabela pelo status selecionado -->
+                    <label for="filtro-status">Status</label>
+                    <select id="filtro-status" class="form-select-custom">
+                        <option value="">Todos os status</option>
+                        <option value="Aberta">Aberta</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Em revisão">Em revisão</option>
+                        <option value="Concluída">Concluída</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="campo-filtro">
+
+                    <!-- Filtra a tabela pela prioridade selecionada -->
+                    <label for="filtro-prioridade">Prioridade</label>
+                    <select id="filtro-prioridade" class="form-select-custom">
+                        <option value="">Todas as prioridades</option>
+                        <option value="Crítica">Crítica</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Média">Média</option>
+                        <option value="Baixa">Baixa</option>
+                    </select>
+                </div>
+            </form>
+
+            <!-- Cabeçalho e espaço para as linhas preenchidas pelo dashboard.js -->
+            <table class="table-custom" id="tabela-demandas">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Projeto</th>
+                        <th>Responsável</th>
+                        <th>Prioridade</th>
+                        <th>Status</th>
+                        <th>Prazo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <!-- Mensagem exibida quando a tabela não tem resultados para os filtros -->
+            <p id="mensagem-sem-resultados" class="mensagem-sem-resultados" hidden>Nenhuma demanda encontrada</p>
+        </div>
+    </main>
+
+    <!-- Carrega as funções de comunicação com o servidor -->
+    <script src="../js/api.js"></script>
+
+    <!-- Carrega os dados da sessão e o controle do menu lateral -->
+    <script src="../js/sessao.js"></script>
+
+    <!-- Carrega os indicadores, as demandas e os filtros do painel -->
+    <script src="../js/dashboard.js"></script>
 </body>
 </html>

@@ -11,42 +11,36 @@ dos cartões de projetos e informações dos integrantes das equipes, além dos 
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- Faz a página se ajustar à largura da tela (celular, tablet e computador) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projetos</title>
-
-    <!-- Fonte Inter, usada em todas as telas do sistema -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/projetos.css">
 
-    <!-- Scripts com "defer": só executam depois que o HTML terminou de carregar.
-         A ordem importa, pois um depende do anterior. -->
-    <!-- api.js: cliente compartilhado da API (envia o token e trata erros) -->
-    <script src="../js/api.js" defer></script>
-    <!-- sessao.js: controle da sessão (saudação ao usuário e botão Sair) -->
-    <script src="../js/sessao.js" defer></script>
-    <!-- projetos.js: busca os projetos na API e desenha os cartões desta tela -->
-    <script src="../js/projetos.js" defer></script>
 </head>
 <body>
-    <!-- Menu lateral, igual ao das demais telas -->
+
+    <!-- Menu lateral com os dados do usuário e os atalhos do sistema -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h4>DemandasApp</h4>
-        <!-- Saudação e perfil do usuário logado, preenchidos pelo JavaScript.
-             O texto "Carregando..." aparece só até a sessão ser lida. -->
-        <p id="saudacaoUsuario">Carregando...</p>
-        <span id="perfilUsuario"></span>
+
+            <!-- Mostra a saudação e o perfil do usuário conectado -->
+            <p id="saudacaoUsuario">Carregando...</p>
+            <span id="perfilUsuario"></span>
         </div>
+
+        <!-- Reúne os atalhos para as telas do sistema -->
         <nav class="sidebar-menu">
-            <!-- Atalho para criar demanda. O JavaScript o esconde para o Membro,
-                 que não tem permissão de criar demandas. -->
+
+            <!-- Atalho para cadastrar uma demanda, exibido conforme o perfil -->
             <a href="cadastro.html" id="link-nova-demanda" class="link-nova">+ Nova Demanda</a>
             <a href="dashboard.html">Dashboard</a>
             <a href="listagemDemandas.html">Demandas</a>
-            <!-- Item da tela atual, destacado pela classe "active" -->
+
+            <!-- Leva à página de projetos e destaca a seção atual -->
             <a href="projetos.html" class="active">Projetos</a>
-            <!-- Encerra a sessão (o comportamento do clique fica no JavaScript) -->
+
+            <!-- Botão que encerra a sessão do usuário -->
             <button type="button" class="btn-sair" id="btn-sair">Sair</button>
         </nav>
     </aside>
@@ -54,14 +48,17 @@ dos cartões de projetos e informações dos integrantes das equipes, além dos 
     <!-- Conteúdo principal da tela -->
     <main>
         <div class="container">
+
+            <!-- Título e descrição da página -->
             <header class="page-header">
                 <h1 class="page-title">Meus projetos</h1>
                 <p>Projetos dos quais você participa e suas respectivas equipes.</p>
             </header>
 
-            <!-- Campo de busca: o JavaScript filtra os cartões enquanto a pessoa digita
-                 (por nome ou descrição do projeto). O label garante acessibilidade. -->
+            <!-- Identifica o campo de pesquisa de projetos -->
             <label class="busca-label" for="busca-projetos">Buscar projeto</label>
+
+            <!-- Campo para pesquisar projetos enquanto a pessoa digita -->
             <input
                 type="search"
                 id="busca-projetos"
@@ -69,26 +66,36 @@ dos cartões de projetos e informações dos integrantes das equipes, além dos 
                 placeholder="Digite o nome ou a descrição do projeto..."
             >
 
-            <!-- Mensagens de estado. Só uma aparece por vez; o JavaScript mostra
-                 ou esconde cada uma (atributo "hidden") conforme a situação. -->
-            <!-- Visível enquanto os dados ainda estão sendo buscados -->
+            <!-- Mensagem exibida enquanto os projetos são carregados -->
             <p id="projetos-carregando" class="mensagem-info" role="status">
                 Carregando projetos...
             </p>
-            <!-- Erro ao buscar os dados (texto preenchido pelo JavaScript);
-                 role="alert" faz leitores de tela anunciarem o aviso -->
+
+            <!-- Espaço para mostrar erros ao carregar os projetos -->
             <p id="projetos-erro" class="mensagem-erro" role="alert" hidden></p>
+
+            <!-- Mensagem exibida quando o usuário não possui projetos vinculados -->
             <p id="projetos-vazio" class="mensagem-info" hidden>
                 Você não está vinculado a nenhum projeto.
             </p>
+            
+            <!-- Mensagem exibida quando a pesquisa não encontra projetos -->
             <p id="projetos-sem-resultado" class="mensagem-info" hidden>
                 Nenhum projeto corresponde à busca.
             </p>
 
-            <!-- Área onde o JavaScript insere um cartão por projeto,
-                 com nome, descrição e a equipe (integrantes e perfis) -->
+            <!-- Área para mostrar os projetos e suas equipes em cartões -->
             <section id="lista-projetos" class="projetos-grid" aria-label="Projetos vinculados"></section>
         </div>
     </main>
+
+    <!-- Carrega as funções de comunicação com o servidor -->
+    <script src="../js/api.js"></script>
+
+    <!-- Carrega os dados da sessão e o controle do menu lateral -->
+    <script src="../js/sessao.js"></script>
+
+    <!-- Carrega os projetos e controla a pesquisa da tela -->
+    <script src="../js/projetos.js"></script>
 </body>
 </html>

@@ -8,42 +8,42 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <!-- Faz a página se ajustar à largura da tela (celular, tablet e computador) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Detalhes da Demanda - Sistema de Demandas</title>
-
-    <!-- Fonte Inter, usada em todas as telas do sistema -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Estilos específicos desta tela -->
     <link rel="stylesheet" href="../css/detalhes.css">
 </head>
 
 <body>
-    <!-- Sidebar -->
+    <!-- Menu lateral com os dados do usuário e os atalhos do sistema -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <h4>DemandasApp</h4>
-        <!-- Saudação e perfil do usuário logado, preenchidos pelo JavaScript.
-             O texto "Carregando..." aparece só até a sessão ser lida. -->
-        <p id="saudacaoUsuario">Carregando...</p>
-        <span id="perfilUsuario"></span>
+            <p id="saudacaoUsuario">Carregando...</p>
+            <span id="perfilUsuario"></span>
         </div>
+
+        <!-- Reúne os atalhos para as telas internas e para sair do sistema -->
         <nav class="sidebar-menu">
+
             <!-- Atalho para criar uma nova demanda -->
             <a href="cadastro.html" class="sidebar-logo"><button class="btn-primary-custom">+ Nova Demanda</button></a>
+
+            <!-- Leva ao painel de indicadores -->
             <a href="dashboard.html">Dashboard</a>
-            <!-- Esta tela faz parte do fluxo de Demandas, por isso esse item fica destacado ("active") -->
+
+            <!-- Leva à listagem de demandas e destaca a seção atual -->
             <a href="listagemDemandas.html" class="active">Demandas</a>
+
+            <!-- Leva à página de projetos -->
             <a href="projetos.html">Projetos</a>
-            <!-- Encerra a sessão (o comportamento do clique fica no JavaScript) -->
+
+            <!-- Botão que encerra a sessão do usuário -->
             <button type="button" class="btn-sair" id="btn-sair">Sair</button>
         </nav>
     </aside>
-
 
     <!-- Conteúdo principal -->
     <main class="main-content">
@@ -59,99 +59,86 @@
             <a href="listagemDemandas.html" class="back-link">
                 ← Voltar para demandas
             </a>
-
         </div>
 
-        <!-- Mensagem de erro geral da tela (por exemplo, demanda não encontrada).
-             Começa oculta; role="alert" faz leitores de tela anunciarem o aviso. -->
+        <!-- Espaço para mostrar erros ao carregar ou atualizar a demanda -->
         <p class="page-error" id="mensagem-erro" role="alert" hidden></p>
-
 
         <!-- Informações principais da demanda -->
         <section class="content-card">
-
             <div class="demand-header">
-
                 <div class="demand-title-area">
 
-                    <!-- Identificação da demanda (preenchida pelo JavaScript após carregar) -->
+                    <!-- Mostra o número de identificação da demanda -->
                     <div class="demand-id">
-                    Carregando...
+                        Carregando...
                     </div>
 
-                    <!-- Título da demanda (preenchido pelo JavaScript) -->
+                    <!-- Mostra o título da demanda -->
                     <h2 class="demand-title">
                         Carregando demanda...
                     </h2>
 
-                    <!-- Etiquetas coloridas da demanda (tipo, prioridade e status).
-                         O JavaScript escreve o texto e define a cor de cada uma. -->
+                    <!-- Mostra as etiquetas de tipo, prioridade e status -->
                     <div class="badges">
-
                         <span class="badge-custom badge-tipo"></span>
                         <span class="badge-custom"></span>
                         <span class="badge-custom"></span>
-
                     </div>
-
                 </div>
 
-                <!-- Ações sobre a demanda. Quais botões aparecem e quais opções de status
-                     são oferecidas dependem do perfil e do status atual, e são decididas
-                     pelo JavaScript conforme as regras do ciclo de vida. -->
+                <!-- Agrupa as ações disponíveis conforme o perfil e o status da demanda -->
                 <div class="demand-actions">
 
-                    <!-- Abre a janela de edição (mais abaixo nesta página) -->
+                    <!-- Botão que abre a janela de edição da demanda -->
                     <button class="btn-secondary-custom" id="btn-editar" type="button">
                         Editar
                     </button>
 
-                    <!-- Lista de transições de status permitidas; as opções são montadas pelo JavaScript -->
+                    <!-- Lista com os próximos status permitidos para a demanda -->
                     <select class="form-select-custom" id="novo-status" aria-label="Novo status"></select>
+                    
+                    <!-- Botão que salva o status selecionado -->
                     <button class="btn-primary-custom" id="btn-atualizar-status" type="button">
                         Salvar status
                     </button>
-                    <!-- Cancela a demanda (nunca apaga o registro). Começa oculto e só é
-                         exibido para quem tem permissão de cancelar. -->
+                    
+                    <!-- Botão que cancela a demanda sem apagar seu registro -->
                     <button class="btn-secondary-custom" id="btn-cancelar-demanda" type="button" hidden>Cancelar demanda</button>
-
                 </div>
-
             </div>
-
         </section>
 
 
-        <!-- Descrição + informações -->
+        <!-- Agrupa a descrição e as informações da demanda -->
         <div class="details-grid">
-
             <section class="content-card">
 
                 <h3 class="card-title">
                     Descrição
                 </h3>
 
-                <!-- Texto da descrição (preenchido pelo JavaScript) -->
+                <!-- Espaço para mostrar a descrição da demanda -->
                 <p class="description" id="descricao-demanda">Carregando descrição...</p>
-
             </section>
 
-
-            <!-- Informações -->
+            <!-- Informações sobre projeto, responsável e datas -->
             <section class="content-card">
 
                 <h3 class="card-title">
                     Informações
                 </h3>
 
-                <!-- Cada valor "Carregando..." é substituído pelo JavaScript, na ordem em que aparecem aqui -->
+                <!-- Os valores são preenchidos quando os dados da demanda carregam -->
                 <div class="info-list">
 
+                    <!-- Mostra o projeto ao qual a demanda pertence -->
                     <div class="info-item">
                         <span class="info-label">Projeto</span>
                         <span class="info-value">Carregando...</span>
                     </div>
 
+                    <!-- Mostra quem é responsável pela demanda -->
                     <div class="info-item">
                         <span class="info-label">Responsável</span>
                         <span class="info-value">Carregando...</span>
@@ -163,37 +150,34 @@
                         <span class="info-value">Carregando...</span>
                     </div>
 
+                    <!-- Mostra a data da última atualização da demanda -->
                     <div class="info-item">
                         <span class="info-label">Última atualização</span>
                         <span class="info-value">Carregando...</span>
                     </div>
 
-                    <!-- Prazo previsto; não pode cair em feriado nacional (validado pela API) -->
+                    <!-- Mostra o prazo previsto para finalizar a demanda -->
                     <div class="info-item">
                         <span class="info-label">Prazo de finalização</span>
                         <span class="info-value">Carregando...</span>
                     </div>
-
                 </div>
-
             </section>
-
         </div>
 
-
-        <!-- Comentários -->
+        <!-- Área para mostrar e adicionar comentários -->
         <section class="content-card comments-section">
 
             <h3 class="card-title">
                 Comentários
             </h3>
 
-            <!-- Campo para novo comentário (a lista de comentários existentes é
-                 inserida nesta seção pelo JavaScript) -->
+            <!-- Agrupa o campo de comentário e sua mensagem de erro -->
             <div class="comment-form">
-            
+
                 <div style="flex: 1;">
-                    <!-- Limite de 500 caracteres, o mesmo aplicado pela API -->
+
+                    <!-- Campo para escrever um comentário de até 500 caracteres -->
                     <input
                         type="text"
                         class="form-control-custom"
@@ -201,109 +185,161 @@
                         maxlength="500"
                         placeholder="Escreva um comentário..."
                     >
-                    <!-- Mensagem de validação do comentário; fica oculta até o JavaScript exibi-la -->
+
+                    <!-- Espaço para mostrar erros no comentário -->
                     <span
                         id="comentario-erro"
                         style="display: none; color: var(--erro); font-size: 12px; margin-top: 4px;"
                     ></span>
                 </div>
-            
+
+                <!-- Botão que envia o novo comentário -->
                 <button class="btn-primary-custom" id="btn-comentar" type="button">
                     Comentar
                 </button>
-            
             </div>
-
         </section>
 
-
-        <!-- Histórico -->
+        <!-- Área para mostrar o histórico da demanda -->
         <section class="content-card">
 
             <h3 class="card-title">
                 Histórico de alterações
             </h3>
 
-            <!-- Registros inseridos pelo JavaScript (quem alterou, o quê e quando).
-                 aria-live="polite" avisa leitores de tela quando o histórico é atualizado. -->
+            <!-- Espaço para mostrar quem fez cada alteração e quando ela aconteceu -->
             <div class="history" aria-live="polite"></div>
-
         </section>
-
     </main>
 
-    <!-- Janela (modal) de edição da demanda, aberta pelo botão "Editar".
-         O elemento <dialog> é nativo do HTML e dispensa biblioteca externa. -->
+    <!-- Janela para editar as informações da demanda -->
     <dialog class="edit-dialog" id="dialog-edicao" aria-labelledby="titulo-edicao">
-        <!-- As mensagens de validação são preenchidas pelo JavaScript . -->
-        <!-- "novalidate" desliga as mensagens padrão do navegador, pois a validação é feita no JavaScript -->
+        
+        <!-- As mensagens de erro são preenchidas pelo JavaScript -->
+        <!-- Formulário de edição; detalhes.js verifica os dados ao enviá-lo -->
         <form id="form-edicao" method="dialog" novalidate>
             <div class="dialog-header">
+
                 <h2 id="titulo-edicao">Editar demanda</h2>
+
                 <!-- Fecha a janela sem salvar -->
                 <button class="dialog-close" id="fechar-edicao" type="button" aria-label="Fechar">×</button>
             </div>
-            <!-- Título (obrigatório, de 3 a 100 caracteres) -->
+
+            <!-- Agrupa o campo de título e sua mensagem de erro -->
             <div class="form-group">
+
+                <!-- Identifica o título como obrigatório -->
                 <label for="edicao-titulo">Título</label>
+
+                <!-- Campo para alterar o título da demanda -->
                 <input class="form-control-custom" id="edicao-titulo" minlength="3" maxlength="100" required aria-describedby="erro-edicao-titulo">
-                <!-- Mensagem de erro deste campo, preenchida pelo JavaScript -->
+
+                <!-- Espaço para mostrar erros no título -->
                 <div id="erro-edicao-titulo" class="erro-campo"></div>
             </div>
-            <!-- Descrição (obrigatória, de 10 a 1000 caracteres) -->
+
+            <!-- Agrupa o campo de descrição e sua mensagem de erro -->
             <div class="form-group">
+
+                <!-- Identifica a descrição como obrigatória -->
                 <label for="edicao-descricao">Descrição</label>
+
+                <!-- Campo para alterar a descrição da demanda -->
                 <textarea class="form-control-custom" id="edicao-descricao" rows="4" minlength="10" maxlength="1000" required aria-describedby="erro-edicao-descricao"></textarea>
+
+                <!-- Espaço para mostrar erros na descrição -->
                 <div id="erro-edicao-descricao" class="erro-campo"></div>
             </div>
-            <!-- Tipo e prioridade lado a lado, com os valores previstos no escopo -->
+
+            <!-- Agrupa os campos de tipo e prioridade -->
             <div class="edit-form-grid">
                 <div class="form-group">
+
+                    <!-- Identifica o tipo como obrigatório -->
                     <label for="edicao-tipo">Tipo</label>
+
+                    <!-- Lista para escolher o tipo da demanda -->
                     <select class="form-select-custom" id="edicao-tipo" required aria-describedby="erro-edicao-tipo">
                         <option value="TAREFA">Tarefa</option>
                         <option value="DEFEITO">Defeito</option>
                         <option value="MELHORIA">Melhoria</option>
                         <option value="DOCUMENTACAO">Documentação</option>
                     </select>
+
+                    <!-- Espaço para mostrar erros na escolha do tipo -->
                     <div id="erro-edicao-tipo" class="erro-campo"></div>
                 </div>
+
                 <div class="form-group">
+
+                    <!-- Identifica a prioridade como obrigatória -->
                     <label for="edicao-prioridade">Prioridade</label>
+
+                    <!-- Lista para escolher a prioridade da demanda -->
                     <select class="form-select-custom" id="edicao-prioridade" required aria-describedby="erro-edicao-prioridade">
                         <option value="CRITICA">Crítica</option>
                         <option value="ALTA">Alta</option>
                         <option value="MEDIA">Média</option>
                         <option value="BAIXA">Baixa</option>
                     </select>
+
+                    <!-- Espaço para mostrar erros na escolha da prioridade -->
                     <div id="erro-edicao-prioridade" class="erro-campo"></div>
                 </div>
             </div>
-            <!-- Projeto (opções montadas pelo JavaScript com os projetos que o usuário pode acessar) -->
+
+            <!-- Agrupa o campo de projeto e sua mensagem de erro -->
             <div class="form-group">
+
+                <!-- Identifica o projeto como obrigatório -->
                 <label for="edicao-projeto">Projeto</label>
+
+                <!-- Lista de projetos preenchida pelo JavaScript -->
                 <select class="form-select-custom" id="edicao-projeto" required aria-describedby="erro-edicao-projeto"></select>
+
+                <!-- Espaço para mostrar erros na escolha do projeto -->
                 <div id="erro-edicao-projeto" class="erro-campo"></div>
             </div>
-            <!-- Responsável (opcional; opções montadas pelo JavaScript) e prazo -->
+
+            <!-- Agrupa os campos opcionais de responsável e prazo -->
             <div class="edit-form-grid">
                 <div class="form-group">
+
+                    <!-- Identifica o campo opcional de responsável -->
                     <label for="edicao-responsavel">Responsável</label>
+
+                    <!-- Lista para escolher um responsável do projeto -->
                     <select class="form-select-custom" id="edicao-responsavel" aria-describedby="erro-edicao-responsavel"></select>
+
+                    <!-- Espaço para mostrar erros na escolha do responsável -->
                     <div id="erro-edicao-responsavel" class="erro-campo"></div>
                 </div>
+
                 <div class="form-group">
+
+                    <!-- Identifica o campo opcional de prazo -->
                     <label for="edicao-prazo">Prazo de finalização</label>
-                    <!-- max="9999-12-31" impede anos com mais de 4 dígitos -->
+
+                    <!-- Limita o ano da data a quatro dígitos -->
+                    <!-- Campo para escolher a data de finalização -->
                     <input class="form-control-custom" id="edicao-prazo" type="date" max="9999-12-31" aria-describedby="erro-edicao-prazo">
+
+                    <!-- Espaço para mostrar erros no prazo -->
                     <div id="erro-edicao-prazo" class="erro-campo"></div>
                 </div>
             </div>
-            <!-- Aviso dinâmico sobre o projeto selecionado; começa oculto -->
+
+            <!-- Espaço para mostrar avisos sobre o projeto selecionado -->
             <p class="form-hint" id="edicao-projeto-aviso" role="status" hidden></p>
+
+            <!-- Orientação sobre a escolha do responsável e do prazo -->
             <p class="form-hint">O responsável deve pertencer ao projeto. Feriados nacionais não podem ser usados como prazo.</p>
-            <!-- Erro geral do formulário (por exemplo, recusa da API ao salvar) -->
+
+            <!-- Espaço para mostrar erros gerais ao salvar as alterações -->
             <p class="form-error" id="edicao-erro" role="alert" hidden></p>
+
+            <!-- Botões para fechar a edição ou salvar as alterações -->
             <div class="dialog-actions">
                 <button class="btn-secondary-custom" id="cancelar-edicao" type="button">Voltar</button>
                 <button class="btn-primary-custom" type="submit">Salvar alterações</button>
@@ -311,14 +347,13 @@
         </form>
     </dialog>
 
-    <!-- Scripts no fim do corpo, para carregarem depois de todo o HTML.
-         A ordem importa, pois um depende do anterior. -->
-    <!-- api.js: cliente compartilhado da API (envia o token e trata erros) -->
+    <!-- Carrega as funções de comunicação com o servidor -->
     <script src="../js/api.js"></script>
-    <!-- sessao.js: controle da sessão (saudação ao usuário e botão Sair) -->
-<script src="../js/sessao.js"></script>
-    <!-- detalhes.js: carrega a demanda e controla edição, status, cancelamento e comentários -->
+
+    <!-- Carrega os dados da sessão e o controle do menu lateral -->
+    <script src="../js/sessao.js"></script>
+    
+    <!-- Carrega os dados e controla as ações da tela de detalhes -->
     <script src="../js/detalhes.js"></script>
 </body>
-
 </html>

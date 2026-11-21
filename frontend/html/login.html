@@ -29,36 +29,36 @@ de preenchimento e espaços para apresentar mensagens de erro caso os dados este
 
             <p class="text-secondary"> Preencha os campos abaixo para entrar no sistema. </p>
 
-            <!-- Formulário de login; login.js verifica os dados ao enviá-lo. -->
+            <!-- Formulário de login; login.js verifica os dados ao enviá-lo -->
             <form id="form-login" novalidate>
 
-                <!-- Agrupa o campo de e-mail e sua mensagem de erro. -->
+                <!-- Agrupa o campo de e-mail e sua mensagem de erro -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Identifica o campo de e-mail como obrigatório. -->
+                    <!-- Identifica o campo de e-mail como obrigatório -->
                     <label for="email" class="form-label"><strong>E-mail *</strong></label>
 
-                    <!-- Campo para digitar o e-mail, com um exemplo de preenchimento. -->
+                    <!-- Campo para digitar o e-mail, com um exemplo de preenchimento -->
                     <input type="email" id="email" class="form-control" placeholder="seu.email@empresa.com" required>
 
-                    <!-- Espaço para mostrar erros no e-mail. -->
+                    <!-- Espaço para mostrar erros no e-mail -->
                     <div id="erro-email" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Agrupa o campo de senha e sua mensagem de erro. -->
+                <!-- Agrupa o campo de senha e sua mensagem de erro -->
                 <div class="campo mb-3 text-start">
 
-                    <!-- Identifica o campo de senha como obrigatório. -->
+                    <!-- Identifica o campo de senha como obrigatório -->
                     <label for="senha" class="form-label"><strong>Senha *</strong></label>
 
-                    <!-- Campo para digitar a senha, com os caracteres ocultos. -->
+                    <!-- Campo para digitar a senha, com os caracteres ocultos -->
                     <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
 
-                    <!-- Espaço para mostrar erros de senha ou de login. -->
+                    <!-- Espaço para mostrar erros de senha ou de login -->
                     <div id="erro-senha" class="invalid-feedback"></div>
                 </div>
 
-                <!-- Botão que envia o formulário. -->
+                <!-- Botão que envia o formulário -->
                 <button type="submit" class="btn btn-primary w-100 mt-3 botao-entrar">Entrar</button>
             </form>
 
@@ -66,10 +66,10 @@ de preenchimento e espaços para apresentar mensagens de erro caso os dados este
 
     </div>
 
-    <!-- Carrega as funções de comunicação com o servidor. -->
+    <!-- Carrega as funções de comunicação com o servidor -->
     <script src="../js/api.js"></script>
 
-    <!-- Carrega as verificações e o controle de login da tela. -->
+    <!-- Carrega as verificações e o controle de login da tela -->
     <script src="../js/login.js"></script>
 </body>
 </html>
