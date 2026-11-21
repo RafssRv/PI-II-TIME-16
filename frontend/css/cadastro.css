@@ -6,7 +6,9 @@
   Estilos da tela de cadastro de demandas (formulário, cards, sidebar, validações e alertas).
 */
 
+/* Guarda as cores usadas nos elementos da página */
 :root {
+
   /* Cores da paleta - Roxo + cinza escuro */
   --cor-primaria: #7C3AED;
   --cor-primaria-hover: #6D28D9;
@@ -25,12 +27,14 @@
   --erro: #DC2626;
 }
 
+/* Ajusta os tamanhos e remove margens e espaçamentos padrão */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Define a fonte, as cores e o espaçamento do texto da página */
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--cinza-fundo);
@@ -39,8 +43,7 @@ body {
   line-height: 1.5;
 }
 
-
-/*Sidebar*/
+/* Define a aparência e mantém o menu lateral fixo */
 .sidebar {
   background: #FFFFFF;
   border-right: 1px solid var(--cinza-borda);
@@ -49,16 +52,21 @@ body {
   position: fixed;
   width: 240px;
 }
+
+/* Ajusta o espaço e a borda da área de identificação do usuário */
 .sidebar-logo {
   padding: 0 24px 24px;
   border-bottom: 1px solid var(--cinza-borda);
   margin-bottom: 16px;
 }
+
+/* Destaca o nome do sistema no menu lateral */
 .sidebar-logo h4 {
   color: var(--cor-primaria);
   font-weight: 700;
   margin: 0;
 }
+
 /* Mantém o botão Sair com a aparência dos demais itens do menu. */
 .sidebar-menu .btn-sair {
   width: 100%;
@@ -68,6 +76,8 @@ body {
   text-align: left;
   cursor: pointer;
 }
+
+/* Organiza os links e o botão Sair com o mesmo espaçamento */
 .sidebar-menu a,
 .sidebar-menu .btn-sair {
   display: flex;
@@ -78,24 +88,29 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
+
+/* Altera as cores dos itens ao passar o mouse ou focar no botão Sair */
 .sidebar-menu a:hover,
 .sidebar-menu .btn-sair:hover,
 .sidebar-menu .btn-sair:focus-visible {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
+
+/* Destaca a página aberta no menu lateral */
 .sidebar-menu a.active {
   background: var(--cor-primaria-clara);
   color: var(--cor-primaria);
   border-right: 3px solid var(--cor-primaria);
 }
 
+/* Reserva espaço para o menu e ajusta o conteúdo principal */
 .main-content {
   margin-left: 240px;
   padding: 32px;
 }
 
-/*layout publico (login)*/
+/* Centraliza o conteúdo público na tela */
 .public-layout {
   min-height: 100vh;
   display: flex;
@@ -103,6 +118,8 @@ body {
   justify-content: center;
   padding: 24px;
 }
+
+/* Define a aparência e a largura do cartão público */
 .public-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -112,8 +129,7 @@ body {
   max-width: 400px;
 }
 
-
-/* Botões */
+/* Define a aparência do botão principal */
 .btn-primary-custom {
   background: var(--cor-primaria);
   color: white;
@@ -124,10 +140,14 @@ body {
   transition: background 0.15s;
   cursor: pointer;
 }
+
+/* Escurece o botão principal quando o mouse passa sobre ele */
 .btn-primary-custom:hover {
   background: var(--cor-primaria-hover);
   color: white;
 }
+
+/* Define a aparência do botão secundário */
 .btn-secondary-custom {
   background: transparent;
   color: var(--texto-secundario);
@@ -138,13 +158,14 @@ body {
   transition: all 0.15s;
   cursor: pointer;
 }
+
+/* Altera as cores do botão secundário ao passar o mouse */
 .btn-secondary-custom:hover {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
 
-
-/* cards e formulários */
+/* Define o fundo, a borda e o espaço interno dos cartões */
 .content-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -153,15 +174,20 @@ body {
   margin-bottom: 16px;
 }
 
+/* Define o espaço abaixo de cada grupo de campo */
 .form-group {
   margin-bottom: 20px;
 }
+
+/* Ajusta o tamanho e o espaço dos nomes dos campos */
 .form-group label {
   display: block;
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 6px;
 }
+
+/* Define a aparência dos campos de texto e das listas de seleção */
 .form-control-custom,
 .form-select-custom {
   width: 100%;
@@ -173,6 +199,8 @@ body {
   background: #FFFFFF;
   transition: border 0.15s, box-shadow 0.15s;
 }
+
+/* Destaca o campo selecionado com borda e sombra roxas */
 .form-control-custom:focus,
 .form-select-custom:focus {
   outline: none;
@@ -180,23 +208,25 @@ body {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
+/* Define a altura mínima e permite redimensionar a descrição na vertical */
 textarea.form-control-custom {
   min-height: 120px;
   resize: vertical;
 }
 
+/* Destaca a marcação de campo obrigatório */
 .form-group label .obrigatorio {
   color: var(--erro);
 }
 
+/* Define a aparência das orientações de preenchimento */
 .form-hint {
   font-size: 12px;
   color: var(--texto-secundario);
   margin-top: 4px;
 }
 
-
-/* status e prioridades */
+/* Define o tamanho e o espaçamento das etiquetas */
 .badge-custom {
   display: inline-block;
   padding: 4px 10px;
@@ -204,52 +234,64 @@ textarea.form-control-custom {
   font-size: 12px;
   font-weight: 500;
 }
+
+/* Define as cores das etiquetas de cada status */
 .badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
 .badge-status-andamento { background: #FEF3C7; color: #92400E; }
 .badge-status-revisao { background: #E0E7FF; color: #4338CA; }
 .badge-status-concluida { background: #D1FAE5; color: #065F46; }
 .badge-status-cancelada { background: #E5E7EB; color: #374151; }
 
+/* Define as cores das etiquetas de cada prioridade */
 .badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
 .badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
 .badge-prioridade-media { background: #FEF3C7; color: #92400E; }
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
-
-/* navegação e cabeçalho de página (usados no cadastro/editar) */
+/* Ajusta a cor e o espaço do caminho de navegação */
 .breadcrumb-custom {
   font-size: 13px;
   color: var(--texto-secundario);
   margin-bottom: 8px;
 }
+
+/* Define a aparência do link no caminho de navegação */
 .breadcrumb-custom a {
   color: var(--texto-secundario);
   text-decoration: none;
 }
+
+/* Altera a cor do link quando o mouse passa sobre ele */
 .breadcrumb-custom a:hover {
   color: var(--cor-primaria);
 }
 
+/* Organiza o cabeçalho e o espaço abaixo dele */
 .page-header {
   margin-bottom: 32px;
 }
+
+/* Ajusta o tamanho e o espaço do título principal */
 .page-header h1 {
   font-size: 24px;
   font-weight: 700;
   margin: 0;
 }
+
+/* Define a cor e o espaço do texto abaixo do título */
 .page-header p {
   color: var(--texto-secundario);
   margin: 4px 0 0;
 }
-/* modificador: só a dashboard usa (título + botão lado a lado) */
+
+/* Posiciona o título e a ação lado a lado */
 .page-header--acao {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* card de formulário (diferente do content-card: mais padding, usado em blocos de form) */
+/* Define o fundo, a borda e o espaço interno do formulário */
 .form-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -257,6 +299,8 @@ textarea.form-control-custom {
   padding: 32px;
   margin-bottom: 24px;
 }
+
+/* Ajusta o título e a linha divisória do formulário */
 .form-card h5 {
   font-size: 15px;
   font-weight: 600;
@@ -265,7 +309,7 @@ textarea.form-control-custom {
   border-bottom: 1px solid var(--cinza-borda);
 }
 
-/* barra de ações do formulário */
+/* Alinha os botões do formulário à direita */
 .actions-bar {
   display: flex;
   justify-content: flex-end;
@@ -273,7 +317,7 @@ textarea.form-control-custom {
   padding: 20px 0;
 }
 
-/* aviso informativo (ex: "status nasce como Aberta") */
+/* Destaca o aviso informativo da página */
 .info-banner {
   background: var(--cor-primaria-clara);
   border-left: 3px solid var(--cor-primaria);
@@ -284,7 +328,7 @@ textarea.form-control-custom {
   margin-bottom: 24px;
 }
 
-/* mensagens de erro */
+/* Define a cor, o tamanho e o espaço das mensagens de erro */
 .erro-campo {
   color: #dc3545;
   font-size: 0.8rem;
@@ -292,6 +336,7 @@ textarea.form-control-custom {
   margin-top: 4px;
 }
 
+/* Destaca com borda vermelha os campos com erro */
 .is-invalid {
   border-color: #dc3545 !important;
 }

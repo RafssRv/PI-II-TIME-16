@@ -7,7 +7,9 @@ Estilos da consulta, cadastro e desativação de projetos. Reaproveita a paleta 
 (sidebar, cards, tabela, botões) das demais telas para manter o padrão visual.
 */
 
+/* Guarda as cores usadas nos elementos da página */
 :root {
+
   /* Cores da paleta - Roxo + cinza escuro (iguais às demais telas) */
   --cor-primaria: #7C3AED;
   --cor-primaria-hover: #6D28D9;
@@ -25,6 +27,7 @@ Estilos da consulta, cadastro e desativação de projetos. Reaproveita a paleta 
   --erro: #DC2626;
 }
 
+/* Ajusta os tamanhos e remove margens e espaçamentos padrão */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,6 +39,7 @@ Estilos da consulta, cadastro e desativação de projetos. Reaproveita a paleta 
   display: none !important;
 }
 
+/* Define a fonte, as cores e o espaçamento do texto da página */
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--cinza-fundo);
@@ -44,7 +48,7 @@ body {
   line-height: 1.5;
 }
 
-/* Sidebar */
+/* Define a aparência e mantém o menu lateral fixo */
 .sidebar {
   background: #FFFFFF;
   border-right: 1px solid var(--cinza-borda);
@@ -53,11 +57,15 @@ body {
   position: fixed;
   width: 240px;
 }
+
+/* Ajusta o espaço e a borda da área de identificação do usuário */
 .sidebar-logo {
   padding: 0 24px 24px;
   border-bottom: 1px solid var(--cinza-borda);
   margin-bottom: 16px;
 }
+
+/* Destaca o nome do sistema no menu lateral */
 .sidebar-logo h4 {
   color: var(--cor-primaria);
   font-size: 1.5rem;
@@ -65,6 +73,7 @@ body {
   font-weight: 700;
   margin: 0;
 }
+
 /* Mantém o botão Sair com a aparência dos demais itens do menu. */
 .sidebar-menu .btn-sair {
   width: 100%;
@@ -74,6 +83,8 @@ body {
   text-align: left;
   cursor: pointer;
 }
+
+/* Organiza os links e o botão Sair com o mesmo espaçamento */
 .sidebar-menu a,
 .sidebar-menu .btn-sair {
   display: flex;
@@ -84,31 +95,42 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
+
+/* Altera as cores dos itens ao passar o mouse ou focar no botão Sair */
 .sidebar-menu a:hover,
 .sidebar-menu .btn-sair:hover,
 .sidebar-menu .btn-sair:focus-visible {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
+
+/* Destaca a página aberta no menu lateral */
 .sidebar-menu a.active {
   background: var(--cor-primaria-clara);
   color: var(--cor-primaria);
   border-right: 3px solid var(--cor-primaria);
 }
 
+/* Reserva espaço para o menu lateral ao lado do conteúdo */
 main {
   margin-left: 240px;
 }
+
+/* Centraliza o conteúdo e define sua largura e espaçamento */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
 }
+
+/* Ajusta a cor, o tamanho e o espaço do título da página */
 .page-title {
   margin-bottom: 24px;
   font-size: 24px;
   color: var(--texto-principal);
 }
+
+/* Organiza o cabeçalho e o espaço abaixo dele */
 .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -117,9 +139,13 @@ main {
   gap: 16px;
   margin-bottom: 24px;
 }
-.page-header .page-title { margin-bottom: 0; }
 
-/* Botão do menu */
+/* Remove a margem inferior do título no cabeçalho */
+.page-header .page-title { 
+  margin-bottom: 0; 
+}
+
+/* Define a aparência do botão principal */
 .btn-primary-custom {
   background: var(--cor-primaria);
   color: white;
@@ -133,9 +159,13 @@ main {
   transition: background 0.15s;
   cursor: pointer;
 }
+
+/* Escurece o botão principal quando o mouse passa sobre ele */
 .btn-primary-custom:hover {
   background: var(--cor-primaria-hover);
 }
+
+/* Define a aparência dos botões secundário e de desativar */
 .btn-secondary-custom,
 .btn-danger-custom {
   padding: 10px 16px;
@@ -147,15 +177,30 @@ main {
   font-weight: 500;
   cursor: pointer;
 }
-.btn-secondary-custom:hover { background: var(--cinza-fundo); }
-.btn-danger-custom { color: #B91C1C; border-color: #FECACA; }
-.btn-danger-custom:hover { background: #FEF2F2; }
+
+/* Altera o fundo do botão secundário ao passar o mouse */
+.btn-secondary-custom:hover { 
+  background: var(--cinza-fundo); 
+}
+
+/* Destaca o botão de desativar com tons de vermelho */
+.btn-danger-custom { 
+  color: #B91C1C; 
+  border-color: #FECACA; 
+}
+
+/* Altera o fundo do botão de desativar ao passar o mouse */
+.btn-danger-custom:hover { 
+  background: #FEF2F2; 
+}
+
+/* Diminui o destaque dos botões desativados */
 .btn-primary-custom:disabled,
 .btn-secondary-custom:disabled,
 .btn-danger-custom:disabled,
 .dialog-close:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Campos de busca e filtro */
+/* Define a aparência dos campos de texto e das listas de seleção */
 .form-control-custom,
 .form-select-custom {
   padding: 10px 12px;
@@ -166,6 +211,8 @@ main {
   background: #FFFFFF;
   transition: border 0.15s, box-shadow 0.15s;
 }
+
+/* Destaca o campo selecionado com borda e sombra roxas */
 .form-control-custom:focus,
 .form-select-custom:focus {
   outline: none;
@@ -173,7 +220,7 @@ main {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-/* Cards */
+/* Define o fundo, a borda e o espaço interno dos cartões */
 .content-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -181,6 +228,8 @@ main {
   padding: 24px;
   margin-bottom: 24px;
 }
+
+/* Organiza o título e os filtros no topo do cartão */
 .card-topo {
   display: flex;
   flex-wrap: wrap;
@@ -189,12 +238,18 @@ main {
   gap: 12px;
   margin-bottom: 16px;
 }
+
+/* Ajusta o tamanho do título do cartão */
 .card-topo h2 {
   font-size: 18px;
 }
+
+/* Define a largura mínima do campo de busca */
 .card-topo .form-control-custom {
   min-width: 240px;
 }
+
+/* Organiza os campos de filtro dos projetos e usuários */
 .filtros-usuarios,
 .filtros-projetos {
   display: flex;
@@ -202,13 +257,15 @@ main {
   gap: 12px;
 }
 
-/* Resumo no topo */
+/* Organiza os indicadores do resumo em colunas */
 .resumo {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
+
+/* Define a aparência de cada cartão do resumo */
 .resumo-item {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -217,25 +274,33 @@ main {
   display: flex;
   flex-direction: column;
 }
+
+/* Destaca o valor do indicador com a cor principal */
 .resumo-valor {
   font-size: 28px;
   font-weight: 700;
   color: var(--cor-primaria);
   line-height: 1.2;
 }
+
+/* Ajusta a cor e o tamanho do nome do indicador */
 .resumo-rotulo {
   color: var(--texto-secundario);
   font-size: 13px;
 }
 
-/* Tabelas */
+/* Permite rolar a tabela horizontalmente em telas menores */
 .tabela-rolagem {
   overflow-x: auto;
 }
+
+/* Define a largura da tabela */
 .table-custom {
   width: 100%;
   border-collapse: collapse;
 }
+
+/* Ajusta o texto, o espaçamento e a borda do cabeçalho da tabela */
 .table-custom thead th {
   text-align: left;
   padding: 10px 12px;
@@ -246,30 +311,42 @@ main {
   border-bottom: 1px solid var(--cinza-borda);
   white-space: nowrap;
 }
+
+/* Define o espaçamento e a borda das células da tabela */
 .table-custom tbody td {
   padding: 12px;
   border-bottom: 1px solid var(--cinza-borda);
   vertical-align: top;
 }
+
+/* Remove a borda inferior da última linha da tabela */
 .table-custom tbody tr:last-child td {
   border-bottom: none;
 }
+
+/* Destaca a linha da tabela quando o mouse passa sobre ela */
 .table-custom tbody tr:hover {
   background: #FAFAFB;
 }
+
+/* Destaca o nome apresentado na tabela */
 .celula-nome {
   font-weight: 600;
 }
+
+/* Usa a cor secundária nas informações da tabela */
 .celula-secundaria {
   color: var(--texto-secundario);
 }
 
-/* Equipe do projeto e projetos do usuário (etiquetas) */
+/* Organiza as etiquetas e permite que passem para outra linha */
 .etiquetas {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
+
+/* Define a aparência das etiquetas de equipe e projeto */
 .etiqueta {
   display: inline-block;
   padding: 2px 8px;
@@ -279,6 +356,8 @@ main {
   font-size: 12px;
   white-space: nowrap;
 }
+
+/* Destaca a etiqueta de líder com a cor principal */
 .etiqueta.lider {
   background: var(--cor-primaria-clara);
   border-color: var(--cor-primaria-clara);
@@ -286,7 +365,7 @@ main {
   font-weight: 600;
 }
 
-/* Perfil e situação */
+/* Define o tamanho e o espaçamento das etiquetas */
 .badge-custom {
   display: inline-block;
   padding: 2px 10px;
@@ -295,26 +374,35 @@ main {
   font-weight: 600;
   white-space: nowrap;
 }
+
+/* Define as cores das etiquetas de perfil */
 .badge-perfil-admin { background: #FEE2E2; color: #991B1B; }
 .badge-perfil-lider { background: #EDE9FE; color: #5B21B6; }
 .badge-perfil-membro { background: #DBEAFE; color: #1E40AF; }
+
+/* Define as cores das etiquetas de situação */
 .badge-ativo { background: #D1FAE5; color: #065F46; }
 .badge-inativo { background: #E5E7EB; color: #374151; }
 
-/* Mensagens */
+/* Define a cor, o tamanho e o espaço das mensagens de erro */
 .erro-campo {
   color: var(--erro);
   font-size: 12px;
   margin-top: 4px;
 }
+
+/* Destaca com borda vermelha os campos com erro */
 .is-invalid {
   border-color: var(--erro) !important;
 }
 
+/* Define a aparência das mensagens informativas */
 .mensagem-info {
   color: var(--texto-secundario);
   margin-bottom: 16px;
 }
+
+/* Destaca as mensagens de erro */
 .mensagem-erro {
   background: #FEE2E2;
   color: #991B1B;
@@ -323,6 +411,8 @@ main {
   padding: 12px 16px;
   margin-bottom: 16px;
 }
+
+/* Destaca as mensagens de sucesso */
 .mensagem-sucesso {
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -332,7 +422,7 @@ main {
   color: #166534;
 }
 
-/* Cadastro de projeto em diálogo, com os mesmos campos e cores da aplicação. */
+/* Define o tamanho e a aparência da janela de cadastro de projeto */
 .project-dialog {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
@@ -344,20 +434,81 @@ main {
   color: var(--texto-principal);
   background: var(--cinza-card);
 }
-.project-dialog::backdrop { background: rgba(17, 24, 39, 0.5); }
-.dialog-header,
-.dialog-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.dialog-header { margin-bottom: 20px; }
-.dialog-header h2 { font-size: 20px; }
-.dialog-close { border: 0; background: transparent; color: var(--texto-secundario); font-size: 24px; cursor: pointer; }
-.project-dialog .form-group { margin-bottom: 16px; }
-.project-dialog label { display: block; margin-bottom: 6px; font-weight: 500; }
-.project-dialog .form-control-custom { width: 100%; }
-.project-dialog textarea { resize: vertical; }
-.dialog-actions { flex-wrap: wrap; justify-content: flex-end; margin-top: 20px; }
 
-/* Telas estreitas: o menu lateral deixa de ocupar a lateral */
+/* Escurece o fundo quando a janela de cadastro está aberta */
+.project-dialog::backdrop { 
+  background: rgba(17, 24, 39, 0.5); 
+}
+
+/* Organiza o cabeçalho e os botões da janela de cadastro */
+.dialog-header,
+.dialog-actions { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 12px; 
+}
+
+/* Define o espaço abaixo do cabeçalho da janela */
+.dialog-header { 
+  margin-bottom: 20px; 
+}
+
+/* Ajusta o tamanho do título da janela */
+.dialog-header h2 { 
+  font-size: 20px; 
+}
+
+/* Define a aparência do botão que fecha a janela */
+.dialog-close { 
+  border: 0; 
+  background: transparent; 
+  color: var(--texto-secundario); 
+  font-size: 24px; 
+  cursor: pointer; 
+}
+
+/* Define o espaço entre os campos do cadastro */
+.project-dialog .form-group { 
+  margin-bottom: 16px; 
+}
+
+/* Ajusta o destaque e o espaço dos nomes dos campos */
+.project-dialog label { 
+  display: block; 
+  margin-bottom: 6px; 
+  font-weight: 500; 
+}
+
+/* Faz os campos ocuparem toda a largura disponível */
+.project-dialog .form-control-custom { 
+  width: 100%; 
+}
+
+/* Permite redimensionar a descrição na vertical */
+.project-dialog textarea { 
+  resize: vertical; 
+}
+
+/* Alinha os botões da janela e permite que passem para outra linha */
+.dialog-actions { 
+  flex-wrap: wrap; 
+  justify-content: flex-end; 
+  margin-top: 20px; 
+}
+
+/* Ajusta o menu e o conteúdo para telas de até 800 pixels */
 @media (max-width: 800px) {
-  .sidebar { position: static; width: 100%; min-height: 0; }
-  main { margin-left: 0; }
+  
+  /* Coloca o menu acima do conteúdo e ajusta sua largura e altura */
+  .sidebar { 
+    position: static; 
+    width: 100%; 
+    min-height: 0; 
+  }
+
+  /* Remove o espaço lateral reservado para o menu */
+  main { 
+    margin-left: 0; 
+  }
 }

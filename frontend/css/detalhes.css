@@ -7,7 +7,9 @@ Cuida da apresentação das informações de uma demanda, separando a descriçã
 de alterações. Inclui a formatação da janela de edição e ajustes na disposição dos elementos em telas menores
 */
 
+/* Guarda as cores usadas nos elementos da página */
 :root {
+
   /* Cores da paleta - Roxo + cinza escuro */
   --cor-primaria: #7C3AED;
   --cor-primaria-hover: #6D28D9;
@@ -26,12 +28,14 @@ de alterações. Inclui a formatação da janela de edição e ajustes na dispos
   --erro: #DC2626;
 }
 
+/* Ajusta os tamanhos e remove margens e espaçamentos padrão */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Define a fonte, as cores e o espaçamento do texto da página */
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--cinza-fundo);
@@ -40,8 +44,7 @@ body {
   line-height: 1.5;
 }
 
-
-/* Sidebar */
+/* Define a aparência e o posicionamento do menu lateral */
 .sidebar {
   background: #FFFFFF;
   border-right: 1px solid var(--cinza-borda);
@@ -50,16 +53,21 @@ body {
   position: fixed;
   width: 240px;
 }
+
+/* Ajusta o espaço e a borda da área de identificação do usuário */
 .sidebar-logo {
   padding: 0 24px 24px;
   border-bottom: 1px solid var(--cinza-borda);
   margin-bottom: 16px;
 }
+
+/* Destaca o nome do sistema no menu lateral */
 .sidebar-logo h4 {
   color: var(--cor-primaria);
   font-weight: 700;
   margin: 0;
 }
+
 /* Mantém o botão Sair com a aparência dos demais itens do menu. */
 .sidebar-menu .btn-sair {
   width: 100%;
@@ -69,6 +77,8 @@ body {
   text-align: left;
   cursor: pointer;
 }
+
+/* Organiza os links e o botão Sair com o mesmo espaçamento */
 .sidebar-menu a,
 .sidebar-menu .btn-sair {
   display: flex;
@@ -79,17 +89,23 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
+
+/* Altera as cores dos itens ao passar o mouse ou focar no botão Sair */
 .sidebar-menu a:hover,
 .sidebar-menu .btn-sair:hover,
 .sidebar-menu .btn-sair:focus-visible {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
+
+/* Destaca a página aberta no menu lateral */
 .sidebar-menu a.active {
   background: var(--cor-primaria-clara);
   color: var(--cor-primaria);
   border-right: 3px solid var(--cor-primaria);
 }
+
+/* Define a aparência do botão de sair do menu */
 .sidebar-logout {
   display: block;
   margin: 24px;
@@ -100,14 +116,20 @@ body {
   background: #fff;
   cursor: pointer;
 }
-.sidebar-logout:hover { color: var(--texto-principal); background: var(--cinza-fundo); }
 
+/* Altera as cores do botão de sair ao passar o mouse */
+.sidebar-logout:hover { 
+  color: var(--texto-principal); 
+  background: var(--cinza-fundo); 
+}
+
+/* Reserva espaço para o menu e ajusta o conteúdo principal */
 .main-content {
   margin-left: 240px;
   padding: 32px;
 }
 
-/* Layout público (login) */
+/* Centraliza o conteúdo público na tela */
 .public-layout {
   min-height: 100vh;
   display: flex;
@@ -115,6 +137,8 @@ body {
   justify-content: center;
   padding: 24px;
 }
+
+/* Define a aparência e a largura do cartão público */
 .public-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -124,7 +148,7 @@ body {
   max-width: 400px;
 }
 
-/* Botões */
+/* Define a aparência do botão principal */
 .btn-primary-custom {
   background: var(--cor-primaria);
   color: white;
@@ -135,10 +159,14 @@ body {
   transition: background 0.15s;
   cursor: pointer;
 }
+
+/* Escurece o botão principal quando o mouse passa sobre ele */
 .btn-primary-custom:hover {
   background: var(--cor-primaria-hover);
   color: white;
 }
+
+/* Define a aparência do botão secundário */
 .btn-secondary-custom {
   background: transparent;
   color: var(--texto-secundario);
@@ -149,12 +177,14 @@ body {
   transition: all 0.15s;
   cursor: pointer;
 }
+
+/* Altera as cores do botão secundário ao passar o mouse */
 .btn-secondary-custom:hover {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
 
-/* Cards e formulários */
+/* Define o fundo, a borda e o espaço interno dos cartões */
 .content-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -163,15 +193,20 @@ body {
   margin-bottom: 16px;
 }
 
+/* Define o espaço abaixo de cada grupo de campo */
 .form-group {
   margin-bottom: 20px;
 }
+
+/* Ajusta o tamanho e o espaço dos nomes dos campos */
 .form-group label {
   display: block;
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 6px;
 }
+
+/* Define a aparência dos campos de texto e das listas de seleção */
 .form-control-custom,
 .form-select-custom {
   width: 100%;
@@ -183,6 +218,8 @@ body {
   background: #FFFFFF;
   transition: border 0.15s, box-shadow 0.15s;
 }
+
+/* Destaca o campo selecionado com borda e sombra roxas */
 .form-control-custom:focus,
 .form-select-custom:focus {
   outline: none;
@@ -190,7 +227,7 @@ body {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-/* Status e prioridades */
+/* Define o tamanho e o espaçamento das etiquetas */
 .badge-custom {
   display: inline-block;
   padding: 4px 10px;
@@ -198,19 +235,21 @@ body {
   font-size: 12px;
   font-weight: 500;
 }
+
+/* Define as cores das etiquetas de cada status */
 .badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
 .badge-status-andamento { background: #FEF3C7; color: #92400E; }
 .badge-status-revisao { background: #E0E7FF; color: #4338CA; }
 .badge-status-concluida { background: #D1FAE5; color: #065F46; }
 .badge-status-cancelada { background: #E5E7EB; color: #374151; }
 
+/* Define as cores das etiquetas de cada prioridade */
 .badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
 .badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
 .badge-prioridade-media { background: #FEF3C7; color: #92400E; }
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
-
-/* cabeçalho da página */
+/* Organiza o título da página e o link para voltar */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -218,17 +257,20 @@ body {
   margin-bottom: 24px;
 }
 
+/* Ajusta o tamanho e o espaço abaixo do título da página */
 .page-header h1 {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
 }
 
+/* Define a cor e a margem do texto abaixo do título */
 .page-header p {
   color: var(--texto-secundario);
   margin: 0;
 }
 
+/* Define a aparência do link para voltar à listagem */
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -238,98 +280,125 @@ body {
   font-weight: 500;
 }
 
+/* Altera a cor do link ao passar o mouse */
 .back-link:hover {
   color: var(--cor-primaria);
 }
 
-/* cabeçalho da demanda */
+/* Organiza as informações e ações no topo da demanda */
 .demand-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
 }
+
+/* Faz a área do título ocupar o espaço disponível */
 .demand-title-area {
   flex: 1;
 }
+
+/* Ajusta a cor e o tamanho da identificação da demanda */
 .demand-id {
   color: var(--texto-secundario);
   font-size: 13px;
   margin-bottom: 6px;
 }
 
+/* Destaca o título da demanda e ajusta seu espaçamento */
 .demand-title {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 14px;
 }
 
+/* Organiza as etiquetas da demanda e permite que mudem de linha */
 .badges {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Define as cores da etiqueta de tipo da demanda */
 .badge-tipo {
   background: var(--cor-primaria-clara);
   color: var(--cor-primaria);
 }
+
+/* Organiza os botões e a lista de status da demanda */
 .demand-actions {
   display: flex;
   gap: 8px;
 }
 
-/* descrição + informações */
+/* Organiza a descrição e as informações em colunas */
 .details-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
 }
+
+/* Ajusta o tamanho e o espaço abaixo dos títulos dos cartões */
 .card-title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
 }
+
+/* Define a cor e o espaçamento do texto da descrição */
 .description {
   color: var(--texto-secundario);
   line-height: 1.7;
 }
+
+/* Organiza as informações da demanda em uma coluna */
 .info-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
+
+/* Coloca o nome e o valor de cada informação em coluna */
 .info-item {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
+
+/* Ajusta a cor e o tamanho do nome de cada informação */
 .info-label {
   font-size: 12px;
   color: var(--texto-secundario);
 }
 
+/* Destaca os valores das informações */
 .info-value {
   font-weight: 500;
 }
 
-/* comentários */
+/* Define o espaço abaixo da área de comentários */
 .comments-section {
   margin-bottom: 16px;
 }
+
+/* Adiciona espaçamento e uma linha abaixo de cada comentário */
 .comment {
   padding: 16px 0;
   border-bottom: 1px solid var(--cinza-borda);
 }
 
+/* Remove o espaço acima do primeiro comentário */
 .comment:first-of-type {
   padding-top: 0;
 }
 
+/* Remove a linha abaixo do último comentário */
 .comment:last-of-type {
   border-bottom: none;
 }
 
+/* Posiciona o autor e a data do comentário */
 .comment-header {
   display: flex;
   justify-content: space-between;
@@ -337,42 +406,52 @@ body {
   margin-bottom: 6px;
 }
 
+/* Destaca o nome do autor do comentário */
 .comment-author {
   font-weight: 600;
 }
 
+/* Ajusta a cor e o tamanho da data do comentário */
 .comment-date {
   font-size: 12px;
   color: var(--texto-secundario);
 }
 
+/* Define a cor do texto do comentário */
 .comment-text {
   color: var(--texto-secundario);
 }
 
+/* Organiza o campo e o botão para enviar comentários */
 .comment-form {
   display: flex;
   gap: 10px;
   margin-top: 16px;
 }
+
+/* Permite que o campo de comentário ocupe o espaço disponível */
 .comment-form .form-control-custom {
   flex: 1;
 }
 
-/* histórico */
+/* Organiza os registros do histórico em coluna */
 .history {
   display: flex;
   flex-direction: column;
 }
+
+/* Reserva espaço para cada registro e seu marcador */
 .history-item {
   position: relative;
   padding: 0 0 20px 28px;
 }
 
+/* Remove o espaço abaixo do último registro */
 .history-item:last-child {
   padding-bottom: 0;
 }
 
+/* Desenha o marcador ao lado de cada registro */
 .history-item::before {
   content: "";
   position: absolute;
@@ -383,6 +462,8 @@ body {
   background: var(--cor-primaria);
   border-radius: 50%;
 }
+
+/* Desenha a linha que liga os registros do histórico */
 .history-item:not(:last-child)::after {
   content: "";
   position: absolute;
@@ -392,20 +473,26 @@ body {
   height: calc(100% - 5px);
   background: var(--cinza-borda);
 }
+
+/* Ajusta o tamanho e o espaço do texto do histórico */
 .history-text {
   font-size: 13px;
   margin-bottom: 3px;
 }
+
+/* Define a cor e o tamanho da data do histórico */
 .history-date {
   font-size: 11px;
   color: var(--texto-secundario);
 }
 
+/* Destaca os avisos de prazo com a cor de erro */
 .deadline-warning {
   color: var(--erro);
   font-weight: 600;
 }
 
+/* Define a aparência das mensagens de erro da página e do formulário */
 .page-error,
 .form-error {
   color: var(--erro);
@@ -415,7 +502,11 @@ body {
   padding: 10px 12px;
   margin: 0 0 16px;
 }
-.form-error { margin: 12px 0 0; }
+
+/* Ajusta o espaço da mensagem de erro do formulário */
+.form-error { 
+  margin: 12px 0 0; 
+}
 
 /* Mensagem e destaque dos campos inválidos, conforme a Aula 05. */
 .erro-campo {
@@ -423,18 +514,35 @@ body {
   font-size: 12px;
   margin-top: 4px;
 }
+
+/* Destaca com borda vermelha os campos com erro */
 .is-invalid {
   border-color: var(--erro) !important;
 }
 
-[hidden] { display: none !important; }
+/* Esconde os elementos marcados como ocultos */
+[hidden] { 
+  display: none !important; 
+}
+
+/* Define a aparência das mensagens quando não há conteúdo */
 .empty-state {
   color: var(--texto-secundario);
   padding: 14px 0;
 }
-.demand-actions .form-select-custom { width: auto; min-width: 180px; }
-.demand-actions button:disabled { opacity: .55; cursor: not-allowed; }
 
+/* Ajusta a largura da lista de status */
+.demand-actions .form-select-custom { 
+  width: auto; min-width: 180px; 
+}
+
+/* Diminui o destaque dos botões desativados */
+.demand-actions button:disabled { 
+  opacity: .55; 
+  cursor: not-allowed; 
+}
+
+/* Define o tamanho e a aparência da janela de edição */
 .edit-dialog {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
@@ -446,16 +554,33 @@ body {
   background: var(--cinza-card);
   box-shadow: 0 24px 70px rgba(17, 24, 39, .24);
 }
-.edit-dialog::backdrop { background: rgba(17, 24, 39, .5); }
+
+/* Escurece o fundo quando a janela de edição está aberta */
+.edit-dialog::backdrop { 
+  background: rgba(17, 24, 39, .5); 
+}
+
+/* Organiza o cabeçalho e os botões da janela de edição */
 .dialog-header,
+/* Alinha os botões de ação à direita da janela */
 .dialog-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
-.dialog-header { margin-bottom: 20px; }
-.dialog-header h2 { font-size: 20px; }
+
+/* Define o espaço abaixo do cabeçalho da janela */
+.dialog-header { 
+  margin-bottom: 20px; 
+}
+
+/* Ajusta o tamanho do título da janela */
+.dialog-header h2 { 
+  font-size: 20px; 
+}
+
+/* Define a aparência do botão que fecha a janela */
 .dialog-close {
   border: 0;
   background: transparent;
@@ -463,24 +588,33 @@ body {
   font-size: 28px;
   cursor: pointer;
 }
+
+/* Organiza os campos da edição em duas colunas */
 .edit-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+
+/* Define a cor e o tamanho das orientações do formulário */
 .form-hint {
   color: var(--texto-secundario);
   font-size: 12px;
 }
+
+/* Alinha os botões de ação à direita da janela */
 .dialog-actions {
   justify-content: flex-end;
   margin-top: 20px;
 }
 
+/* Ajusta a disposição da página para telas de até 900 pixels */
 @media (max-width: 900px) {
   .sidebar { position: static; width: 100%; min-height: auto; }
   .main-content { margin-left: 0; padding: 20px; }
 }
+
+/* Ajusta as ações, os campos e os comentários para telas de até 640 pixels */
 @media (max-width: 640px) {
   .page-header,
   .demand-header { flex-direction: column; }
@@ -492,38 +626,55 @@ body {
   .comment-header { align-items: flex-start; flex-direction: column; gap: 4px; }
 }
 
+/* Ajusta a disposição da página para telas de até 900 pixels */
 @media (max-width: 900px) {
+
+  /* Coloca a descrição e as informações em uma única coluna */
   .details-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Organiza as informações e ações no topo da demanda */
   .demand-header {
     flex-direction: column;
   }
+
+  /* Organiza os botões e a lista de status da demanda */
   .demand-actions {
     width: 100%;
   }
 }
 
+/* Ajusta o menu e o conteúdo para telas de até 600 pixels */
 @media (max-width: 600px) {
+
+  /* Remove o espaço lateral do menu e ajusta o conteúdo principal */
   .main-content {
     margin-left: 0;
     padding: 20px;
   }
+
+  /* Define a aparência e o posicionamento do menu lateral */
   .sidebar {
     position: static;
     width: 100%;
     min-height: auto;
   }
+
+  /* Organiza o título da página e o link para voltar */
   .page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
+
+  /* Organiza o campo e o botão para enviar comentários */
   .comment-form {
     flex-direction: column;
   }
 }
 
+/* Organiza o título da página e o link para voltar */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -531,17 +682,20 @@ body {
     margin-bottom: 24px;
 }
 
+/* Ajusta o tamanho e o espaço abaixo do título da página */
 .page-header h1 {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 4px;
 }
 
+/* Define a cor e a margem do texto abaixo do título */
 .page-header p {
     color: var(--texto-secundario);
     margin: 0;
 }
 
+/* Define a aparência do link para voltar à listagem */
 .back-link {
     display: inline-flex;
     align-items: center;
@@ -551,10 +705,12 @@ body {
     font-weight: 500;
 }
 
+/* Altera a cor do link ao passar o mouse */
 .back-link:hover {
     color: var(--cor-primaria);
 }
 
+/* Organiza as informações e ações no topo da demanda */
 .demand-header {
     display: flex;
     justify-content: space-between;
@@ -562,38 +718,45 @@ body {
     gap: 20px;
 }
 
+/* Faz a área do título ocupar o espaço disponível */
 .demand-title-area {
     flex: 1;
 }
 
+/* Ajusta a cor e o tamanho da identificação da demanda */
 .demand-id {
     color: var(--texto-secundario);
     font-size: 13px;
     margin-bottom: 6px;
 }
 
+/* Destaca o título da demanda e ajusta seu espaçamento */
 .demand-title {
     font-size: 22px;
     font-weight: 700;
     margin-bottom: 14px;
 }
 
+/* Organiza as etiquetas da demanda e permite que mudem de linha */
 .badges {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
+/* Define as cores da etiqueta de tipo da demanda */
 .badge-tipo {
     background: var(--cor-primaria-clara);
     color: var(--cor-primaria);
 }
 
+/* Organiza os botões e a lista de status da demanda */
 .demand-actions {
     display: flex;
     gap: 8px;
 }
 
+/* Organiza a descrição e as informações em colunas */
 .details-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -601,55 +764,66 @@ body {
     margin-bottom: 16px;
 }
 
+/* Ajusta o tamanho e o espaço abaixo dos títulos dos cartões */
 .card-title {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 16px;
 }
 
+/* Define a cor e o espaçamento do texto da descrição */
 .description {
     color: var(--texto-secundario);
     line-height: 1.7;
 }
 
+/* Organiza as informações da demanda em uma coluna */
 .info-list {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
+/* Coloca o nome e o valor de cada informação em coluna */
 .info-item {
     display: flex;
     flex-direction: column;
     gap: 3px;
 }
 
+/* Ajusta a cor e o tamanho do nome de cada informação */
 .info-label {
     font-size: 12px;
     color: var(--texto-secundario);
 }
 
+/* Destaca os valores das informações */
 .info-value {
     font-weight: 500;
 }
 
+/* Define o espaço abaixo da área de comentários */
 .comments-section {
     margin-bottom: 16px;
 }
 
+/* Adiciona espaçamento e uma linha abaixo de cada comentário */
 .comment {
     padding: 16px 0;
     border-bottom: 1px solid var(--cinza-borda);
 }
 
+/* Remove o espaço acima do primeiro comentário */
 .comment:first-of-type {
     padding-top: 0;
 }
 
+/* Remove a linha abaixo do último comentário */
 .comment:last-of-type {
     border-bottom: none;
 }
 
+/* Posiciona o autor e a data do comentário */
 .comment-header {
     display: flex;
     justify-content: space-between;
@@ -657,43 +831,52 @@ body {
     margin-bottom: 6px;
 }
 
+/* Destaca o nome do autor do comentário */
 .comment-author {
     font-weight: 600;
 }
 
+/* Ajusta a cor e o tamanho da data do comentário */
 .comment-date {
     font-size: 12px;
     color: var(--texto-secundario);
 }
 
+/* Define a cor do texto do comentário */
 .comment-text {
     color: var(--texto-secundario);
 }
 
+/* Organiza o campo e o botão para enviar comentários */
 .comment-form {
     display: flex;
     gap: 10px;
     margin-top: 16px;
 }
 
+/* Permite que o campo de comentário ocupe o espaço disponível */
 .comment-form .form-control-custom {
     flex: 1;
 }
 
+/* Organiza os registros do histórico em coluna */
 .history {
     display: flex;
     flex-direction: column;
 }
 
+/* Reserva espaço para cada registro e seu marcador */
 .history-item {
     position: relative;
     padding: 0 0 20px 28px;
 }
 
+/* Remove o espaço abaixo do último registro */
 .history-item:last-child {
     padding-bottom: 0;
 }
 
+/* Desenha o marcador ao lado de cada registro */
 .history-item::before {
     content: "";
     position: absolute;
@@ -705,6 +888,7 @@ body {
     border-radius: 50%;
 }
 
+/* Desenha a linha que liga os registros do histórico */
 .history-item:not(:last-child)::after {
     content: "";
     position: absolute;
@@ -715,53 +899,67 @@ body {
     background: var(--cinza-borda);
 }
 
+/* Ajusta o tamanho e o espaço do texto do histórico */
 .history-text {
     font-size: 13px;
     margin-bottom: 3px;
 }
 
+/* Define a cor e o tamanho da data do histórico */
 .history-date {
     font-size: 11px;
     color: var(--texto-secundario);
 }
 
+/* Destaca os avisos de prazo com a cor de erro */
 .deadline-warning {
     color: var(--erro);
     font-weight: 600;
 }
 
+/* Ajusta a disposição da página para telas de até 900 pixels */
 @media (max-width: 900px) {
+    
+  /* Coloca a descrição e as informações em uma única coluna */
     .details-grid {
         grid-template-columns: 1fr;
     }
 
+    /* Organiza as informações e ações no topo da demanda */
     .demand-header {
         flex-direction: column;
     }
 
+    /* Organiza os botões e a lista de status da demanda */
     .demand-actions {
         width: 100%;
     }
 }
 
+/* Ajusta o menu e o conteúdo para telas de até 600 pixels */
 @media (max-width: 600px) {
+  
+    /* Remove o espaço lateral do menu e ajusta o conteúdo principal */
     .main-content {
         margin-left: 0;
         padding: 20px;
     }
 
+    /* Define a aparência e o posicionamento do menu lateral */
     .sidebar {
         position: static;
         width: 100%;
         min-height: auto;
     }
 
+    /* Organiza o título da página e o link para voltar */
     .page-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
 
+    /* Organiza o campo e o botão para enviar comentários */
     .comment-form {
         flex-direction: column;
     }

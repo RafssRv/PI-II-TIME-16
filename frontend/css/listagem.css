@@ -7,7 +7,9 @@ Organiza visualmente a consulta de demandas, reservando espaço para a pesquisa,
 Usa cores para diferenciar status e prioridades e ajusta o menu e o conteúdo conforme a largura da tela
 */
 
+/* Guarda as cores usadas nos elementos da página */
 :root {
+
   /* Cores da paleta - Roxo + cinza escuro */
   --cor-primaria: #7C3AED;
   --cor-primaria-hover: #6D28D9;
@@ -26,12 +28,14 @@ Usa cores para diferenciar status e prioridades e ajusta o menu e o conteúdo co
   --erro: #DC2626;
 }
 
+/* Ajusta o cálculo dos tamanhos e remove margens e espaçamentos padrão */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Define a fonte, as cores e o espaçamento do texto da página */
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--cinza-fundo);
@@ -40,7 +44,7 @@ body {
   line-height: 1.5;
 }
 
-/* Sidebar */
+/* Define a aparência e mantém o menu lateral fixo */
 .sidebar {
   background: #FFFFFF;
   border-right: 1px solid var(--cinza-borda);
@@ -49,11 +53,15 @@ body {
   position: fixed;
   width: 240px;
 }
+
+/* Ajusta o espaço e a borda da área de identificação do usuário */
 .sidebar-logo {
   padding: 0 24px 24px;
   border-bottom: 1px solid var(--cinza-borda);
   margin-bottom: 16px;
 }
+
+/* Destaca o nome do sistema no menu lateral */
 .sidebar-logo h4 {
   color: var(--cor-primaria);
   font-size: 1.5rem;
@@ -61,6 +69,7 @@ body {
   font-weight: 700;
   margin: 0;
 }
+
 /* Mantém o botão Sair com a aparência dos demais itens do menu. */
 .sidebar-menu .btn-sair {
   width: 100%;
@@ -70,6 +79,8 @@ body {
   text-align: left;
   cursor: pointer;
 }
+
+/* Organiza os links e o botão Sair com o mesmo espaçamento */
 .sidebar-menu a,
 .sidebar-menu .btn-sair {
   display: flex;
@@ -80,39 +91,47 @@ body {
   font-weight: 500;
   transition: all 0.15s;
 }
+
+/* Altera as cores dos itens ao passar o mouse ou focar no botão Sair */
 .sidebar-menu a:hover,
 .sidebar-menu .btn-sair:hover,
 .sidebar-menu .btn-sair:focus-visible {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
+
+/* Destaca a página aberta no menu lateral */
 .sidebar-menu a.active {
   background: var(--cor-primaria-clara);
   color: var(--cor-primaria);
   border-right: 3px solid var(--cor-primaria);
 }
 
+/* Esconde os links do menu marcados como ocultos */
 .sidebar-menu a[hidden] {
   display: none !important;
 }
 
+/* Reserva espaço para o menu lateral ao lado do conteúdo */
 main {
   margin-left: 240px;
 }
 
+/* Centraliza o conteúdo e define sua largura e espaçamento */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
 }
 
+/* Ajusta a cor, o tamanho e o espaço abaixo do título */
 .page-title {
   margin-bottom: 24px;
   font-size: 24px;
   color: var(--texto-principal);
 }
 
-/* Botões */
+/* Define a aparência do botão principal */
 .btn-primary-custom {
   background: var(--cor-primaria);
   color: white;
@@ -126,11 +145,14 @@ main {
   transition: background 0.15s;
   cursor: pointer;
 }
+
+/* Escurece o botão principal quando o mouse passa sobre ele */
 .btn-primary-custom:hover {
   background: var(--cor-primaria-hover);
   color: white;
 }
 
+/* Define a aparência do botão secundário */
 .btn-secondary-custom {
   background: transparent;
   color: var(--texto-secundario);
@@ -144,14 +166,19 @@ main {
   transition: all 0.15s;
   cursor: pointer;
 }
+
+/* Altera as cores do botão secundário ao passar o mouse */
 .btn-secondary-custom:hover {
   background: var(--cinza-fundo);
   color: var(--texto-principal);
 }
 
+/* Define o espaço abaixo de cada grupo de campo */
 .form-group {
   margin-bottom: 20px;
 }
+
+/* Ajusta o tamanho e o espaço dos nomes dos campos */
 .form-group label {
   display: block;
   font-size: 13px;
@@ -159,6 +186,7 @@ main {
   margin-bottom: 6px;
 }
 
+/* Define a aparência dos campos de texto e das listas de seleção */
 .form-control-custom,
 .form-select-custom {
   width: 100%;
@@ -170,6 +198,8 @@ main {
   background: #FFFFFF;
   transition: border 0.15s, box-shadow 0.15s;
 }
+
+/* Destaca o campo selecionado com borda e sombra roxas */
 .form-control-custom:focus,
 .form-select-custom:focus {
   outline: none;
@@ -177,7 +207,7 @@ main {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-/* filtros (barra superior) */
+/* Define o fundo, a borda e o espaço interno dos cartões */
 .content-card {
   background: var(--cinza-card);
   border: 1px solid var(--cinza-borda);
@@ -186,6 +216,7 @@ main {
   margin-bottom: 24px;
 }
 
+/* Organiza os filtros lado a lado e permite que passem para outra linha */
 .toolbar-filters {
   display: flex;
   flex-wrap: wrap;
@@ -193,33 +224,38 @@ main {
   align-items: flex-end;
 }
 
+/* Distribui o espaço entre os campos de filtro */
 .toolbar-filters .filter-group {
   flex: 1;
   min-width: 150px;
   margin-bottom: 0; 
 }
 
+/* Reserva mais espaço para o campo de busca */
 .toolbar-filters .filter-group.busca {
   min-width: 200px;
 }
 
+/* Ajusta a altura do botão de filtrar */
 .toolbar-filters .btn-filtrar {
   height: 42px; 
 }
 
-/* cards e formulários */
+/* Organiza os cartões de demandas em colunas conforme o espaço disponível */
 .demandas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
 
+/* Organiza o conteúdo de cada cartão em coluna */
 .card-demanda {
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
 }
 
+/* Posiciona o título e as etiquetas no topo do cartão */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -227,6 +263,7 @@ main {
   margin-bottom: 16px;
 }
 
+/* Destaca o título da demanda com a cor principal */
 .card-title {
   font-size: 16px;
   font-weight: 600;
@@ -235,6 +272,7 @@ main {
   padding-right: 12px;
 }
 
+/* Organiza as etiquetas de status e prioridade */
 .card-badges {
   display: flex;
   flex-direction: column;
@@ -242,14 +280,17 @@ main {
   align-items: flex-end;
 }
 
+/* Define o espaço abaixo das informações da demanda */
 .card-body {
   margin-bottom: 16px;
 }
 
+/* Ajusta o espaço entre as informações da demanda */
 .card-body p {
   margin-bottom: 4px;
 }
 
+/* Organiza as datas no rodapé e adiciona uma linha divisória */
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -260,12 +301,13 @@ main {
   margin-top: auto;
 }
 
+/* Faz o botão de detalhes ocupar a largura do cartão */
 .card-demanda .btn-detalhes {
   margin-top: 16px;
   width: 100%;
 }
 
-/* status e prioridades */
+/* Define o tamanho, o espaçamento e as bordas das etiquetas */
 .badge-custom {
   display: inline-block;
   padding: 4px 10px;
@@ -274,18 +316,23 @@ main {
   font-weight: 500;
 }
 
+/* Define as cores das etiquetas de cada status */
 .badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
 .badge-status-andamento { background: #FEF3C7; color: #92400E; }
 .badge-status-revisao { background: #E0E7FF; color: #4338CA; }
 .badge-status-concluida { background: #D1FAE5; color: #065F46; }
 .badge-status-cancelada { background: #E5E7EB; color: #374151; }
 
+/* Define as cores das etiquetas de cada prioridade */
 .badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
 .badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
 .badge-prioridade-media { background: #FEF3C7; color: #92400E; }
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
-/* Responsividade da listagem */
+
+/* Ajusta o menu, o conteúdo e os cartões para telas de até 900 pixels */
 @media (max-width: 900px) {
+
+  /* Coloca o menu acima do conteúdo e ajusta sua largura */
   .sidebar {
     position: static;
     width: 100%;
@@ -293,70 +340,86 @@ main {
     padding: 16px 0;
   }
 
+  /* Organiza os itens do menu em linhas */
   .sidebar-menu {
     display: flex;
     flex-wrap: wrap;
   }
 
+  /* Distribui o espaço entre os links do menu */
   .sidebar-menu a {
     flex: 1 1 130px;
     padding: 10px 16px;
   }
 
+  /* Faz o primeiro link do menu ocupar uma linha inteira */
   .sidebar-menu a:first-child {
     flex-basis: 100%;
   }
 
+  /* Remove o espaço lateral reservado para o menu */
   main {
     margin-left: 0;
   }
 
+  /* Ajusta a largura e o espaçamento do conteúdo */
   .container {
     width: 100%;
     padding: 24px 16px;
   }
 
+  /* Exibe os cartões em uma única coluna */
   .demandas-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
+/* Ajusta os filtros e os cartões para telas de até 600 pixels */
 @media (max-width: 600px) {
+  
+  /* Reduz o espaço nas laterais do conteúdo */
   .container {
     padding: 20px 12px;
   }
 
+  /* Reduz o espaço interno dos cartões */
   .content-card {
     padding: 16px;
   }
 
+  /* Empilha os campos de filtro */
   .toolbar-filters {
     flex-direction: column;
     align-items: stretch;
   }
 
+  /* Faz os campos de filtro ocuparem toda a largura disponível */
   .toolbar-filters .filter-group,
   .toolbar-filters .filter-group.busca {
     width: 100%;
     min-width: 0;
   }
 
+  /* Faz a área e o botão de filtrar ocuparem toda a largura */
   .toolbar-filters > div:last-child,
   .toolbar-filters .btn-filtrar {
     width: 100%;
   }
 
+  /* Coloca o título e as etiquetas um abaixo do outro */
   .card-header {
     flex-direction: column;
     gap: 10px;
   }
 
+  /* Organiza as etiquetas lado a lado quando houver espaço */
   .card-badges {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
   }
 
+  /* Permite que as datas passem para outra linha */
   .card-footer {
     flex-wrap: wrap;
     gap: 8px;

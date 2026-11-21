@@ -6,9 +6,8 @@ Descrição:
 Estilização do painel principal do sistema, organizando a exibição das métricas, dos indicadores e das demandas 
 em cartões e tabelas, com recursos visuais para facilitar a consulta e o acompanhamento das informações
 */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+ 
+/* Guarda as cores usadas nos elementos da página */
 :root {
     --cor-primaria: #7C3AED;
     --cor-primaria-hover: #6D28D9;
@@ -24,12 +23,14 @@ em cartões e tabelas, com recursos visuais para facilitar a consulta e o acompa
     --info: #0EA5E9;
 }
 
+/* Ajusta os tamanhos e remove margens e espaçamentos padrão */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* Define a fonte, as cores e o espaçamento do texto da página */
 body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--cinza-fundo);
@@ -38,7 +39,7 @@ body {
     line-height: 1.5;
 }
 
-/* Sidebar */
+/* Define a aparência e mantém o menu lateral fixo */
 .sidebar {
     background: #FFFFFF;
     border-right: 1px solid var(--cinza-borda);
@@ -47,16 +48,21 @@ body {
     position: fixed;
     width: 240px;
 }
+
+/* Ajusta o espaço e a borda da área de identificação do usuário */
 .sidebar-logo {
     padding: 0 24px 24px;
     border-bottom: 1px solid var(--cinza-borda);
     margin-bottom: 16px;
 }
+
+/* Destaca o nome do sistema no menu lateral */
 .sidebar-logo h4 {
     color: var(--cor-primaria);
     font-weight: 700;
     margin: 0;
 }
+
 /* Mantém o botão Sair com a aparência dos demais itens do menu. */
 .sidebar-menu .btn-sair {
     width: 100%;
@@ -66,6 +72,8 @@ body {
     text-align: left;
     cursor: pointer;
 }
+
+/* Organiza os links e o botão Sair com o mesmo espaçamento */
 .sidebar-menu a,
 .sidebar-menu .btn-sair {
     display: flex;
@@ -76,40 +84,50 @@ body {
     font-weight: 500;
     transition: all 0.15s;
 }
+
+/* Altera as cores dos itens ao passar o mouse ou focar no botão Sair */
 .sidebar-menu a:hover,
 .sidebar-menu .btn-sair:hover,
 .sidebar-menu .btn-sair:focus-visible {
     background: var(--cinza-fundo);
     color: var(--texto-principal);
 }
+
+/* Destaca a página aberta no menu lateral */
 .sidebar-menu a.active {
     background: var(--cor-primaria-clara);
     color: var(--cor-primaria);
     border-right: 3px solid var(--cor-primaria);
 }
 
-/* Conteudo */
+/* Reserva espaço para o menu e ajusta o conteúdo principal */
 .main-content {
     margin-left: 240px;
     padding: 32px;
 }
+
+/* Organiza o cabeçalho e o espaço abaixo dele */
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
 }
+
+/* Ajusta o tamanho e o espaço do título principal */
 .page-header h1 {
     font-size: 24px;
     font-weight: 700;
     margin: 0;
 }
+
+/* Define a cor e o espaço do texto abaixo do título */
 .page-header p {
     color: var(--texto-secundario);
     margin: 4px 0 0;
 }
 
-/* Botao primario */
+/* Define a aparência do botão principal */
 .btn-primary-custom {
     background: var(--cor-primaria);
     color: white;
@@ -120,11 +138,14 @@ body {
     transition: background 0.15s;
     cursor: pointer;
 }
+
+/* Escurece o botão principal quando o mouse passa sobre ele */
 .btn-primary-custom:hover {
     background: var(--cor-primaria-hover);
     color: white;
 }
 
+/* Define a aparência dos campos de texto e das listas de seleção */
 .form-control-custom,
 .form-select-custom {
     padding: 10px 12px;
@@ -136,6 +157,8 @@ body {
     color: var(--texto-principal);
     transition: border 0.15s, box-shadow 0.15s;
 }
+
+/* Destaca o campo selecionado com borda e sombra roxas */
 .form-control-custom:focus,
 .form-select-custom:focus {
     outline: none;
@@ -143,6 +166,7 @@ body {
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
+/* Organiza os filtros e permite que passem para outra linha */
 .filtros-ativos {
     display: flex;
     align-items: flex-end;
@@ -150,6 +174,8 @@ body {
     flex-wrap: wrap;
     margin-bottom: 16px;
 }
+
+/* Organiza o nome e o campo de cada filtro em coluna */
 .campo-filtro {
     display: flex;
     flex-direction: column;
@@ -158,26 +184,33 @@ body {
     min-width: 0;
     max-width: 100%;
 }
+
+/* Ajusta a cor e o tamanho dos nomes dos filtros */
 .campo-filtro label {
     color: var(--texto-secundario);
     font-size: 13px;
     font-weight: 500;
 }
+
+/* Reserva mais espaço para o campo de busca */
 .filtro-busca {
     flex: 1 1 240px;
 }
+
+/* Faz os campos de filtro ocuparem toda a largura disponível */
 .campo-filtro .form-control-custom,
 .campo-filtro .form-select-custom {
     width: 100%;
 }
+
+/* Define a aparência da mensagem quando a busca não encontra demandas */
 .mensagem-sem-resultados {
     color: var(--texto-secundario);
     font-size: 13px;
     margin: 12px 0 0;
 }
 
-
-/* Cards de metrica */
+/* Define a aparência e o espaço interno dos cartões de indicadores */
 .metric-card {
     background: var(--cinza-card);
     border: 1px solid var(--cinza-borda);
@@ -185,39 +218,53 @@ body {
     padding: 20px;
     transition: box-shadow 0.15s;
 }
+
+/* Adiciona sombra ao cartão quando o mouse passa sobre ele */
 .metric-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
+
+/* Ajusta a cor e o tamanho do nome do indicador */
 .metric-card .label {
     color: var(--texto-secundario);
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 8px;
 }
+
+/* Destaca o valor apresentado no cartão */
 .metric-card .value {
     font-size: 28px;
     font-weight: 700;
     color: var(--texto-principal);
 }
+
+/* Ajusta o texto complementar do indicador */
 .metric-card .trend {
     font-size: 12px;
     color: var(--texto-secundario);
     margin-top: 4px;
 }
+
+/* Destaca o valor do indicador com a cor principal */
 .metric-card .value.destaque {
     color: var(--cor-primaria);
 }
+
+/* Destaca o valor de alerta com a cor de erro */
 .metric-card .value.alerta {
     color: var(--erro);
 }
 
-/* Card generico */
+/* Define o fundo, a borda e o espaço interno dos cartões */
 .content-card {
     background: var(--cinza-card);
     border: 1px solid var(--cinza-borda);
     border-radius: 8px;
     padding: 24px;
 }
+
+/* Ajusta o tamanho e o espaço abaixo dos títulos dos cartões */
 .content-card h5 {
     font-size: 16px;
     font-weight: 600;
@@ -232,21 +279,28 @@ body {
     font-weight: 500;
     transition: color 0.15s;
 }
+
+/* Altera a cor do link da demanda ao passar o mouse ou receber foco */
 .link-demanda:hover,
+/* Destaca o link quando ele recebe foco pelo teclado */
 .link-demanda:focus-visible {
     color: var(--cor-primaria);
     text-decoration: none;
 }
+
+/* Destaca o link quando ele recebe foco pelo teclado */
 .link-demanda:focus-visible {
     outline: 2px solid var(--cor-primaria);
     outline-offset: 3px;
     border-radius: 2px;
 }
 
-/* Tabela */
+/* Define a largura da tabela */
 .table-custom {
     width: 100%;
 }
+
+/* Ajusta o texto, o espaçamento e a borda do cabeçalho da tabela */
 .table-custom thead th {
     font-size: 12px;
     text-transform: uppercase;
@@ -256,18 +310,24 @@ body {
     padding: 12px 8px;
     border-bottom: 1px solid var(--cinza-borda);
 }
+
+/* Define o espaçamento e a borda das células da tabela */
 .table-custom tbody td {
     padding: 14px 8px;
     border-bottom: 1px solid var(--cinza-borda);
 }
+
+/* Remove a borda inferior da última linha da tabela */
 .table-custom tbody tr:last-child td {
     border-bottom: none;
 }
+
+/* Destaca a linha da tabela quando o mouse passa sobre ela */
 .table-custom tbody tr:hover {
     background: var(--cinza-fundo);
 }
 
-/* Badges */
+/* Define o tamanho e o espaçamento das etiquetas */
 .badge-custom {
     display: inline-block;
     padding: 4px 10px;
@@ -275,18 +335,21 @@ body {
     font-size: 12px;
     font-weight: 500;
 }
+
+/* Define as cores das etiquetas de cada status */
 .badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
 .badge-status-andamento { background: #FEF3C7; color: #92400E; }
 .badge-status-revisao { background: #E0E7FF; color: #4338CA; }
 .badge-status-concluida { background: #D1FAE5; color: #065F46; }
 .badge-status-cancelada { background: #E5E7EB; color: #374151; }
 
+/* Define as cores das etiquetas de cada prioridade */
 .badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
 .badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
 .badge-prioridade-media { background: #FEF3C7; color: #92400E; }
 .badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
 
-/* Barra de progresso simples */
+/* Define a aparência da barra de progresso */
 .progress-bar-custom {
     height: 6px;
     background: var(--cinza-fundo);
@@ -294,13 +357,15 @@ body {
     overflow: hidden;
     margin-top: 12px;
 }
+
+/* Define a cor e a altura da parte preenchida da barra */
 .progress-bar-custom .fill {
     height: 100%;
     background: var(--cor-primaria);
     border-radius: 3px;
 }
 
-/* Distribuicao por tipo */
+/* Organiza o nome e a quantidade de cada item do resumo */
 .tipo-item {
     display: flex;
     justify-content: space-between;
@@ -308,8 +373,18 @@ body {
     padding: 10px 0;
     border-bottom: 1px solid var(--cinza-borda);
 }
-.tipo-item:last-child { border-bottom: none; }
-.tipo-item .nome { font-weight: 500; }
+
+/* Remove a borda inferior do último item */
+.tipo-item:last-child { 
+    border-bottom: none; 
+}
+
+/* Destaca o nome do item */
+.tipo-item .nome {
+    font-weight: 500; 
+}
+
+/* Destaca a quantidade com a cor principal */
 .tipo-item .count {
     color: var(--cor-primaria);
     font-weight: 600;
