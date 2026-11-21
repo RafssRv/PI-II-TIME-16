@@ -375,14 +375,35 @@ main {
   white-space: nowrap;
 }
 
-/* Define as cores das etiquetas de perfil */
-.badge-perfil-admin { background: #FEE2E2; color: #991B1B; }
-.badge-perfil-lider { background: #EDE9FE; color: #5B21B6; }
-.badge-perfil-membro { background: #DBEAFE; color: #1E40AF; }
+/* Usa tons de vermelho para identificar o administrador */
+.badge-perfil-admin { 
+  background: #FEE2E2; 
+  color: #991B1B; 
+}
 
-/* Define as cores das etiquetas de situação */
-.badge-ativo { background: #D1FAE5; color: #065F46; }
-.badge-inativo { background: #E5E7EB; color: #374151; }
+/* Usa tons de roxo para identificar o líder de projeto */
+.badge-perfil-lider { 
+  background: #EDE9FE; 
+  color: #5B21B6; 
+}
+
+/* Usa tons de azul para identificar o membro da equipe */
+.badge-perfil-membro { 
+  background: #DBEAFE; 
+  color: #1E40AF; 
+}
+
+/* Usa tons de verde para indicar que está ativo */
+.badge-ativo { 
+  background: #D1FAE5; 
+  color: #065F46; 
+}
+
+/* Usa tons de cinza para indicar que está inativo */
+.badge-inativo { 
+  background: #E5E7EB; 
+  color: #374151; 
+}
 
 /* Define a cor, o tamanho e o espaço das mensagens de erro */
 .erro-campo {
@@ -499,7 +520,7 @@ main {
 
 /* Ajusta o menu e o conteúdo para telas de até 800 pixels */
 @media (max-width: 800px) {
-  
+
   /* Coloca o menu acima do conteúdo e ajusta sua largura e altura */
   .sidebar { 
     position: static; 

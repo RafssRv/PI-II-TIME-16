@@ -235,18 +235,59 @@ textarea.form-control-custom {
   font-weight: 500;
 }
 
-/* Define as cores das etiquetas de cada status */
-.badge-status-aberta { background: #DBEAFE; color: #1E40AF; }
-.badge-status-andamento { background: #FEF3C7; color: #92400E; }
-.badge-status-revisao { background: #E0E7FF; color: #4338CA; }
-.badge-status-concluida { background: #D1FAE5; color: #065F46; }
-.badge-status-cancelada { background: #E5E7EB; color: #374151; }
+/* Usa tons de azul para indicar uma demanda aberta */
+.badge-status-aberta { 
+  background: #DBEAFE; 
+  color: #1E40AF; 
+}
 
-/* Define as cores das etiquetas de cada prioridade */
-.badge-prioridade-critica { background: #FEE2E2; color: #991B1B; }
-.badge-prioridade-alta { background: #FED7AA; color: #9A3412; }
-.badge-prioridade-media { background: #FEF3C7; color: #92400E; }
-.badge-prioridade-baixa { background: #E5E7EB; color: #374151; }
+/* Usa tons de amarelo para indicar uma demanda em andamento */
+.badge-status-andamento { 
+  background: #FEF3C7; 
+  color: #92400E; 
+}
+
+/* Usa tons de roxo para indicar uma demanda em revisão */
+.badge-status-revisao { 
+  background: #E0E7FF; 
+  color: #4338CA; 
+}
+
+/* Usa tons de verde para indicar uma demanda concluída */
+.badge-status-concluida { 
+  background: #D1FAE5; 
+  color: #065F46; 
+}
+
+/* Usa tons de cinza para indicar uma demanda cancelada */
+.badge-status-cancelada { 
+  background: #E5E7EB; 
+  color: #374151; 
+}
+
+/* Usa tons de vermelho para indicar prioridade crítica */
+.badge-prioridade-critica { 
+  background: #FEE2E2; 
+  color: #991B1B; 
+}
+
+/* Usa tons de laranja para indicar prioridade alta */
+.badge-prioridade-alta { 
+  background: #FED7AA; 
+  color: #9A3412; 
+}
+
+/* Usa tons de amarelo para indicar prioridade média */
+.badge-prioridade-media { 
+  background: #FEF3C7; 
+  color: #92400E; 
+}
+
+/* Usa tons de cinza para indicar prioridade baixa */
+.badge-prioridade-baixa { 
+  background: #E5E7EB; 
+  color: #374151; 
+}
 
 /* Ajusta a cor e o espaço do caminho de navegação */
 .breadcrumb-custom {
