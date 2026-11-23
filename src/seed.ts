@@ -9,16 +9,15 @@ comentários e históricos de alterações. A execução é interrompida caso j�
 
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-
 import { createMysqlDatabase } from './database';
 
-// Senha padrão de demonstração (pode ser sobrescrita pelo ambiente).
+// Usa a senha configurada no ambiente ou uma senha padrão
 const SENHA = process.env.SEED_SENHA || 'demo-pi2-2026';
 
+// Lista os perfis disponíveis no sistema
 type Perfil = 'ADMIN' | 'LIDER' | 'MEMBRO';
 
-// Usuários de demonstração: um ADMIN, dois líderes (um por projeto) e três membros.
-// O membro "Diego" participa dos dois projetos para exercitar o escopo por vínculo.
+// Define os usuários que serão cadastrados para demonstração
 const USUARIOS: { chave: string; nome: string; email: string; perfil: Perfil }[] = [
   { chave: 'admin', nome: 'Administrador Geral', email: 'admin@local.test', perfil: 'ADMIN' },
   { chave: 'ana', nome: 'Ana Souza', email: 'ana.lider@local.test', perfil: 'LIDER' },
@@ -28,7 +27,7 @@ const USUARIOS: { chave: string; nome: string; email: string; perfil: Perfil }[]
   { chave: 'elisa', nome: 'Elisa Rocha', email: 'elisa.membro@local.test', perfil: 'MEMBRO' }
 ];
 
-// Projetos e suas equipes (o ADMIN enxerga tudo, por isso não precisa de vínculo).
+// Define os projetos e os membros que farão parte de cada equipe
 const PROJETOS = [
   {
     chave: 'vendas', nome: 'Sistema de Vendas',
@@ -44,7 +43,7 @@ const PROJETOS = [
 
 type Status = 'ABERTA' | 'EM_ANDAMENTO' | 'EM_REVISAO' | 'CONCLUIDA' | 'CANCELADA';
 
-// Declara cada campo do objeto com interface
+// Define o caminho de status permitido para cada situação
 interface CaminhosStatus {
   ABERTA: Status[];
   EM_ANDAMENTO: Status[];
@@ -53,7 +52,7 @@ interface CaminhosStatus {
   CANCELADA: Status[];
 }
 
-// Caminho percorrido por cada status a partir de ABERTA, respeitando o ciclo de vida.
+// Guarda os passos necessários para chegar ao status final de cada demanda
 const CAMINHO: CaminhosStatus = {
   ABERTA: [],
   EM_ANDAMENTO: ['EM_ANDAMENTO'],
@@ -62,22 +61,26 @@ const CAMINHO: CaminhosStatus = {
   CANCELADA: ['EM_ANDAMENTO', 'CANCELADA']
 };
 
-// Guarda a chave do dado de demonstração junto ao identificador gerado pelo banco.
+// Associa uma chave de demonstração ao identificador criado no banco
 interface IdentificadorCadastrado {
   chave: string;
   id: number;
 }
 
+// Localiza o identificador correspondente a uma chave cadastrada
 function buscarId(cadastrados: IdentificadorCadastrado[], chave: string): number {
+
+  // Procura o registro pela chave
   const registro = cadastrados.find((item) => item.chave === chave);
+
+  // Interrompe a carga se a chave não tiver sido cadastrada
   if (!registro) {
     throw new Error(`Identificador não encontrado para a chave: ${chave}.`);
   }
   return registro.id;
 }
 
-// "dias" é relativo a hoje (null = sem prazo), para o dashboard sempre ter
-// demandas "próximas do prazo" mesmo que o seed seja executado em outra data.
+// Define as demandas de demonstração e seus prazos relativos ao dia atual
 const DEMANDAS: {
   projeto: string; titulo: string; descricao: string; tipo: string; prioridade: string;
   status: Status; responsavel: string | null; dias: number | null;
@@ -142,40 +145,61 @@ const DEMANDAS: {
   }
 ];
 
-// Data civil de hoje em São Paulo (mesma regra usada pelo dashboard).
+// Obtém a data atual no fuso horário de São Paulo
 function hojeCivil(): Date {
+
+  // Separa ano, mês e dia da data atual
   const partes = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'
   }).formatToParts(new Date());
   const valor = (tipo: string) => partes.find((p) => p.type === tipo)!.value;
+
+  // Cria uma data UTC usando os componentes locais do dia
   return new Date(`${valor('year')}-${valor('month')}-${valor('day')}T00:00:00Z`);
 }
 
-// Soma dias à data de hoje e devolve AAAA-MM-DD (ou null quando não há prazo).
+// Calcula um prazo relativo ao dia atual
 function prazoRelativo(dias: number | null): string | null {
+
+  // Mantém o prazo vazio quando não existir número de dias
   if (dias === null) return null;
+
+  // Obtém hoje e avança o número de dias informado
   const data = hojeCivil();
   data.setUTCDate(data.getUTCDate() + dias);
   return data.toISOString().slice(0, 10);
 }
 
 async function main() {
+  // Cria o objeto usado para conectar e fechar o banco
   const database = createMysqlDatabase();
+
+  // Abre uma conexão e inicia uma transação
   const c = await database.connection();
   try {
-    // Trava de segurança: só popula um banco sem nenhum usuário.
+
+    // Confere se o banco já possui algum usuário
     const existentes = await c.query('SELECT COUNT(*) AS total FROM usuarios');
+
+    // Interrompe o seed em um banco que já tenha dados
     if (Number(existentes[0]?.total || 0) !== 0) {
       throw new Error('O banco já possui usuários. O seed só roda em banco vazio; nada foi alterado.');
     }
+
+    // Exige uma senha mínima para os dados de demonstração
     if (SENHA.length < 10) throw new Error('SEED_SENHA precisa ter pelo menos 10 caracteres.');
+    
+    // Rejeita uma senha maior que o limite aceito pelo bcrypt
     if (bcrypt.truncates(SENHA)) throw new Error('SEED_SENHA deve ter até 72 bytes em UTF-8.');
 
-    // Todos os usuários de demonstração compartilham a mesma senha (e o mesmo hash).
+    // Protege uma única senha e reutiliza o hash entre os usuários
     const senhaHash = await bcrypt.hash(SENHA, 12);
 
+    // Guarda os identificadores dos usuários criados
     const usuariosCadastrados: IdentificadorCadastrado[] = [];
+
     for (const u of USUARIOS) {
+      // Insere o usuário e guarda o identificador criado pelo banco
       const r = await c.execute(
         'INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES (:nome, :email, :senha_hash, :perfil)',
         { nome: u.nome, email: u.email, senha_hash: senhaHash, perfil: u.perfil }
@@ -183,13 +207,18 @@ async function main() {
       usuariosCadastrados.push({ chave: u.chave, id: r.insertId });
     }
 
+    // Guarda os identificadores dos projetos criados
     const projetosCadastrados: IdentificadorCadastrado[] = [];
+
     for (const p of PROJETOS) {
+      // Insere o projeto e guarda o identificador criado
       const r = await c.execute(
         'INSERT INTO projetos (nome, descricao) VALUES (:nome, :descricao)',
         { nome: p.nome, descricao: p.descricao }
       );
       projetosCadastrados.push({ chave: p.chave, id: r.insertId });
+
+      // Vincula cada membro à equipe do projeto
       for (const membro of p.membros) {
         await c.execute(
           'INSERT INTO projeto_membros (projeto_id, usuario_id) VALUES (:projeto_id, :usuario_id)',
@@ -199,11 +228,14 @@ async function main() {
     }
 
     for (const d of DEMANDAS) {
+      // Localiza o projeto e o líder associados à demanda
       const projeto = PROJETOS.find((p) => p.chave === d.projeto)!;
       const criador = buscarId(usuariosCadastrados, projeto.lider);
+
+      // Usa vazio quando a demanda não possui responsável
       const responsavel = d.responsavel ? buscarId(usuariosCadastrados, d.responsavel) : null;
-      // A demanda nasce ABERTA (regra do documento) e o status final é aplicado pelo
-      // caminho abaixo, gerando o histórico como a API faria.
+      
+      // Insere toda demanda começando no status aberta
       const r = await c.execute(
         `INSERT INTO demandas (projeto_id, criador_id, responsavel_id, titulo, descricao, tipo, prioridade, prazo)
          VALUES (:projeto_id, :criador_id, :responsavel_id, :titulo, :descricao, :tipo, :prioridade, :prazo)`,
@@ -215,16 +247,23 @@ async function main() {
       );
       const demandaId = r.insertId;
 
+      // Registra a criação no histórico da demanda
       await c.execute(
         "INSERT INTO historico_demandas (demanda_id, autor_id, acao, valor_novo) VALUES (:id, :autor, 'CRIACAO', :titulo)",
         { id: demandaId, autor: criador, titulo: d.titulo }
       );
 
+      // Percorre a sequência de status até chegar ao estado final
       let anterior: Status = 'ABERTA';
+
       for (const proximo of CAMINHO[d.status]) {
-        // Quem executa o andamento é o responsável; concluir/cancelar é do líder.
+        // Liderança autoriza conclusão ou cancelamento
         const lider = ['CONCLUIDA', 'CANCELADA'].includes(proximo);
+
+        // Responsável registra avanço e líder registra ações especiais
         const autor = lider || !responsavel ? criador : responsavel;
+
+        // Insere no histórico a mudança entre dois status
         await c.execute(
           `INSERT INTO historico_demandas (demanda_id, autor_id, acao, campo, valor_anterior, valor_novo)
            VALUES (:id, :autor, 'ALTERACAO', 'status', :anterior, :novo)`,
@@ -232,10 +271,13 @@ async function main() {
         );
         anterior = proximo;
       }
+      
+      // Atualiza o campo status para o estado final configurado
       if (d.status !== 'ABERTA') {
         await c.execute('UPDATE demandas SET status = :status WHERE id = :id', { status: d.status, id: demandaId });
       }
 
+      // Insere cada comentário usando o usuário indicado
       for (const [quem, texto] of d.comentarios || []) {
         await c.execute(
           'INSERT INTO comentarios (demanda_id, autor_id, texto) VALUES (:demanda_id, :autor_id, :texto)',
@@ -244,21 +286,26 @@ async function main() {
       }
     }
 
+    // Confirma todas as inserções em uma única transação
     await c.commit();
 
+    // Apresenta no terminal os usuários disponíveis para demonstração
     console.log('Seed concluído. Usuários de demonstração (senha única para todos):\n');
     console.table(USUARIOS.map((u) => ({ perfil: u.perfil, nome: u.nome, email: u.email })));
     console.log(`Senha: ${SENHA}`);
     console.log(`${PROJETOS.length} projetos e ${DEMANDAS.length} demandas criados.`);
   } catch (error) {
+    // Cancela todas as inserções caso alguma etapa falhe
     await c.rollback();
     throw error;
   } finally {
+    // Fecha a conexão da transação e encerra o pool do banco
     await c.close();
     await database.close();
   }
 }
 
+// Inicia o processo e mostra uma falha clara no terminal
 main().catch((error) => {
   console.error(`Falha no seed: ${error.message}`);
   process.exit(1);

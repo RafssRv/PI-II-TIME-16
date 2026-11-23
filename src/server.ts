@@ -7,9 +7,9 @@ Carrega as configurações de ambiente, prepara o acesso ao banco e inicia a apl
 Exibe o endereço do servidor no terminal e organiza seu encerramento, fechando também as conexões com o MySQL
 */
 
-import 'dotenv/config'; // Carrega automaticamente as configurações salvas no arquivo .env
-import { createApp } from './app'; // Função que monta as rotas e configurações da aplicação
-import { createMysqlDatabase } from './database'; // Conecta o sistema ao banco MySQL
+import 'dotenv/config';
+import { createApp } from './app'; 
+import { createMysqlDatabase } from './database'; 
 
 // Usa a porta definida no .env ou a porta 3000 se nenhuma tiver sido informada
 const port = Number(process.env.PORT || 3000);
