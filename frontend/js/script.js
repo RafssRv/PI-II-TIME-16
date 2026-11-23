@@ -1,6 +1,6 @@
 /*
 Autor: Rafael Roveri Pires - RA: 24007131
-Tela: Compartilhado entre as telas (menu lateral)
+Tela: Controla o destaque do menu lateral 
 
 Descrição: 
 Identifica a página aberta pelo endereço do navegador e acrescenta a classe active ao link correspondente no menu

@@ -1,6 +1,7 @@
 /*
 Autora: Sophia Franco de Godoy - RA: 24000833
 Tela: Login (backend)
+  - Verifica a conta e registra quem está autenticado 
 
 Descrição: 
 Faz a autenticação a partir do e-mail e da senha informados. Consulta os usuários ativos e compara a senha com
@@ -9,96 +10,88 @@ usuário para permitir o acesso ao sistema
 */
 
 import { Express, Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcryptjs'; // Compara a senha digitada com o hash guardado no banco de dados
+import bcrypt from 'bcryptjs';
 import type { Database, DbConnection } from '../app';
-import type { UsuarioSessao } from '../autenticacao'; // Quais informações do usuário podem ser guardadas na sessão
+import type { UsuarioSessao } from '../autenticacao';
 
+// Inclui o hash da senha nos dados encontrados no banco
 interface UsuarioBanco extends UsuarioSessao {
-  // Hash é um resultado calculado a partir da senha
-  // Permite conferir a senha digitada sem precisar guardar a senha original no banco
+  // Versão protegida usada para conferir a senha digitada
   senha_hash: string;
 }
 
-// Registra a rota de login na aplicação
+// Registra a rota responsável pelo login
 export function registrarLogin(app: Express, database: Database) {
 
-  // Recebe os dados enviados quando uma pessoa tenta entrar no sistema
-  // next encaminha o processamento, inclusive erros, para o Express
-  // async permite usar await para esperar operações como consultas ao banco
+  // Recebe e-mail e senha e cria ou mantém a sessão do usuário
   app.post('/api/login', async (req: Request, res: Response, next: NextFunction) => {
 
-    // req.body contém os dados enviados no corpo do pedido
-    // Se não houver corpo, usa {} para evitar erro
+    // Lê os dados enviados ou usa um objeto vazio
     const { email, senha } = req.body || {};
 
+    // Exige que os dois campos tenham sido enviados
     if (!email || !senha) {
       return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
     }
 
+    // Exige que e-mail e senha sejam textos
     if (typeof email !== 'string' || typeof senha !== 'string') {
       return res.status(400).json({ error: 'Informe e-mail e senha como texto.' });
     }
 
-    // trim() retira espaços do começo e do fim para esta verificação
-    // Se o resultado for vazio, o campo tinha apenas espaços e não é aceito
+    // Remove espaços para conferir se os campos não estão vazios
     if (email.trim() === '' || senha.trim() === '') {
       return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
     }
 
-    // O bcrypt considera até 72 bytes da senha em UTF-8
-    // Esta verificação recusa senhas que ultrapassariam esse limite, para que uma parte delas não seja ignorada durante a comparação
+    // Rejeita uma senha maior que o limite aceito pelo bcrypt
     if (bcrypt.truncates(senha)) {
       return res.status(400).json({ error: 'A senha deve ter até 72 bytes em UTF-8.' });
     }
 
-    // Reserva um lugar para a conexão com o banco
-    // Neste momento, ela ainda pode não ter sido criada (undefined)
+    // Reserva a variável usada pela conexão com o banco
     let conexao: DbConnection | undefined;
 
-    // Reserva um lugar para o usuário encontrado
-    // Também pode ficar undefined caso nenhuma conta corresponda ao e-mail informado
+    // Reserva o usuário encontrado na consulta
     let usuario: UsuarioBanco | undefined;
 
     try {
-      // Pede uma conexão e espera sua abertura antes de continuar
+      // Abre uma conexão com o banco
       conexao = await database.connection();
 
-      // Procura no banco de dados um usuário ativo com o e-mail informado, ignorando maiúsculas e minúsculas
+      // Busca uma conta ativa pelo e-mail informado
       const usuarios = await conexao.query(
         'SELECT id, nome, email, senha_hash, perfil FROM usuarios WHERE LOWER(email) = LOWER(:email) AND ativo = 1',
         { email: email.trim().toLowerCase() }
       );
 
-      // A consulta devolve uma lista
-      // A posição 0 é o primeiro resultado, se a lista estiver vazia, usuario receberá undefined
+      // Guarda o primeiro usuário encontrado
       usuario = usuarios[0];
 
     } catch (erro) {
-      // Encaminha o problema ao tratamento de erros configurado no servidor
+      // Encaminha o erro ao tratamento configurado pelo Express
       return next(erro);
       
     } finally {
-      // Fechar a conexão com o banco
-      // Se a conexão foi aberta, fecha-a para liberar recursos
+      // Fecha a conexão mesmo se a consulta falhar
       if (conexao) await conexao.close();
     }
 
-    // Se um usuário foi encontrado, bcrypt.compare verifica se a senha digitada corresponde ao hash salvo
-    // Se não houver usuário, a comparação não é feita 
+    // Compara a senha digitada com o hash salvo no banco
     const senhaCorreta = usuario && await bcrypt.compare(senha, usuario.senha_hash);
 
+    // Recusa o login quando não encontrar o usuário ou a senha estiver incorreta
     if (!usuario || !senhaCorreta) {
       return res.status(401).json({ error: 'E-mail ou senha inválidos.' });
     }
     
-    // Cria uma nova sessão para o usuário que fez login, com um novo identificador
+    // Gera um novo identificador de sessão após o login
     req.session.regenerate((erro) => {
 
-      // Se houve erro ao criar a sessão, encaminha-o ao servidor e interrompe
+      // Interrompe se não puder criar a nova sessão
       if (erro) return next(erro);
 
-      // Guarda na sessão as informações do usuário que fez login.
-      // Essas informações permitem que o sistema reconheça o usuário depois, sem precisar pedir o e-mail e a senha novamente
+      // Guarda na sessão os dados públicos necessários
       req.session.usuario = {
         id: usuario.id,
         nome: usuario.nome,
@@ -106,14 +99,13 @@ export function registrarLogin(app: Express, database: Database) {
         perfil: usuario.perfil
       };
 
-      // Salva a sessão com as informações do usuário
+      // Persiste os dados antes de responder ao navegador
       req.session.save((erro) => {
 
-        // Se o salvamento falhar, encaminha o erro ao servidor
+        // Interrompe se não puder salvar a sessão
         if (erro) return next(erro);
 
-        // Envia uma resposta informando que o login foi realizado com sucesso
-        // A senha e o hash não são enviados
+        // Confirma o login sem enviar senha ou hash
         return res.status(200).json(req.session.usuario);
       });
     });

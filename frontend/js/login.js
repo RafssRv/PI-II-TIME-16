@@ -1,125 +1,116 @@
 /*
 Autora: Sophia Franco de Godoy - RA: 24000833
-Tela: Login
+Tela: Login (controla o formulário de login) 
+  - Valida os dados, tenta autenticar e controla o resultado do login
 
 Descrição: 
 Faz a conferência do e-mail e da senha antes de solicitar o acesso ao sistema. Mostra as mensagens de erro
 no formulário e encaminha o usuário ao dashboard quando o login é autorizado ou já existe uma sessão válida
 */
 
-// Encontrar os elementos da tela de login no HTML e guardá-los em variáveis
-// Encontrar o formulário e os campos
+// Guarda os elementos usados pelo formulário de login
 const formulario = document.querySelector('#form-login');
 const campoEmail = document.querySelector('#email');
 const campoSenha = document.querySelector('#senha');
 
-// Procura dentro do formulário o botão que tem type="submit", usado para enviá-lo
+// Guarda o botão que envia o formulário
 const botaoEntrar = formulario.querySelector('[type="submit"]');
 
-// Seleciona os espaços do HTML onde serão exibidas as mensagens de erro
+// Guarda os elementos que exibem mensagens de erro
 const erroEmail = document.querySelector('#erro-email');
 const erroSenha = document.querySelector('#erro-senha');
 
-// Cria duas listas: uma com os campos e outra com os espaços das mensagens
-// Isso permite percorrer todos eles ao limpar os erros da tentativa anterior
+// Organiza os campos e suas mensagens para facilitar a limpeza dos erros
 const camposComErro = [campoEmail, campoSenha];
 const mensagensDeErro = [erroEmail, erroSenha];
 
-// Mostrar uma mensagem de erro na tela e destacar o campo que está com problema
+// Marca um campo como inválido e mostra sua mensagem de erro
 function mostrarErro(campo, elementoErro, mensagem) {
-
-  // Adiciona a classe is-invalid, que destaca o campo usando o estilo da página
   campo.classList.add('is-invalid');
-
-  // Coloca a mensagem como texto no espaço de erro correspondente
   elementoErro.innerText = mensagem;
 }
 
-// Limpa os erros exibidos anteriormente, para começar uma nova tentativa
+// Remove os erros antes de validar uma nova tentativa
 function limparErros() {
 
-  // forEach passa por cada campo da lista e remove seu destaque de erro
+  // Remove a marcação de todos os campos
   camposComErro.forEach(function (campo) {
     campo.classList.remove('is-invalid');
   });
 
-  // Passa por cada espaço de mensagem e troca o texto por uma string vazia
-  // Limpa as mensagens de erro 
+  // Apaga todas as mensagens de erro
   mensagensDeErro.forEach(function (elementoErro) {
     elementoErro.innerText = '';
   });
 }
 
-// Verifica o que a pessoa digitou no formulário de login e, se estiver tudo preenchido corretamente, enviar o e-mail e a senha para o servidor
-// addEventListener espera o evento submit, quando isso acontece, executa a função abaixo
-// async permite usar await para esperar a resposta do servidor sem travar a página enquanto ela chega
+// Valida os dados e envia o login ao servidor
 formulario.addEventListener('submit', async function (event) {
 
-  // event representa o envio
-  // preventDefault impede o comportamento padrão do navegador, que enviaria o formulário e recarregaria a página
+  // Impede o navegador de recarregar a página ao enviar o formulário
   event.preventDefault();
-
   limparErros();
 
-  // Lê o que o usuário digitou 
+  // Padroniza o e-mail e lê a senha digitada
   const email = campoEmail.value.trim().toLowerCase();
   const senha = campoSenha.value;
 
-  // Acompanha o resultado das verificações
+  // Define como válida até encontrar algum dado incorreto
   let formularioValido = true;
 
+  // Exige o preenchimento do e-mail
   if (email === '') {
     mostrarErro(campoEmail, erroEmail, 'E-mail é obrigatório.');
     formularioValido = false;
 
-  // Caso não esteja vazio, consulta a verificação de formato do navegador
-  // typeMismatch indica que o conteúdo não tem um formato de e-mail aceito
+  // Confere o formato de e-mail reconhecido pelo navegador
   } else if (campoEmail.validity.typeMismatch) {
     mostrarErro(campoEmail, erroEmail, 'Informe um e-mail válido.');
     formularioValido = false;
   }
 
+  // Exige o preenchimento da senha
   if (senha.trim() === '') {
     mostrarErro(campoSenha, erroSenha, 'Senha é obrigatória.');
     formularioValido = false;
   }
 
-  // Se alguma verificação falhou, não envia o formulário
+  // Interrompe o envio caso algum dado seja inválido
   if (!formularioValido) return;
 
-  // Desativa o botão enquanto a solicitação está em andamento
+  // Impede novos envios enquanto aguarda o servidor
   botaoEntrar.disabled = true;
 
   try {
-
-    // Envia o e-mail e a senha ao servidor
+    // Solicita o login com os dados informados
     await entrarApi(email, senha);
 
-    // Se o login der certo, abre o dashboard 
-    // replace substitui a página atual no histórico de navegação por essa página
+    // Envia o usuário para o dashboard após entrar
     window.location.replace('dashboard.html');
 
   } catch (error) {
     mostrarErro(campoSenha, erroSenha, error.message);
 
-    // Apaga a senha digitada, deixando o campo pronto para uma nova tentativa
+    // Apaga a senha para uma nova tentativa
     campoSenha.value = '';
   } finally {
-    // Reativa o botão ao final da tentativa
+
+    // Reativa o botão depois da tentativa
     botaoEntrar.disabled = false;
   }
 });
 
-// Verifica se a pessoa já está logada quando abre a página de login
-// Se ela já tiver uma sessão válida, o sistema a encaminha diretamente para o dashboard, sem precisar digitar o e-mail e a senha novamente
+// Verifica se existe uma sessão ativa ao abrir a página
 document.addEventListener('DOMContentLoaded', async function () {
+
   try {
-    // Verifica se a pessoa já possui uma sessão ativa no servidor
+    // Consulta o servidor sobre a sessão atual
     await buscarSessaoApi();
     
-    // Se a consulta funcionar, abre o dashboard sem pedir o login novamente
+    // Abre o dashboard quando a sessão já estiver válida
     window.location.replace('dashboard.html');
+    
   } catch {
-    // Se a consulta falhar, mantém a tela de login aberta
+    // Mantém a tela de login aberta se não houver sessão válida
   }
 });

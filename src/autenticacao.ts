@@ -9,8 +9,6 @@ e restringem determinadas ações aos administradores, retornando uma mensagem q
 
 import { Request, Response, NextFunction } from 'express';
 
-// Indica quais informações identificam o usuário na sessão.
-// A sessão permite que o servidor reconheça o usuário em pedidos posteriores ao login
 export interface UsuarioSessao {
   id: number;
   nome: string;
@@ -18,7 +16,6 @@ export interface UsuarioSessao {
   perfil: 'ADMIN' | 'LIDER' | 'MEMBRO';
 }
 
-// express-session é a biblioteca que cuida das sessões da aplicação
 // Avisa ao TypeScript que a sessão pode guardar as informações de um usuário que fez login
 declare module 'express-session' {
 
