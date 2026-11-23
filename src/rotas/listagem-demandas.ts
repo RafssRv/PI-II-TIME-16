@@ -7,9 +7,11 @@ Busca as demandas no banco conforme o texto pesquisado, os filtros e a ordenaç�
 consulta e limita os resultados de líderes e membros aos projetos dos quais participam, retornando os dados para a listagem
 */
 
+// Importações para tipagem de objetos de requisição e resposta e tipos do banco de dados
 import { Express, Request, Response } from 'express';
 import type { Database, DbConnection } from '../app';
 
+// Definindo valores aceitos nos filtros para consultas no banco, fora dessa lista gera erro 400.
 const STATUS_VALIDOS = ['ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'];
 const PRIORIDADES_VALIDAS = ['CRITICA', 'ALTA', 'MEDIA', 'BAIXA'];
 const TIPOS_VALIDOS = ['TAREFA', 'DEFEITO', 'MELHORIA', 'DOCUMENTACAO'];
@@ -26,10 +28,13 @@ function converterIdPositivo(valor: string): number | null {
   return numero;
 }
 
+// FUNÇÃO PRINCIPAL
+// Função exportada de listagemDemandas.ts e importada em app.ts
+
 // Registra na aplicação a rota responsável por consultar as demandas
 export function registrarListagemDemandas(app: Express, database: Database) {
 
-  // Rota que recebe os pedidos de listagem e pega os filtros enviados pelo usuário
+  // Rota GET que recebe os pedidos de listagem e pega os filtros enviados pelo usuário
   app.get('/api/demandas', async (req: Request, res: Response) => {
 
     // Pega os filtros que chegaram na URL e guarda cada um em uma variável 
@@ -43,6 +48,7 @@ export function registrarListagemDemandas(app: Express, database: Database) {
       ordenacao
     } = req.query;
 
+    // Validação do tipo dos parâmetros
     const nomesParametros = ['status', 'prioridade', 'tipo', 'projeto_id', 'responsavel_id', 'busca', 'ordenacao'];
     
     // Percorre cada nome para verificar o valor correspondente no pedido
@@ -71,12 +77,11 @@ export function registrarListagemDemandas(app: Express, database: Database) {
       return res.status(400).json({ error: 'Filtro inválido: tipo.' });
     }
 
-    // Variável para guardar o ID do projeto depois que ele for convertido em número 
-    // Ele pode guardar um número inteiro positivo ou null caso o filtro não tenha sido informado
+    // Variável para guardar o ID DO PROJETO depois que ele for convertido em número.
+    // Ele pode guardar um número inteiro positivo ou null quando o filtro não for informado
     let projetoIdNumero: number | null = null;
 
     if (typeof projeto_id === 'string' && projeto_id !== '') {
-
       // Converte o ID para um número positivo 
       projetoIdNumero = converterIdPositivo(projeto_id);
       
@@ -85,10 +90,13 @@ export function registrarListagemDemandas(app: Express, database: Database) {
         return res.status(400).json({ error: 'Identificador inválido.' });
       }
     }
-
+    
+    // Variável para guardar o ID DO PROJETO depois que ele for convertido em número.
+    // Guarda número inteiro positivo ou null quando o filtro não for informado
     let responsavelIdNumero: number | null = null;
 
     if (typeof responsavel_id === 'string' && responsavel_id !== '') {
+      // Converte o ID para um número positivo 
       responsavelIdNumero = converterIdPositivo(responsavel_id);
       
       if (responsavelIdNumero === null) {
@@ -96,7 +104,9 @@ export function registrarListagemDemandas(app: Express, database: Database) {
       }
     }
 
-    // Define a ordem em que as demandas serão apresentadas
+    // DEFINIÇÃO DA ORDENAÇÃO
+    // Define a ordem em que as demandas serão apresentadas com base no critério
+
     // ? ordenacao: se as condições forem verdadeiras, utiliza a ordenação informada.
     // : 'criacao_desc': caso contrário, utiliza a ordenação padrão, que coloca as demandas mais recentes primeiro
     const criterioOrdenacao = typeof ordenacao === 'string' && ordenacao !== '' ? ordenacao : 'criacao_desc';
@@ -111,6 +121,8 @@ export function registrarListagemDemandas(app: Express, database: Database) {
     
     } else if (criterioOrdenacao === 'prazo_asc') {
       // ASC coloca as datas de prazo mais próximas primeiro; IS NULL coloca primeiro as demandas sem prazo definido
+      // (no MySQL, "IS NULL" vale 1 quando é nulo e 0 quando não é; ordenando em
+      // ordem crescente, os 0 vêm antes, ou seja, as demandas COM prazo vêm primeiro)
       sqlOrdenacao = 'd.prazo IS NULL, d.prazo ASC, d.id DESC';
     
     // Ordenação pela prioridade 
@@ -120,12 +132,15 @@ export function registrarListagemDemandas(app: Express, database: Database) {
     
     // Ordenação pelo status 
     } else if (criterioOrdenacao === 'status') {
-      // Coloca primeiro as demandas abertas, depois as em andamento, em revisão, concluídas e canceladas
+      // FIELD define a sequência do status primeiro as demandas abertas, depois as em andamento, em revisão, concluídas e canceladas
       sqlOrdenacao = "FIELD(d.status, 'ABERTA', 'EM_ANDAMENTO', 'EM_REVISAO', 'CONCLUIDA', 'CANCELADA'), d.id DESC";
     
     } else {
+      // Critérios desconhecido a requisição é recusa
       return res.status(400).json({ error: 'Ordenação inválida.' });
     }
+
+    // CONEXÃO COM O BANCO E CONSULTAS //
 
     // Cria a variável da conexão com o banco 
     let conexao: DbConnection | undefined;
@@ -205,9 +220,15 @@ export function registrarListagemDemandas(app: Express, database: Database) {
       // Envia o SQL e os valores separados ao banco e espera a lista de resultados
       const demandas = await conexao.query(sql, binds);
       return res.status(200).json(demandas);
+
+      // Registra o erro real no servidor (console) e devolve ao cliente apenas
+      // uma mensagem genérica, sem expor detalhes internos.
     } catch (erro) {
       console.error(erro);
       return res.status(500).json({ error: 'Erro ao listar demandas.' });
+
+      // O finally roda sempre (sucesso ou erro), garantindo que a conexão
+      // seja devolvida/fechada e não fique vazando.
     } finally {
       // Fecha a conexão com o banco depois que a consulta termina 
       if (conexao) await conexao.close();
