@@ -297,7 +297,11 @@ O MySQL e o arquivo `.env` devem estar configurados também para essa forma de e
 
 ## Testes automatizados
 
-Execute:
+O projeto possui testes automatizados para verificar as regras da API, a autenticação, o acesso ao banco de dados e a integração com o MySQL.
+
+### Execução padrão
+
+Na raiz do projeto, execute:
 
 ```bash
 npm test
@@ -305,20 +309,126 @@ npm test
 
 A execução padrão utiliza banco simulado nos testes da API e do acesso ao banco, além de simular as respostas da API de feriados.
 
-O teste com MySQL real é ignorado por padrão. Para executá-lo, prepare um banco separado, com nome terminado em `_test`, aplique o schema e configure credenciais exclusivas para esse banco.
+O teste de integração com MySQL real aparece como `SKIP` nessa execução. Isso é esperado: ele só é executado quando a variável `MYSQL_INTEGRATION` está definida como `1`.
 
-Em um terminal PowerShell separado:
+### Executar a integração com MySQL real
+
+O teste de integração verifica o funcionamento conjunto da API e do MySQL, incluindo cadastro, login, operações com demandas, comentários e histórico.
+
+Para executá-lo, é necessário:
+
+- Ter o serviço MySQL em execução.
+- Criar um banco exclusivo para testes, com nome terminado em `_test`.
+- Aplicar `database/schema.sql` nesse banco vazio.
+- Configurar um usuário MySQL com permissões de leitura, inclusão, atualização e exclusão nesse banco.
+
+**1. Configurar a conexão com o banco de testes**
+
+No Linux ou macOS, execute na raiz do projeto:
+
+```bash
+export MYSQL_INTEGRATION=1
+export MYSQL_DATABASE=demandas_app_test
+export MYSQL_USER=app_demandas_test
+export MYSQL_PASSWORD=senha_do_usuario_de_teste
+```
+
+No Windows, usando PowerShell:
 
 ```powershell
 $env:MYSQL_INTEGRATION = "1"
 $env:MYSQL_DATABASE = "demandas_app_test"
 $env:MYSQL_USER = "app_demandas_test"
 $env:MYSQL_PASSWORD = "senha_do_usuario_de_teste"
+```
 
+Substitua os valores de usuário e senha pelas credenciais do usuário MySQL que possui acesso ao banco de testes. As demais configurações de conexão, como `MYSQL_HOST` e `MYSQL_PORT`, podem ser mantidas no `.env`.
+
+**2. Informar um ADMIN quando o banco já estiver populado**
+
+O teste verifica quantos usuários existem na tabela `usuarios`.
+
+- **Banco vazio:** não é necessário informar credenciais de ADMIN. O teste utiliza o fluxo inicial de cadastro por bootstrap.
+- **Banco com usuários cadastrados:** é obrigatório informar as credenciais de uma conta ativa com perfil `ADMIN`, já existente nesse banco.
+
+No Linux ou macOS, informe as credenciais sem deixar a senha visível na digitação:
+
+```bash
+read -rp "E-mail do ADMIN: " MYSQL_TEST_ADMIN_EMAIL
+read -rsp "Senha do ADMIN: " MYSQL_TEST_ADMIN_PASSWORD
+echo
+
+export MYSQL_TEST_ADMIN_EMAIL MYSQL_TEST_ADMIN_PASSWORD
+```
+
+No Windows, usando PowerShell:
+
+```powershell
+$env:MYSQL_TEST_ADMIN_EMAIL = Read-Host "E-mail do ADMIN"
+$senha = Read-Host "Senha do ADMIN" -AsSecureString
+$env:MYSQL_TEST_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new("", $senha).Password
+```
+
+Essas variáveis representam as credenciais de login na aplicação, não as credenciais de conexão com o MySQL.
+
+**3. Executar o teste**
+
+Após configurar as variáveis necessárias, execute:
+
+```bash
 npm test
 ```
 
-O banco de integração deve ser exclusivo para testes, pois o teste cria registros e os remove ao finalizar.
+O teste `MySQL real: cadastro, login, CRUD, comentários e histórico` deverá ser executado, em vez de aparecer como `SKIP`.
+
+**4. Resolver falhas relacionadas às credenciais do ADMIN**
+
+Se aparecer a mensagem:
+
+```text
+Banco populado: informe MYSQL_TEST_ADMIN_EMAIL e MYSQL_TEST_ADMIN_PASSWORD de um ADMIN.
+```
+
+Significa que o banco já possui usuários, mas as credenciais do ADMIN não foram informadas.
+
+Para resolver:
+
+1. Consulte os usuários do banco de testes:
+
+```sql
+USE demandas_app_test;
+
+SELECT id, nome, email, perfil, ativo
+FROM usuarios;
+```
+
+2. Identifique uma conta com perfil `ADMIN` e situação ativa (`ativo = 1`).
+3. Informe o e-mail e a senha dessa conta nas variáveis `MYSQL_TEST_ADMIN_EMAIL` e `MYSQL_TEST_ADMIN_PASSWORD`, conforme o passo 2.
+4. Execute novamente `npm test`.
+
+Se o login retornar erro `401`, verifique se o e-mail e a senha informados correspondem a uma conta ADMIN ativa do banco de testes.
+
+**5. Limpar as variáveis temporárias**
+
+No Linux ou macOS:
+
+```bash
+unset MYSQL_INTEGRATION MYSQL_DATABASE MYSQL_USER MYSQL_PASSWORD
+unset MYSQL_TEST_ADMIN_EMAIL MYSQL_TEST_ADMIN_PASSWORD
+```
+
+No PowerShell:
+
+```powershell
+Remove-Item Env:MYSQL_INTEGRATION -ErrorAction SilentlyContinue
+Remove-Item Env:MYSQL_DATABASE -ErrorAction SilentlyContinue
+Remove-Item Env:MYSQL_USER -ErrorAction SilentlyContinue
+Remove-Item Env:MYSQL_PASSWORD -ErrorAction SilentlyContinue
+Remove-Item Env:MYSQL_TEST_ADMIN_EMAIL -ErrorAction SilentlyContinue
+Remove-Item Env:MYSQL_TEST_ADMIN_PASSWORD -ErrorAction SilentlyContinue
+```
+
+**Importante:** o teste cria registros de usuário, projeto, demanda, comentários e histórico, e remove esses registros ao finalizar. Utilize exclusivamente um banco de testes terminado em `_test`. Nunca execute a integração no banco de desenvolvimento ou de produção.
 
 ## Conferir a conexão com o banco
 
