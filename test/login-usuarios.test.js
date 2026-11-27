@@ -1,5 +1,5 @@
 /*
-Autora: Sophia Franco de Godoy - RA: 24000833
+Autor: Vinícius Panutti Salgado - RA: 25007329
 Tela: Login e telas internas (testes de sessão e permissões)
 
 Descrição: 
